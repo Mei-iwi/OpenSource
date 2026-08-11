@@ -1,301 +1,375 @@
-# Website Quản lý Sự kiện – Đăng ký tham gia
+# Website Quản lý Nhân sự
+
+## Trạng thái dự án
+
+Đây là scaffold/configuration của đồ án môn **Lập trình mã nguồn mở** với Laravel 12. Hiện chưa triển khai chức năng nghiệp vụ. Các thư mục nghiệp vụ mới chỉ có `.gitkeep` để giữ cấu trúc trên Git.
 
 ## 1. Tên đề tài
 
-Website hỗ trợ tạo và công bố sự kiện, để người dùng đăng ký tham gia; admin quản lý sự kiện, chuyên mục và người tham gia. Sự kiện được phân loại theo chuyên mục.
-
-**Trạng thái hiện tại:** Project scaffold/configuration only. Chưa triển khai nghiệp vụ; README này mô tả kế hoạch để tiếp tục phát triển theo từng Lab.
+Website quản lý thông tin nhân viên, phòng ban, chấm công và báo cáo/thống kê nhân sự. Hệ thống dự kiến có hai vai trò: **HR** quản lý hệ thống và **Employee** xem, cập nhật phần hồ sơ được phép và xem chấm công của chính mình.
 
 ## 2. Mục tiêu đồ án
 
-Đồ án thực hành PHP/Laravel, OOP/MVC, MySQL, Eloquent ORM, routing, Controller, Blade, migration, seeder, factory, validation, middleware, authentication/authorization, CSRF, xuất dữ liệu an toàn và tìm kiếm/phân trang. Công nghệ được giữ trong phạm vi học phần.
+Đồ án áp dụng PHP, OOP, Laravel 12, MVC, MySQL, Blade, Eloquent ORM, Migration, Seeder/Factory, Resource Controller, named route, Form Request/Validation, Middleware, Authentication/Authorization, CSRF, Blade escaping, tìm kiếm, phân trang và truy vấn thống kê `COUNT`/`GROUP BY`. Git được dùng để quản lý lịch sử đóng góp nhóm.
 
-## 3. Phạm vi chức năng
+Giải pháp giữ trong phạm vi học phần: không dùng DDD, Hexagonal, Clean Architecture nhiều tầng, Repository/Service abstraction, microservice, Redis, queue, SPA framework, API-only architecture hoặc package xuất Excel/PDF ở giai đoạn scaffold.
 
-### Public
+## 3. Phạm vi chức năng dự kiến
 
-- Xem danh sách và chi tiết sự kiện.
-- Lọc theo chuyên mục, tìm kiếm theo tên và phân trang.
+### HR
 
-### User
+- Đăng nhập và dashboard thống kê cơ bản.
+- CRUD phòng ban, CRUD nhân viên và gán nhân viên vào phòng ban.
+- Quản lý/chỉnh sửa bản ghi chấm công.
+- Tìm kiếm, lọc và phân trang nhân viên/chấm công.
+- Xem báo cáo chấm công và thống kê nhân sự theo phòng ban/trạng thái.
+- Xuất CSV và trang HTML thân thiện với thao tác in.
 
-- Đăng ký/đăng nhập.
-- Đăng ký tham dự, chống đăng ký trùng.
-- Xem các sự kiện đã đăng ký.
-- Hủy đăng ký là phần mở rộng tùy thời gian.
+### Employee
 
-### Admin
+- Đăng nhập và xem hồ sơ của chính mình.
+- Cập nhật các trường cá nhân được cho phép.
+- Xem lịch sử chấm công của chính mình và lọc theo tháng.
+- Không được tự thay đổi role, mã nhân viên, phòng ban, chức vụ, ngày vào làm hoặc trạng thái làm việc.
 
-- Đăng nhập và dashboard cơ bản.
-- CRUD chuyên mục, CRUD sự kiện, upload ảnh.
-- Xem/quản lý người tham gia; tìm kiếm và phân trang.
-- Soft delete là phần mở rộng hợp lý nếu không làm tăng độ phức tạp quá mức.
+### Ngoài phạm vi bản cơ bản
 
-Ưu tiên hoàn thành chức năng bắt buộc trước, sau đó mới mở rộng capacity, trạng thái, upload và soft delete.
+Payroll/tính lương, tuyển dụng, KPI, nghỉ phép phức tạp, ca làm việc nhiều tầng, fingerprint, QR, GPS và self check-in không thuộc core scope. Excel/PDF bằng package chỉ là mở rộng khi giảng viên yêu cầu; CSV và print-friendly HTML là lựa chọn mặc định.
 
-## 4. Role và ma trận quyền
+## 4. Role matrix
 
-| Hành động | Guest | User | Admin |
-|---|---:|---:|---:|
-| Xem sự kiện/chi tiết | Có | Có | Có |
-| Đăng ký tham gia | Không | Có | Có |
-| Xem đăng ký cá nhân | Không | Có | Có |
-| Quản lý category | Không | Không | Có |
-| Tạo/sửa/xóa event | Không | Không | Có |
-| Xem participant | Không | Không | Có |
-| Truy cập `/admin` | Không | Không | Có |
+| Chức năng | HR | Employee |
+|---|---:|---:|
+| Đăng nhập | Có | Có |
+| Xem hồ sơ bản thân | Có | Có |
+| Cập nhật thông tin cá nhân được phép | Có | Có |
+| Xem chấm công bản thân | Có | Có |
+| Xem toàn bộ nhân viên | Có | Không |
+| Tạo nhân viên | Có | Không |
+| Sửa thông tin nghiệp vụ nhân viên | Có | Không |
+| Xóa/vô hiệu hóa nhân viên | Có | Không |
+| Quản lý phòng ban | Có | Không |
+| Quản lý chấm công | Có | Không |
+| Xem báo cáo toàn hệ thống | Có | Không |
+| Xuất báo cáo | Có | Không |
+| Truy cập `/hr` | Có | Không |
 
-Guest chỉ xem public; User đăng ký sự kiện; Admin quản trị. Khi implementation, quyền phải được kiểm tra server-side bằng middleware/Gate/Policy, không chỉ ẩn nút Blade.
+HR có quyền quản trị; Employee chỉ được truy cập dữ liệu của chính mình. Phân quyền và ownership phải kiểm tra server-side bằng middleware/policy, không chỉ ẩn nút trên Blade.
 
-## 5. Kiến trúc MVC
+## 5. Use case tổng quát
 
 ```mermaid
 flowchart LR
-    A[Request] --> B[Route]
+    HR[HR] --> H1[Quản lý phòng ban]
+    HR --> H2[Quản lý nhân viên]
+    HR --> H3[Quản lý chấm công]
+    HR --> H4[Xem báo cáo và thống kê]
+    Employee[Employee] --> E1[Xem hồ sơ cá nhân]
+    Employee --> E2[Cập nhật trường được phép]
+    Employee --> E3[Xem chấm công cá nhân]
+```
+
+## 6. Kiến trúc MVC
+
+```mermaid
+flowchart LR
+    A[Browser] --> B[Route]
     B --> C[Middleware/Auth]
     C --> D[Controller]
-    D --> E[Form Request/Validation]
+    D --> E[Form Request]
     E --> F[Model/Eloquent]
     F --> G[(MySQL)]
     G --> D
-    D --> H[Blade View]
-    H --> I[Response]
+    D --> H[Blade]
+    H --> A
 ```
 
-- Model chứa dữ liệu và quan hệ Eloquent.
-- View dùng Blade để trình bày, escape bằng `{{ }}`.
-- Controller nhận request và điều phối nghiệp vụ mức ứng dụng.
-- Form Request chứa validation; Middleware/Policy kiểm soát truy cập.
-- Migration mô tả cấu trúc DB; Seeder/Factory cung cấp dữ liệu mẫu.
-- Không sử dụng DDD, Hexagonal, Service/Repository hay kiến trúc vượt phạm vi môn học.
+- Route định tuyến request; Middleware xác thực và giới hạn nhóm HR/Employee.
+- Controller điều phối use case, không chứa validation dài.
+- Form Request chứa validation khi bước implementation bắt đầu.
+- Model mô tả dữ liệu và quan hệ Eloquent; Blade chỉ trình bày và escape output bằng `{{ }}`.
+- Migration mô tả schema; Seeder/Factory tạo dữ liệu mẫu; Policy/Gate dùng cho ownership khi cần.
+- Không dùng DDD, Hexagonal hay kiến trúc nhiều tầng vượt phạm vi môn học.
 
-## 6. Mô hình dữ liệu dự kiến
+## 7. Mô hình dữ liệu dự kiến
 
-Chưa tạo migration nghiệp vụ ở giai đoạn scaffold.
+Chưa tạo migration nghiệp vụ trong giai đoạn scaffold. Bảng `reports` không cần ở phiên bản cơ bản; báo cáo được sinh từ `employees`, `departments` và `attendances`.
 
 ### `users`
 
-| Tên cột | Kiểu dự kiến | Ý nghĩa | Ràng buộc |
-|---|---|---|---|
-| id | bigint | Mã người dùng | PK, Laravel mặc định |
-| name | varchar | Họ tên | bắt buộc |
-| email | varchar | Email | unique |
-| password | varchar | Mật khẩu đã băm | bắt buộc |
-| role | enum/string | `admin` hoặc `user` | mặc định `user` |
+| Cột | Kiểu dự kiến | Null | Ràng buộc | Ý nghĩa |
+|---|---|---|---|---|
+| id | bigint | Không | PK | Mã tài khoản |
+| name | string | Không | bắt buộc | Tên hiển thị |
+| email | string | Không | unique | Email đăng nhập |
+| password | string | Không | hash, không plain text | Mật khẩu |
+| role | string/enum | Không | `hr` hoặc `employee` | Vai trò |
+| timestamps | datetime | Không | Laravel | Thời gian |
 
-### `categories`
+### `departments`
 
-| Tên cột | Kiểu dự kiến | Ý nghĩa | Ràng buộc |
-|---|---|---|---|
-| id | bigint | Mã chuyên mục | PK |
-| name | varchar | Tên chuyên mục | bắt buộc |
-| description | text nullable | Mô tả | tùy chọn |
-| timestamps | datetime | Thời gian | Laravel |
+| Cột | Kiểu dự kiến | Null | Ràng buộc | Ý nghĩa |
+|---|---|---|---|---|
+| id | bigint | Không | PK | Mã phòng ban |
+| code | string | Không | unique | Mã phòng ban |
+| name | string | Không | bắt buộc | Tên phòng ban |
+| description | text | Có | tùy chọn | Mô tả |
+| timestamps | datetime | Không | Laravel | Thời gian |
 
-### `events`
+### `employees`
 
-| Tên cột | Kiểu dự kiến | Ý nghĩa | Ràng buộc |
-|---|---|---|---|
-| id | bigint | Mã sự kiện | PK |
-| category_id | bigint | Chuyên mục | FK → `categories.id` |
-| created_by | bigint | Admin tạo | FK → `users.id` |
-| title/description | varchar/text | Nội dung | bắt buộc |
-| location | varchar | Địa điểm | bắt buộc |
-| start_at/end_at | datetime | Thời gian | `end_at` sau `start_at` |
-| capacity | integer nullable | Sức chứa | không âm, tùy chọn |
-| image_path | varchar nullable | Ảnh | tùy chọn |
-| status | enum/string | `draft`, `published`, `cancelled` | mặc định phù hợp |
-| timestamps | datetime | Thời gian | Laravel |
+| Cột | Kiểu dự kiến | Null | Ràng buộc | Ý nghĩa |
+|---|---|---|---|---|
+| id | bigint | Không | PK | Mã hồ sơ |
+| user_id | bigint | Không | FK `users.id`, unique | Tài khoản gắn với hồ sơ |
+| department_id | bigint | Không | FK `departments.id` | Phòng ban |
+| employee_code | string | Không | unique | Mã nhân viên |
+| phone/address | string/text | Có | tùy chọn | Thông tin liên hệ |
+| date_of_birth | date | Có | ngày hợp lệ | Ngày sinh |
+| position | string | Có | tùy chọn | Chức vụ |
+| hire_date | date | Không | ngày hợp lệ | Ngày vào làm |
+| employment_status | string/enum | Không | `active`/`inactive` | Trạng thái làm việc |
+| timestamps | datetime | Không | Laravel | Thời gian |
 
-### `registrations`
+### `attendances`
 
-| Tên cột | Kiểu dự kiến | Ý nghĩa | Ràng buộc |
-|---|---|---|---|
-| id | bigint | Mã đăng ký | PK |
-| event_id | bigint | Sự kiện | FK → `events.id` |
-| user_id | bigint | Người dùng | FK → `users.id` |
-| status | enum/string | `registered`/`cancelled` | có thể tối giản |
-| timestamps | datetime | Thời gian | Laravel |
+| Cột | Kiểu dự kiến | Null | Ràng buộc | Ý nghĩa |
+|---|---|---|---|---|
+| id | bigint | Không | PK | Mã chấm công |
+| employee_id | bigint | Không | FK `employees.id` | Nhân viên |
+| work_date | date | Không | kết hợp unique | Ngày làm việc |
+| check_in/check_out | time | Có | check-out >= check-in | Giờ vào/ra |
+| status | string/enum | Không | present/late/absent/leave | Trạng thái |
+| note | text | Có | tùy chọn | Ghi chú |
+| timestamps | datetime | Không | Laravel | Thời gian |
 
-Đặt `UNIQUE(event_id, user_id)` để chống đăng ký trùng. Các khóa ngoại chính là `events.category_id → categories.id`, `events.created_by → users.id`, `registrations.event_id → events.id` và `registrations.user_id → users.id`.
+Ràng buộc quan trọng: `employees.user_id` là unique FK tới `users`; `employees.department_id` là FK tới `departments`; `attendances.employee_id` là FK tới `employees`; `UNIQUE(employee_id, work_date)` chống trùng chấm công trong cùng ngày.
 
-## 7. ERD
+## 8. ERD
 
 ```mermaid
 erDiagram
-    USERS ||--o{ EVENTS : creates
-    CATEGORIES ||--o{ EVENTS : contains
-    USERS ||--o{ REGISTRATIONS : registers
-    EVENTS ||--o{ REGISTRATIONS : has
+    USERS ||--o| EMPLOYEES : has_profile
+    DEPARTMENTS ||--o{ EMPLOYEES : contains
+    EMPLOYEES ||--o{ ATTENDANCES : has
 ```
 
-## 8. Quan hệ Eloquent dự kiến
+Một User có tối đa một hồ sơ Employee. Một Department có nhiều Employee. Một Employee có nhiều Attendance, mỗi ngày tối đa một bản ghi.
 
-- `Category hasMany Event`; `Event belongsTo Category`.
-- `Event belongsTo User as creator`; `User hasMany Event as creator`.
-- `User belongsToMany Event through registrations`.
-- `Event belongsToMany User through registrations`.
-- Có thể dùng model `Registration` riêng để quản lý `status` và quan hệ tới User/Event.
+## 9. Quan hệ Eloquent dự kiến
 
-## 9. Cấu trúc thư mục
+- `User hasOne Employee`; `Employee belongsTo User`.
+- `Department hasMany Employee`; `Employee belongsTo Department`.
+- `Employee hasMany Attendance`; `Attendance belongsTo Employee`.
+
+## 10. Quy tắc nghiệp vụ
+
+1. Một tài khoản Employee chỉ gắn với tối đa một hồ sơ.
+2. `employee_code` và `department.code` là duy nhất.
+3. Một nhân viên chỉ có một attendance trong một ngày.
+4. `check_out` nếu có phải lớn hơn hoặc bằng `check_in`.
+5. Employee chỉ xem hồ sơ và chấm công của chính mình.
+6. Employee không sửa role, mã nhân viên, phòng ban, chức vụ, ngày vào làm hoặc trạng thái.
+7. HR quản lý phòng ban, nhân viên, chấm công và báo cáo.
+8. Không xóa phòng ban đang có nhân viên nếu chưa chuyển nhân viên.
+9. Route HR dùng `auth` và kiểm tra role `hr`.
+10. Báo cáo theo tháng phải lọc đúng mốc ngày; thống kê không được đếm trùng do JOIN.
+
+## 11. Báo cáo và thống kê dự kiến
+
+- Báo cáo chấm công lọc theo tháng/năm, phòng ban và trạng thái; bảng gồm mã nhân viên, họ tên, phòng ban, ngày, check-in, check-out, trạng thái và ghi chú.
+- Thống kê tháng gồm số ngày `present`, `late`, `absent`, `leave`.
+- Thống kê nhân sự gồm tổng nhân viên, active/inactive và số nhân viên theo phòng ban, dùng `COUNT`, `GROUP BY`, `WHERE`, `ORDER BY`.
+- Xuất CSV bằng `StreamedResponse`/`response()->streamDownload()` của Laravel/PHP, không cần package ngoài; có thể thêm UTF-8 BOM để Excel đọc tiếng Việt.
+- Trang HTML print-friendly dùng `@media print`, cho phép Print/Save as PDF từ trình duyệt.
+
+Đây là kế hoạch, chưa có code báo cáo hay thống kê trong scaffold.
+
+## 12. Cấu trúc thư mục
 
 ```text
-app/Http/Controllers/Admin/    # controller admin, hiện là .gitkeep
-app/Http/Controllers/Web/      # controller public/user
-app/Http/Requests/             # Form Request theo vai trò
-app/Policies/                  # policy khi cần
-database/migrations/           # migration Laravel mặc định; nghiệp vụ sẽ bổ sung sau
-database/factories/            # factory Laravel mặc định
-database/seeders/              # seeder Laravel mặc định
-resources/views/layouts/       # layout public
-resources/views/partials/      # navbar/footer/flash
-resources/views/events/        # view sự kiện
-resources/views/my-registrations/
-resources/views/admin/         # layout và view admin
-public/css/ public/images/     # tài nguyên tĩnh
-docs/diagrams/ screenshots/ report/
-routes/web.php                 # route web; admin có thể dùng prefix trong file này
+app/Http/Controllers/HR/          # .gitkeep, controller HR sẽ bổ sung sau
+app/Http/Controllers/Employee/    # controller Employee sẽ bổ sung sau
+app/Http/Requests/HR/             # Form Request HR
+app/Http/Requests/Employee/       # Form Request Employee
+app/Policies/                     # policy khi cần
+database/migrations/              # migration Laravel mặc định; chưa có nghiệp vụ
+database/factories/               # factory Laravel mặc định
+database/seeders/                 # seeder Laravel mặc định
+resources/views/layouts/          # layout chung
+resources/views/partials/         # partial chung
+resources/views/components/       # component chung
+resources/views/hr/                # view HR dự kiến
+resources/views/employee/         # view Employee dự kiến
+public/css/ public/images/        # tài nguyên tĩnh
+docs/diagrams/                    # ERD/use case/architecture
+docs/screenshots/                 # ảnh minh chứng
+docs/report/                      # báo cáo
+routes/web.php                    # route web; nghiệp vụ sẽ bổ sung sau
 ```
 
-`.gitkeep` chỉ giữ các thư mục dự kiến trên Git khi chưa có source thật; không phải code nghiệp vụ.
+`.gitkeep` chỉ giữ thư mục rỗng trên Git, không phải class hay chức năng giả.
 
-## 10. Cấu hình môi trường
+## 13. Cấu hình môi trường
 
-Yêu cầu: PHP/Composer theo Laravel 12, MySQL, Laragon hoặc `php artisan serve`, VS Code và Git. `.env.example` đã đặt local development với database `event_management`, MySQL tại `127.0.0.1:3306`, user `root` và mật khẩu trống. Không commit `.env`.
+Yêu cầu: PHP và Composer theo Laravel 12, MySQL/MariaDB, Laragon hoặc `php artisan serve`, VS Code và Git.
 
 ```text
 git clone <GITLAB_REPOSITORY_URL>
-cd project
+cd <PROJECT_FOLDER>
 composer install
-copy .env.example .env
+copy .env.example .env       # PowerShell/Windows
 php artisan key:generate
-# tạo database event_management và kiểm tra DB_* trong .env
-php artisan migrate                 # chỉ sau khi có migration nghiệp vụ
-php artisan db:seed                  # chỉ sau khi có seeder
-php artisan storage:link             # sau khi có upload ảnh
+# tạo database hr_management và cấu hình DB_* trong .env
+php artisan migrate           # chỉ sau khi có migration nghiệp vụ
+php artisan db:seed           # chỉ sau khi có seeder nghiệp vụ
 php artisan serve
 ```
 
-`<GITLAB_REPOSITORY_URL>` là placeholder, không phải URL giả.
+`<GITLAB_REPOSITORY_URL>` chỉ là placeholder theo tài liệu môn học, không phải URL được bịa. `.env` không commit.
 
-## 11. Các file cấu hình chính
+## 14. Các file cấu hình chính
 
-| File | Vai trò | Quy tắc dự án |
+| File | Vai trò | Quy tắc |
 |---|---|---|
-| `.env` | Cấu hình máy local | không commit |
-| `.env.example` | Mẫu cấu hình | không chứa secret |
-| `.gitignore` | Loại file runtime/secret | không ignore source cần chấm |
-| `composer.json` | Dependency/scripts | giữ ràng buộc Laravel 12 |
-| `composer.lock` | Khóa dependency | commit để đồng nhất môi trường |
-| `package.json`/`vite.config.js` | tài sản frontend | giữ skeleton |
+| `.env` | cấu hình local | không commit |
+| `.env.example` | mẫu cấu hình | không có secret, DB `hr_management` |
+| `.gitignore` | loại secret/runtime | không ignore source cần chấm |
+| `composer.json` | dependency Laravel | giữ Laravel 12 |
+| `composer.lock` | khóa dependency | commit để đồng nhất |
+| `package.json` | script frontend | giữ skeleton |
+| `vite.config.js` | cấu hình Vite | giữ skeleton |
 | `phpunit.xml` | cấu hình test | giữ skeleton |
-| `config/app.php`/`config/database.php` | cấu hình framework/DB | lấy giá trị từ env |
-| `bootstrap/app.php` | bootstrap và middleware Laravel 12 | cấu hình khi cần |
-| `routes/web.php` | route web/user/admin | giữ đơn giản theo Lab |
+| `bootstrap/app.php` | bootstrap/middleware Laravel 12 | cấu hình alias khi triển khai role |
+| `config/app.php` | cấu hình ứng dụng | đọc biến môi trường phù hợp |
+| `config/database.php` | kết nối DB | lấy từ `DB_*` trong env |
+| `routes/web.php` | route web | có thể chứa group HR/Employee đơn giản |
 
-## 12. Kế hoạch Authentication & Authorization
+## 15. Authentication và Authorization
 
-Authentication có thể dùng Laravel Breeze ở milestone implementation; chưa cài ở scaffold này. User có `role=admin|user`. `/admin/*` sẽ dùng `auth` và kiểm tra admin; Policy/Gate dùng khi cần. `@can` chỉ hỗ trợ UI, kiểm tra server-side vẫn bắt buộc.
+Laravel Breeze có thể được cài theo Lab khi bắt đầu milestone authentication, nhưng chưa cài trong scaffold. `users.role` dự kiến là `hr|employee`. Nhóm `/hr/*` yêu cầu `auth` và role `hr`; nhóm `/employee/*` yêu cầu `auth` và kiểm tra ownership. Việc ẩn menu không thay thế kiểm tra server-side.
 
-## 13. Validation và bảo mật
+## 16. Validation và bảo mật
 
-- Dùng `@csrf`, `@method` cho form tương ứng.
+- Dùng `@csrf` và `@method` trong form.
 - Dùng Form Request cho create/update.
-- Validate `unique`, `exists`, ngày giờ, `after_or_equal` và dữ liệu upload MIME/size.
-- Dùng `{{ }}` để escape; không nối raw SQL từ input.
-- Dùng Eloquent/Query Builder/prepared statement.
-- Không commit `.env`, token, password hay private key.
-- Production đặt `APP_DEBUG=false`; mật khẩu do cơ chế auth Laravel hash.
+- Validate FK `exists`, mã phòng ban/mã nhân viên `unique`, ngày giờ và trạng thái.
+- Đảm bảo `check_out >= check_in` và unique attendance theo ngày ở cả validation lẫn database.
+- Escape Blade bằng `{{ }}`, không nối raw SQL từ input.
+- Dùng Eloquent/Query Builder và prepared statement.
+- Hash mật khẩu qua cơ chế authentication Laravel.
+- Không commit `.env`, token, password thật, private key hoặc DB dump.
+- Production đặt `APP_DEBUG=false`.
 
-## 14. Quy tắc nghiệp vụ quan trọng
+## 17. Giao diện dự kiến
 
-`end_at` phải sau `start_at`; chỉ event `published` hiển thị public; user không đăng ký trùng; nếu có capacity thì không vượt số chỗ; event `cancelled` không nhận đăng ký mới; chỉ admin CRUD category/event; mọi dữ liệu form phải validate server-side. Capacity/status có thể giản lược nếu scope tối thiểu được yêu cầu.
+HR: login, dashboard, danh sách/thêm/sửa/xem nhân viên, phòng ban, chấm công và báo cáo. Employee: dashboard, hồ sơ cá nhân, sửa hồ sơ và lịch sử chấm công. Giao diện dùng Blade layout, partial, component, flash message, validation error, pagination, filter và responsive. Bootstrap 5 CDN có thể dùng để giảm cấu hình frontend. Chưa tạo UI thật ở giai đoạn này.
 
-## 15. Giao diện dự kiến
+## 18. Roadmap
 
-Dùng Blade layout, partial navbar/footer, component alert/input/button khi phù hợp; admin có layout riêng. Bootstrap 5 CDN là lựa chọn ưu tiên cho responsive desktop/mobile và giảm cấu hình build. Các trang dự kiến: public home/list/detail; user my registrations; admin dashboard/categories/events/registrations. Chưa tạo UI thật.
-
-## 16. Roadmap
-
-| Milestone | Output chính |
+| Milestone | Kết quả chính |
 |---|---|
-| M0 Scaffold/config | Laravel skeleton, env mẫu, placeholder, README |
-| M1 Database + Eloquent | migration, model, quan hệ, factory/seeder |
-| M2 Public pages | danh sách, chi tiết, lọc, tìm kiếm, phân trang |
-| M3 Authentication + roles | đăng ký/đăng nhập, auth, admin role |
-| M4 User registration | đăng ký sự kiện, chống trùng, danh sách cá nhân |
-| M5 Admin | CRUD category/event, participant |
-| M6 Hoàn thiện | upload, validation, UI responsive, mở rộng |
-| M7 Kiểm thử/báo cáo | test, screenshot, report, deployment |
+| M0 | Scaffold, config, README, placeholders |
+| M1 | Database, model, migration, quan hệ, seed |
+| M2 | Authentication và role HR/Employee |
+| M3 | HR quản lý phòng ban |
+| M4 | HR quản lý nhân viên, Employee profile |
+| M5 | Chấm công và lịch sử cá nhân |
+| M6 | Báo cáo, thống kê, CSV, print, search/pagination |
+| M7 | UI, test, report, screenshot, deployment |
 
-## 17. Mapping với nội dung Lab
+## 19. Mapping với nội dung Lab
 
 | Nội dung đồ án | Kiến thức áp dụng |
 |---|---|
-| Laravel skeleton/MVC | framework, OOP, routing/controller |
-| Blade layout/partials/components | view và tái sử dụng giao diện |
-| Migration/Seeder/Factory/Eloquent | DB, ORM, quan hệ |
+| Laravel skeleton/MVC | framework, OOP, cấu trúc MVC |
+| Routing/resource Controller | route, named route, điều phối request |
+| Blade layout/partial/component | view và tái sử dụng giao diện |
+| Migration/Seeder/Factory | schema và dữ liệu mẫu |
+| Eloquent relationships | ORM và quan hệ bảng |
 | Form Request | validation |
-| Middleware/Auth/Authorization | bảo vệ tài nguyên |
-| Search/pagination | truy vấn và hiển thị dữ liệu |
-| Upload ảnh | xử lý file an toàn |
-| Admin area | phân quyền và resource route |
+| Middleware/Auth/Authorization | bảo vệ khu vực HR/Employee |
+| Search/pagination | truy vấn và trình bày dữ liệu |
+| `COUNT`/`GROUP BY` | báo cáo và thống kê |
+| Admin-style management area | quản lý phòng ban, nhân viên, chấm công |
+| Deployment | env, public document root, cache |
 
-## 18. Mapping rubric
+## 20. Mapping rubric
 
-| Tiêu chí | Trọng số | Cách dự án đáp ứng | Minh chứng dự kiến |
+| Tiêu chí | Trọng số | Cách dự án hướng tới 10–8.5 | Minh chứng |
 |---|---:|---|---|
-| Hình thức báo cáo | 10% | README/report rõ, đúng chính tả | docs/report, screenshot |
-| Nội dung/chất lượng báo cáo | 10% | bài toán, use case, ERD, DB, kiến trúc, test, setup | README/report |
-| Giao diện phần mềm | 30% | layout thống nhất, responsive, public/admin rõ | screenshots, bản chạy |
-| Sản phẩm phần mềm | 40% | core functions, MVC/Eloquent, role, validation, CRUD, search/pagination | source, test |
-| Tham gia nhóm | 10% | commit theo thành viên, task và phân công | Git history, bảng nhóm |
+| Hình thức báo cáo | 10% | README/report rõ, chuẩn, có ảnh | `docs/report`, screenshots |
+| Nội dung/chất lượng báo cáo | 10% | bài toán, use case, ERD, DB, kiến trúc, test | README/report |
+| Giao diện phần mềm | 30% | HR/Employee thống nhất, responsive, dễ dùng | bản chạy, screenshots |
+| Sản phẩm phần mềm | 40% | CRUD, role, ownership, chấm công, báo cáo, CSV, search/pagination, validation | source và test |
+| Tham gia thực hiện/tương tác nhóm | 10% | commit, phân công, issue/task | Git history, bảng nhóm |
 
-Mục tiêu là hướng tới mức 10–8.5 theo rubric, không cam kết điểm tuyệt đối.
+Mục tiêu là hướng tới mức 10–8.5 theo rubric, không tuyên bố chắc chắn điểm 10.
 
-## 19. Quy ước Git/GitLab
+## 21. Git/GitLab
 
-`main` là nhánh ổn định; dùng `feature/<ten-chuc-nang>` cho chức năng. Commit nhỏ, rõ ràng, ví dụ: `chore: initialize Laravel project scaffold`, `feat: add event catalog`, `feat: add event registration`, `feat: add admin event management`, `fix: prevent duplicate registrations`, `docs: update project report`. Không cần GitFlow phức tạp.
+Dùng `main` cho bản ổn định và `feature/<feature-name>` cho chức năng. Ví dụ commit:
 
-## 20. Phân công nhóm
+```text
+chore: initialize HR management project scaffold
+feat: add department management
+feat: add employee management
+feat: add attendance management
+feat: add employee self profile
+feat: add HR reports and statistics
+fix: restrict employee profile updates
+docs: update project report
+```
 
-| Thành viên | MSSV | Nhiệm vụ | Nhánh chính | Minh chứng |
+Không cần GitFlow phức tạp.
+
+## 22. Phân công nhóm
+
+| Thành viên | MSSV | Nhiệm vụ | Branch | Minh chứng |
 |---|---|---|---|---|
 | _(nhóm tự điền)_ |  |  |  |  |
 | _(nhóm tự điền)_ |  |  |  |  |
 
-## 21. Test checklist dự kiến
+## 23. Test checklist dự kiến
 
-- [ ] Guest truy cập các trang public.
-- [ ] User auth và đăng ký sự kiện.
-- [ ] Admin authorization và CRUD category/event.
-- [ ] Validation, chống đăng ký trùng và capacity.
-- [ ] Search, pagination, upload.
-- [ ] Truy cập trái phép trả redirect/403.
-- [ ] Kiểm tra responsive thủ công.
+- [ ] Người chưa đăng nhập không vào được trang bảo vệ.
+- [ ] HR truy cập được `/hr`; Employee bị chặn khỏi khu vực HR.
+- [ ] Employee không xem được hồ sơ người khác.
+- [ ] Employee không sửa được các field nghiệp vụ bị khóa.
+- [ ] CRUD phòng ban/nhân viên và unique employee code.
+- [ ] Không xóa phòng ban đang có nhân viên.
+- [ ] Chấm công và chống trùng cùng nhân viên/ngày.
+- [ ] Từ chối check-out sớm hơn check-in.
+- [ ] Lọc chấm công, ownership, thống kê và CSV đúng bộ lọc.
+- [ ] Phân trang giữ filter và kiểm tra responsive thủ công.
 
-## 22. Deployment checklist
+## 24. Deployment checklist
 
-Đặt `APP_ENV=production`, `APP_DEBUG=false`, cấu hình `.env` server; chạy `composer install --optimize-autoloader --no-dev`; dùng `migrate --force` khi triển khai; chạy `storage:link`; cache config/route/view khi phù hợp; document root trỏ vào `public/`; dùng HTTPS nếu có; không commit `.env`. Chỉ mô tả, chưa deploy ở giai đoạn scaffold.
+Đặt `APP_ENV=production`, `APP_DEBUG=false`, cấu hình `.env` production; chạy `composer install --optimize-autoloader --no-dev`; chạy `php artisan migrate --force` khi deploy; cache config/routes/views nếu phù hợp; document root trỏ vào `public/`; dùng HTTPS nếu server hỗ trợ; không commit `.env`. Đây chỉ là checklist, chưa deploy ở giai đoạn scaffold.
 
-## 23. Trạng thái dự án
+## 25. Project status
 
 - [x] Laravel skeleton
-- [x] Project configuration
-- [x] Directory placeholders
-- [x] Architecture/database plan
-- [ ] Business migrations/models
+- [x] Configuration
+- [x] Placeholder directories
+- [x] README architecture/database plan
+- [ ] Business migrations
+- [ ] Business models
 - [ ] Authentication
-- [ ] Public UI
-- [ ] Registration
-- [ ] Admin
+- [ ] Roles
+- [ ] Department management
+- [ ] Employee management
+- [ ] Attendance
+- [ ] Employee profile
+- [ ] Reports/statistics
+- [ ] CSV export
 - [ ] Tests
 - [ ] Deployment
 
-## 24. Tài liệu minh chứng
+## 26. Tài liệu minh chứng
 
-- `docs/diagrams/`: ERD, flow và sơ đồ kiến trúc.
-- `docs/screenshots/`: ảnh minh chứng giao diện và kiểm thử.
-- `docs/report/`: báo cáo môn học và tài liệu triển khai.
+- `docs/diagrams/`: ERD, use case và architecture.
+- `docs/screenshots/`: ảnh minh chứng chức năng.
+- `docs/report/`: báo cáo và bản nháp.
 
-Các thư mục hiện chỉ có `.gitkeep`. README không khai báo thành viên, URL hay chức năng đã hoàn thành khi mới scaffold.
+Các thư mục hiện chỉ có `.gitkeep`. README không bịa thành viên, URL GitLab hay chức năng đã hoàn thành.
