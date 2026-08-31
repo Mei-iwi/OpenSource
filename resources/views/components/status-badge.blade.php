@@ -1,0 +1,3 @@
+@props(['status' => 'default', 'label' => null])
+@php($classes = ['active' => 'bg-emerald-100 text-emerald-700', 'present' => 'bg-emerald-100 text-emerald-700', 'late' => 'bg-amber-100 text-amber-700', 'inactive' => 'bg-slate-100 text-slate-600', 'absent' => 'bg-rose-100 text-rose-700', 'leave' => 'bg-sky-100 text-sky-700', 'admin' => 'bg-violet-100 text-violet-700', 'hr' => 'bg-indigo-100 text-indigo-700', 'employee' => 'bg-slate-100 text-slate-700'])
+<span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $classes[$status] ?? 'bg-slate-100 text-slate-600' }}">{{ $label ?? ucfirst($status) }}</span>

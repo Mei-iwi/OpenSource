@@ -1,0 +1,93 @@
+PROMPT 05 — ADMIN: QUẢN LÝ TÀI KHOẢN + ROLE
+
+MỤC TIÊU
+Role Admin phải là vai trò thật, có chức năng rõ ràng và có minh chứng.
+
+ĐỌC
+- docs/codex-state.md
+- User/Employee models
+- role middleware
+- admin views
+
+A. ADMIN USER MANAGEMENT
+Tạo khu vực /admin/users:
+- index.
+- search name/email.
+- filter role.
+- filter account_status.
+- pagination 10 hoặc 15.
+- show.
+- create tài khoản HR hoặc Employee.
+- update name/email/role hr|employee.
+- lock/unlock account.
+- không hard-delete user đã gắn Employee/Attendance.
+
+B. QUY TẮC ADMIN
+- Admin có full access.
+- Admin không được tự hạ role admin của chính mình qua form thông thường.
+- Admin chỉ tạo role hr/employee qua màn hình user management.
+- Không cho HR sửa role admin.
+
+C. ROUTES
+Ưu tiên Resource Controller:
+Route::resource('users', Admin\UserController::class)
+Có route PATCH riêng:
+admin.users.lock
+admin.users.unlock
+Dùng named routes, implicit binding.
+
+D. FORM REQUEST
+StoreUserRequest:
+- name required|string|max:255
+- email required|email|unique:users
+- role required|in:hr,employee
+- password required|min:8|confirmed nếu có confirmation
+
+UpdateUserRequest:
+- name required
+- email unique ignore current
+- role in:hr,employee
+- account_status in:active,locked khi phù hợp
+
+E. PASSWORD
+- Hash::make.
+- không log/plain text.
+- không hiển thị password hiện tại.
+- reset password chỉ làm nếu gọn; không bắt buộc.
+
+F. LOCK
+User locked:
+- không dùng protected routes hoặc không login được.
+- flash message rõ.
+
+G. UI
+Table:
+Name | Email | Role | Status | Actions
+Có:
+- search.
+- role/status filter.
+- pagination.
+- badge.
+- create/edit form.
+- validation errors.
+- confirm lock/unlock.
+
+H. TEST
+- admin index users = 200.
+- hr/employee -> admin users = 403.
+- admin creates HR.
+- admin creates Employee.
+- duplicate email rejected.
+- lock blocks account.
+- admin cannot demote self.
+
+I. STATE
+STEP: 05
+ADMIN_MODULE_STATUS:
+TEST_RESULTS:
+NEXT_STEP: 06_HR
+
+OUTPUT
+- controller/requests/routes/views.
+- tests pass/fail.
+- READY FOR PROMPT 06.

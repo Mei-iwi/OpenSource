@@ -1,0 +1,79 @@
+CHECKLIST WEB THỰC TẾ
+
+MÔI TRƯỜNG
+[ ] PHP/Composer/Laravel đúng
+[ ] .env DB đúng
+[ ] migrate --seed
+[ ] storage:link
+[ ] php artisan test PASS
+[ ] php artisan serve
+
+ADMIN
+[ ] Login
+[ ] Dashboard
+[ ] User list
+[ ] Search/filter/pagination
+[ ] Create HR
+[ ] Create Employee
+[ ] Lock/unlock
+[ ] HR blocked admin
+[ ] Employee blocked admin
+
+HR
+[ ] Dashboard KPI
+[ ] Department CRUD
+[ ] Cannot delete used department
+[ ] Employee CRUD
+[ ] Search code/name/email
+[ ] Filter department/status
+[ ] Pagination
+[ ] Attendance create/edit
+[ ] Duplicate day blocked
+[ ] Invalid time blocked
+[ ] Report filters
+[ ] COUNT/GROUP BY
+[ ] CSV
+[ ] Print/Save as PDF
+
+EMPLOYEE
+[ ] Dashboard
+[ ] Own profile
+[ ] Update phone/address/date_of_birth
+[ ] Avatar
+[ ] Protected fields unchanged
+[ ] Own attendance only
+[ ] Month/year filter
+[ ] HR route blocked
+
+CÔNG CỤ MÔN
+[ ] MVC
+[ ] Blade layout
+[ ] Partial
+[ ] Component
+[ ] Resource/named routes
+[ ] Eloquent
+[ ] Migration
+[ ] Seeder
+[ ] Factory
+[ ] Relations
+[ ] Form Request
+[ ] Middleware
+[ ] Auth
+[ ] Authorization/Policy
+[ ] CSRF
+[ ] Search
+[ ] Pagination
+[ ] Query Builder COUNT/GROUP BY
+[ ] JS
+[ ] AJAX Fetch + JSON
+[ ] Upload Storage
+[ ] Artisan
+[ ] Git
+[ ] Feature Test
+
+RUBRIC
+[ ] Hình thức 10%
+[ ] Nội dung 10%
+[ ] UI 30%
+[ ] Product 40%
+[ ] Teamwork 10%

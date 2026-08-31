@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title', 'Nhân viên')
+@section('content')
+<x-page-header eyebrow="HR / Nhân sự" title="Danh sách nhân viên" description="Tra cứu và quản lý hồ sơ nhân sự."><button class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white">Thêm nhân viên</button></x-page-header>
+<div id="employees" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><div class="mb-5 grid gap-3 md:grid-cols-[1fr_auto_auto]"><input type="search" placeholder="Tìm tên, mã nhân viên..." class="rounded-lg border border-slate-300 px-3 py-2 text-sm"><select class="rounded-lg border border-slate-300 px-3 py-2 text-sm"><option>Tất cả phòng ban</option></select><select class="rounded-lg border border-slate-300 px-3 py-2 text-sm"><option>Tất cả trạng thái</option></select></div><div class="overflow-x-auto"><table class="min-w-full text-left text-sm"><thead class="border-b border-slate-200 text-xs uppercase text-slate-500"><tr><th class="px-3 py-3">Nhân viên</th><th class="px-3 py-3">Phòng ban</th><th class="px-3 py-3">Trạng thái</th><th class="px-3 py-3 text-right">Thao tác</th></tr></thead><tbody><tr><td colspan="4" class="px-3 py-3"><x-empty-state title="Chưa có nhân viên" /></td></tr></tbody></table></div></div>
+@endsection

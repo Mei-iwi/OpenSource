@@ -1,0 +1,146 @@
+HƯỚNG DẪN DÙNG BỘ PROMPT CODEX LUNA 5.6
+
+1. MỞ đúng repository bằng VS Code.
+2. Chọn Codex Luna 5.6.
+3. Dán 00_QUY_TAC_CHUNG_LUNA56.txt một lần.
+4. Chạy lần lượt 01 -> 13.
+5. Dùng cùng session để giảm quota.
+6. Nếu mở session mới: dán lại file 00 và nói "Đọc docs/codex-state.md rồi thực hiện prompt hiện tại".
+7. Nếu prompt trước BLOCKED, không chạy prompt sau.
+
+THỨ TỰ
+01 Audit/scaffold
+02 UI Blade
+03 Auth + 3 roles
+04 Database/Eloquent
+05 Admin users/roles
+06 HR Departments/Employees
+07 Attendance + Employee self
+08 Reports/statistics/CSV/print
+09 AJAX/upload/security
+10 Tests
+11 UI/rubric evidence
+12 README/report/teamwork/deploy docs
+13 Final audit/run
+
+TẠI SAO UI TRƯỚC DB
+- UI chiếm 30% rubric.
+- Prompt 02 chỉ dựng layout/view khung.
+- Prompt 03–09 mới nối auth/backend/DB thật.
+- Không hard-code business logic vào Blade.
+
+KIỂM TRA SAU 01
+- php artisan about.
+- composer validate.
+- docs/codex-state.md.
+
+SAU 02
+- layout render.
+- view đủ 3 role.
+- không Blade error.
+
+SAU 03
+- /login.
+- admin/hr/employee dashboard đúng.
+- employee -> HR = 403.
+- HR -> Admin = 403.
+
+SAU 04
+- migrate status.
+- 4 bảng users/departments/employees/attendances.
+- seed có admin/hr/employee.
+- attendance demo.
+
+SAU 05 — ADMIN
+- Dashboard.
+- Users list/search/filter/pagination.
+- create HR/Employee.
+- lock/unlock.
+- HR/Employee bị chặn admin area.
+
+SAU 06 — HR
+- Department CRUD.
+- không xóa phòng có employee.
+- Employee CRUD.
+- search code/name/email.
+- filter department/status.
+- pagination.
+
+SAU 07
+HR:
+- create/edit attendance.
+- duplicate date blocked.
+- invalid check_out blocked.
+Employee:
+- own profile.
+- chỉ safe fields.
+- own attendance.
+
+SAU 08
+- Dashboard KPI.
+- Report filters.
+- COUNT/GROUP BY.
+- CSV download.
+- Print/Save as PDF.
+
+SAU 09
+- Fetch check employee code trả JSON.
+- avatar upload valid.
+- invalid file rejected.
+- storage link.
+
+SAU 10
+php artisan test
+Mục tiêu full PASS.
+
+SAU 11
+- desktop/mobile basic.
+- no broken links.
+- rubric matrix.
+
+SAU 12
+- README clone-to-run.
+- report outline.
+- Mermaid.
+- teamwork template.
+- deploy checklist.
+
+SAU 13
+- composer validate PASS.
+- tests PASS.
+- route list đủ.
+- web: http://127.0.0.1:8000
+
+DEMO ACCOUNTS ĐỀ XUẤT
+Chỉ dùng nếu Seeder thực tế tạo đúng:
+admin@example.com / Password123!
+hr@example.com / Password123!
+employee1@example.com / Password123!
+
+KỊCH BẢN DEMO 8–10 PHÚT
+1. Admin login.
+2. Admin Dashboard.
+3. User management: role/filter/lock.
+4. Logout.
+5. HR login.
+6. HR Dashboard.
+7. Department CRUD + thử delete bị chặn.
+8. Employee search/filter/pagination + create/edit.
+9. Attendance create/edit + validation.
+10. Report filter -> CSV -> Print.
+11. AJAX employee code.
+12. Logout.
+13. Employee login.
+14. Profile update + avatar.
+15. Own attendance.
+16. Truy cập /hr/employees -> 403.
+17. Kết thúc bằng test PASS.
+
+PROMPT CỨU HỘ KHI LUNA BỊ LẠC
+"Đọc docs/codex-state.md và prompt hiện tại. Chỉ sửa các mục FAIL/BLOCKED của bước này. Không thêm chức năng, không đổi kiến trúc, output tối đa 20 dòng."
+
+KHI TEST FAIL
+"Đọc stack trace test thất bại gần nhất và file liên quan. Sửa nguyên nhân gốc trong phạm vi. Chạy lại test cụ thể, sau đó php artisan test. Không bỏ test, không nới business rule chỉ để pass."
+
+KHI WEB 500
+"Đọc storage/logs/laravel.log cho request vừa lỗi, route/controller/view và migrate status liên quan. Sửa tối thiểu, chạy test liên quan. Báo nguyên nhân, file sửa, URL kiểm tra. Không đổi kiến trúc."

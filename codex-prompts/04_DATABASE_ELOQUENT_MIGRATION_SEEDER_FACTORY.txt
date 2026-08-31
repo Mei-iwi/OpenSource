@@ -1,0 +1,110 @@
+PROMPT 04 — DATABASE + ELOQUENT + MIGRATION + SEEDER + FACTORY
+
+MỤC TIÊU
+Dùng đúng phần CSDL/Laravel của môn. Mô hình đơn giản, đủ chức năng và demo.
+
+A. 4 BẢNG CHÍNH
+users
+- auth fields
+- role admin|hr|employee
+- account_status active|locked
+
+departments
+- id
+- code unique
+- name
+- description nullable
+- timestamps
+
+employees
+- id
+- user_id FK users unique
+- department_id FK departments
+- employee_code unique
+- phone nullable
+- address nullable
+- date_of_birth date nullable
+- position nullable
+- hire_date date
+- employment_status active|inactive
+- avatar_path nullable
+- timestamps
+
+attendances
+- id
+- employee_id FK employees
+- work_date date
+- check_in time nullable
+- check_out time nullable
+- status present|late|absent|leave
+- note nullable
+- timestamps
+- UNIQUE(employee_id, work_date)
+
+Không tạo reports table.
+
+B. DELETE/FK
+- department đang có employee: không xóa.
+- employee đã có attendance: không hard-delete; dùng inactive.
+- user gắn employee: không hard-delete.
+- attendance giữ lịch sử.
+
+C. MODELS
+Department, Employee, Attendance.
+Relations:
+User hasOne Employee
+Employee belongsTo User
+Department hasMany Employees
+Employee belongsTo Department
+Employee hasMany Attendances
+Attendance belongsTo Employee
+Có fillable và casts phù hợp.
+
+D. FACTORY
+- DepartmentFactory
+- EmployeeFactory
+- AttendanceFactory
+- UserFactory states nếu cần.
+
+E. SEEDER
+Tạo deterministic demo:
+- 1 admin
+- 2 hr
+- 10–15 employee
+- 3–5 departments
+- attendance 1–2 tháng gần đây
+- đủ present/late/absent/leave
+
+Demo đề xuất:
+admin@example.com / Password123!
+hr@example.com / Password123!
+employee1@example.com / Password123!
+Chỉ dev/demo; password phải hash.
+
+F. MIGRATE
+php artisan migrate
+php artisan db:seed
+Chỉ migrate:fresh --seed nếu xác nhận DB dev/demo an toàn.
+
+G. VERIFY
+php artisan migrate:status
+Dùng tinker/test:
+- count department/employee/attendance.
+- relation hoạt động.
+- unique employee/day.
+
+H. DOCS
+docs/diagrams/erd.md bằng Mermaid.
+docs/evidence/database.md mô tả migration/relation/factory/seeder/constraints.
+
+I. STATE
+STEP: 04
+DATABASE_STATUS:
+SEED_STATUS:
+NEXT_STEP: 05_ADMIN
+
+OUTPUT
+- migrations/models/factories/seeders.
+- demo counts.
+- migrate status.
+- READY FOR PROMPT 05.

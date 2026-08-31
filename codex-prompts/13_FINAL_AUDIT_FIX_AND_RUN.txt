@@ -1,0 +1,114 @@
+PROMPT 13 — FINAL AUDIT + FIX + RUN WEB
+
+MỤC TIÊU
+Đưa project về trạng thái demo/nộp. Chỉ sửa lỗi, không thêm scope.
+
+A. ĐỌC
+- docs/codex-state.md
+- docs/evidence/rubric-matrix.md
+- README.md
+- git status --short
+- tests
+
+B. AUDIT RUBRIC
+Hình thức 10:
+- README/docs rõ, không placeholder sai.
+Nội dung 10:
+- role/use case/MVC/ERD/test/install.
+Giao diện 30:
+- main pages render, responsive, validation, flash, empty state.
+Sản phẩm 40:
+- 3 roles.
+- Admin user/role.
+- Department.
+- Employee.
+- Attendance.
+- Self profile.
+- Reports/statistics.
+- Search/filter/pagination.
+- CSV/print.
+- AJAX/JSON.
+- avatar upload.
+- authorization.
+- tests.
+Teamwork 10:
+- chỉ kiểm tra template/evidence guide; không bịa Git history.
+
+C. FINAL COMMANDS
+php artisan optimize:clear
+composer validate
+php artisan migrate:status
+php artisan route:list
+php artisan test
+php artisan storage:link
+git status --short
+
+Nếu project dùng Vite/npm:
+npm run build
+Nếu Bootstrap CDN và không cần build:
+SKIPPED_NOT_REQUIRED.
+
+D. DB DEMO
+Chỉ khi DB chắc chắn là dev/demo:
+php artisan migrate:fresh --seed
+php artisan test
+Nếu không chắc:
+KHÔNG migrate:fresh.
+
+E. RUN
+php artisan serve
+URL:
+http://127.0.0.1:8000
+
+F. ROUTE DEMO CẦN CÓ TƯƠNG ĐƯƠNG
+/login
+/admin/dashboard
+/admin/users
+/hr/dashboard
+/hr/departments
+/hr/employees
+/hr/attendances
+/hr/reports
+/employee/dashboard
+/employee/profile
+/employee/attendances
+
+Nếu URL thực tế khác, liệt kê URL thật.
+
+G. CHỈ ĐƯỢC FIX
+- route.
+- view.
+- validation.
+- authorization.
+- query.
+- test.
+- typo/link.
+Không:
+- redesign.
+- module mới.
+- package nặng.
+- schema lớn trừ lỗi bắt buộc.
+
+H. FINAL STATE
+docs/codex-state.md:
+STEP: 13
+FINAL_STATUS: PASS | PASS_WITH_NOTES | BLOCKED
+TESTS:
+ROUTES:
+DB:
+RUBRIC_MATRIX:
+OPEN_ISSUES:
+DEMO_URLS:
+
+OUTPUT <= 40 DÒNG
+1. FINAL_STATUS.
+2. Laravel/PHP.
+3. migrate.
+4. tests.
+5. build.
+6. route demo.
+7. demo accounts từ README.
+8. URL.
+9. issues.
+10. rubric PASS/PARTIAL/BLOCKED.
+Không paste source.

@@ -1,0 +1,114 @@
+PROMPT 06 — HR: DEPARTMENT + EMPLOYEE CRUD
+
+MỤC TIÊU
+Hoàn thiện core sản phẩm 40% và giao diện 30%; dùng Resource Controller, Form Request, Eloquent, search/filter/pagination.
+
+A. DEPARTMENT
+Tạo DepartmentController resource cho admin+hr:
+- index
+- create
+- store
+- show nếu hữu ích
+- edit
+- update
+- destroy
+
+Rules:
+- code required unique.
+- name required.
+- description nullable.
+- không xóa department nếu employees()->exists().
+- department trống mới xóa.
+- flash success/error.
+- index dùng withCount('employees').
+- search code/name.
+- pagination.
+
+Requests:
+StoreDepartmentRequest
+UpdateDepartmentRequest
+
+B. EMPLOYEE
+Tạo EmployeeController resource cho admin+hr:
+- index/create/store/show/edit/update.
+- không hard-delete employee đã có attendance.
+- ưu tiên employment_status=inactive thay vì delete.
+
+CREATE EMPLOYEE
+Một form tạo đồng thời:
+- name
+- email
+- initial password
+- department_id
+- employee_code
+- phone
+- address
+- date_of_birth
+- position
+- hire_date
+- employment_status
+Trong DB::transaction:
+1. tạo User role=employee.
+2. tạo Employee liên kết user.
+HR không được tạo admin.
+
+UPDATE EMPLOYEE
+- update User name/email + Employee fields trong transaction.
+- không đổi role admin.
+- employee_code unique.
+- department exists.
+- hire_date valid.
+
+C. SEARCH/FILTER/PAGINATION
+Employee index:
+- search employee_code, user.name, user.email.
+- filter department_id.
+- filter employment_status.
+- eager load user, department.
+- paginate 10/15.
+- withQueryString().
+
+D. UI
+Department:
+- search + table + pagination + count employee.
+Employee:
+- search.
+- filter department/status.
+- reset filter.
+- responsive table.
+- status badge.
+- View/Edit.
+- form labels/errors/old().
+
+E. ROUTES
+- named routes.
+- Route::resource.
+- implicit model binding.
+- không hard-code URL trong Blade.
+
+F. QUERY SECURITY
+- Eloquent/Query Builder.
+- không raw SQL nối input.
+- Blade {{ }}.
+
+G. TEST
+- HR/admin CRUD department.
+- employee role 403.
+- duplicate dept code rejected.
+- cannot delete dept with employees.
+- create employee + user transaction.
+- duplicate employee_code/email rejected.
+- search/filter works.
+- pagination retains query.
+- admin also accesses HR module.
+
+H. STATE
+STEP: 06
+HR_CORE_STATUS:
+TEST_RESULTS:
+NEXT_STEP: 07_ATTENDANCE_SELF
+
+OUTPUT
+- files/routes.
+- tests.
+- READY FOR PROMPT 07.

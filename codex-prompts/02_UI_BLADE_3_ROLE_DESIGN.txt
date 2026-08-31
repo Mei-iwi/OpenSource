@@ -1,0 +1,85 @@
+PROMPT 02 — THIẾT KẾ UI BLADE TRƯỚC
+
+MỤC TIÊU
+Tối ưu tiêu chí giao diện 30% và dùng Blade Layout/Partial/Component. Chưa gắn business query sâu.
+
+ĐỌC
+- docs/codex-state.md
+- resources/views
+- routes/web.php
+- CSS stack hiện tại
+
+A. UI STACK
+- Nếu Tailwind/Breeze đã ổn: giữ.
+- Nếu chưa có: Bootstrap 5 CDN.
+- Không cài framework UI khác.
+
+B. TẠO DESIGN SYSTEM
+resources/views/layouts/app.blade.php
+resources/views/partials/navbar.blade.php
+resources/views/partials/sidebar.blade.php
+resources/views/partials/flash.blade.php
+resources/views/components/page-header.blade.php
+resources/views/components/status-badge.blade.php
+resources/views/components/empty-state.blade.php
+
+Yêu cầu:
+- @yield title/content.
+- @stack styles/scripts nếu phù hợp.
+- responsive.
+- flash success/error.
+- menu có cấu trúc cho admin/hr/employee nhưng không gây lỗi nếu auth chưa hoàn chỉnh.
+
+C. TẠO VIEW KHUNG
+- dashboard/admin.blade.php
+- dashboard/hr.blade.php
+- dashboard/employee.blade.php
+- admin/users/index.blade.php
+- hr/departments/index.blade.php
+- hr/employees/index.blade.php
+- hr/attendances/index.blade.php
+- hr/reports/index.blade.php
+- employee/profile/show.blade.php
+- employee/attendances/index.blade.php
+
+D. QUY CHUẨN
+- Sidebar/menu rõ.
+- Cards KPI.
+- Table responsive.
+- Form label.
+- Buttons thống nhất.
+- Role/status badge.
+- Empty state.
+- Mobile không vỡ.
+- Tiếng Việt thống nhất.
+- Không animation/template nặng.
+
+E. PREVIEW
+Nếu chưa có business/auth:
+- có thể tạo route /preview/* tạm bằng closure.
+- comment TODO REMOVE AFTER INTEGRATION.
+- không biến preview route thành route cuối.
+
+F. KHÔNG LÀM
+- migration business.
+- CRUD controller thật.
+- report query.
+- seed business.
+- role middleware thật.
+
+G. CHECK
+php artisan route:list
+php artisan view:clear
+Mở route preview chính nếu có; không Blade exception.
+
+H. STATE
+STEP: 02
+COMPLETED: UI skeleton
+NEXT_STEP: 03_AUTH_ROLES
+
+OUTPUT
+- UI stack.
+- Views/components.
+- Preview routes.
+- Test result.
+- READY FOR PROMPT 03.

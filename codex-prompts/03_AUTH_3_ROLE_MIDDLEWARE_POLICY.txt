@@ -1,0 +1,89 @@
+PROMPT 03 — AUTHENTICATION + 3 ROLE ADMIN / HR / EMPLOYEE
+
+ĐỌC
+- docs/codex-state.md
+- composer.json
+- routes/web.php
+- bootstrap/app.php
+- app/Models/User.php
+- migrations users
+- UI Prompt 02
+
+A. AUTH
+Nếu chưa có auth:
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install
+npm run build
+Nếu đã có auth tương đương: giữ nguyên, không cài lại.
+Phải có login/logout.
+Public registration không bắt buộc; ưu tiên Admin tạo tài khoản.
+
+B. ROLE
+Tạo migration bổ sung users.role:
+admin | hr | employee
+default employee.
+Nếu chưa có users.account_status thì thêm:
+active | locked
+default active.
+
+C. USER MODEL HELPERS
+isAdmin(): bool
+isHr(): bool
+isEmployee(): bool
+hasRole(string|array $roles): bool
+
+D. ROLE MIDDLEWARE
+app/Http/Middleware/RoleMiddleware.php
+- auth required.
+- nhận variadic role.
+- sai role => abort(403).
+Đăng ký alias trong bootstrap/app.php theo Laravel 12.
+
+Route groups:
+- /admin/*: auth + role:admin
+- /hr/*: auth + role:admin,hr
+- /employee/*: auth + role:employee
+
+E. DASHBOARD CONTROLLERS
+- AdminDashboardController
+- HrDashboardController
+- EmployeeDashboardController
+Hiện tại chỉ trả view.
+
+F. REDIRECT
+/dashboard redirect theo role:
+admin -> /admin/dashboard
+hr -> /hr/dashboard
+employee -> /employee/dashboard
+
+G. LOCKED ACCOUNT
+User account_status=locked không được sử dụng hệ thống.
+Chọn cách ít thay đổi nhất:
+- middleware account.active hoặc kiểm tra sau login.
+Phải test.
+
+H. TEST
+Feature test:
+- guest protected -> login.
+- admin dashboard 200.
+- hr dashboard 200.
+- employee dashboard 200.
+- employee -> hr dashboard 403.
+- hr -> admin dashboard 403.
+- locked user blocked.
+
+I. STATE
+STEP: 03
+AUTH_STATUS:
+ROLE_STATUS:
+TEST_RESULTS:
+NEXT_STEP: 04_DATABASE
+
+OUTPUT
+- Auth method.
+- Migration role/status.
+- Middleware.
+- Dashboard routes.
+- Test result.
+- READY FOR PROMPT 04.

@@ -1,0 +1,76 @@
+PROMPT 01 — AUDIT + CHUẨN HÓA PROJECT
+
+MỤC TIÊU
+Xác định chính xác trạng thái project và chuẩn bị nền tảng cho các bước sau. Không triển khai nghiệp vụ.
+
+A. KIỂM TRA MỘT LẦN
+- pwd/current directory.
+- ls/dir mức root.
+- git status --short nếu có Git.
+- php --version.
+- composer --version.
+- php artisan --version nếu có.
+- composer.json.
+- routes/web.php.
+- database/migrations.
+- app/Models.
+- resources/views.
+- README.md nếu có.
+
+B. XÁC ĐỊNH
+- Nếu đã Laravel 12: giữ nguyên, không create-project lại.
+- Nếu Laravel khác version: BLOCKED, không tự upgrade.
+- Nếu chưa có Laravel và folder an toàn: tạo Laravel 12 bằng Composer ngay trong folder hiện tại.
+- Nếu có project khác/nguy cơ ghi đè: BLOCKED.
+
+C. TẠO DOCS
+docs/
+  diagrams/
+  screenshots/
+  test/
+  report/
+  teamwork/
+  evidence/
+  codex-state.md
+
+D. GIT
+- Nếu chưa có repo: git init.
+- Kiểm tra .gitignore loại .env, vendor, node_modules.
+- Không commit/push.
+
+E. README TẠM
+Chỉ ghi:
+- Website Quản lý Nhân sự.
+- Laravel 12 + MySQL.
+- Roles admin/hr/employee.
+- Trạng thái hiện tại.
+- Roadmap Prompt 01–13.
+
+F. docs/codex-state.md
+STEP: 01
+PROJECT_STATUS:
+LARAVEL_VERSION:
+CSS_STACK:
+AUTH_STATUS:
+DATABASE_STATUS:
+COMPLETED:
+FILES_CHANGED:
+COMMANDS_RUN:
+TEST_RESULTS:
+OPEN_ISSUES:
+NEXT_STEP: 02_UI
+
+G. KIỂM TRA CUỐI
+php artisan about
+composer validate
+git status --short
+
+OUTPUT
+1. Project status.
+2. Laravel/PHP version.
+3. CSS/auth/db status.
+4. Files changed.
+5. Artisan/composer result.
+6. BLOCKED nếu có.
+7. READY FOR PROMPT 02 nếu đạt.
+Không làm UI/auth/business migration ở bước này.

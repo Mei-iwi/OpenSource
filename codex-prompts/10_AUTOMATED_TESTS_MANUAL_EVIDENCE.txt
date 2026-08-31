@@ -1,0 +1,107 @@
+PROMPT 10 — AUTOMATED TESTS + MANUAL TEST EVIDENCE
+
+MỤC TIÊU
+Giảm lỗi runtime, tạo minh chứng cho Sản phẩm 40% và Nội dung báo cáo 10%.
+
+A. NGUYÊN TẮC
+- Dùng PHPUnit/Laravel Feature Test có sẵn.
+- Không thêm Pest/package nếu project chưa dùng.
+- Chỉ test luồng quan trọng, không over-test.
+- Dùng RefreshDatabase + Factory.
+- Test deterministic.
+
+B. FEATURE TEST TỐI THIỂU
+
+1. AuthenticationRoleTest
+- guest protected redirect.
+- admin dashboard 200.
+- hr dashboard 200.
+- employee dashboard 200.
+- employee -> hr 403.
+- hr -> admin 403.
+- locked account blocked.
+
+2. DepartmentManagementTest
+- HR/Admin create/update.
+- unique code.
+- cannot delete department with employee.
+
+3. EmployeeManagementTest
+- HR creates user+employee.
+- duplicate email/code rejected.
+- employee role 403.
+- search/filter basic.
+
+4. EmployeeProfileAuthorizationTest
+- employee sees own.
+- safe fields update.
+- protected fields unchanged.
+- cannot access another employee.
+
+5. AttendanceManagementTest
+- HR create/update.
+- duplicate employee/day blocked.
+- check_out < check_in blocked.
+- employee sees own only.
+
+6. ReportTest
+- admin/hr access.
+- employee 403.
+- filters/counts correct.
+- CSV response.
+
+7. AjaxAvatarTest
+- check-code JSON.
+- invalid avatar rejected.
+- valid avatar stored.
+- ownership.
+
+C. CHẠY
+php artisan test
+
+Nếu fail:
+1. đọc stack trace thật.
+2. sửa nguyên nhân gốc trong phạm vi.
+3. chạy test cụ thể.
+4. chạy full suite.
+Không bỏ test và không nới business rule chỉ để xanh.
+
+D. MANUAL TEST DOC
+Tạo docs/test/manual-test-cases.md:
+ID | Role | Chức năng | Tiền điều kiện | Các bước | Kết quả mong đợi | Kết quả thực tế | PASS/FAIL | Minh chứng
+
+Tối thiểu 20 cases:
+- login/logout.
+- role.
+- lock.
+- department CRUD.
+- employee CRUD.
+- validation.
+- search/filter/pagination.
+- attendance.
+- ownership.
+- report.
+- CSV.
+- print.
+- AJAX.
+- upload.
+- mobile basic.
+- migrate/seed.
+
+E. BUG LOG
+docs/test/bug-log.md:
+ID | Mô tả | Mức độ | Nguyên nhân | Cách sửa | Trạng thái
+Không bịa bug.
+
+F. STATE
+STEP: 10
+TEST_SUITE_STATUS:
+TOTAL_TESTS:
+FAILURES:
+NEXT_STEP: 11_UI_RUBRIC
+
+OUTPUT
+- test files.
+- php artisan test summary.
+- manual test doc.
+- READY FOR PROMPT 11.

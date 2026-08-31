@@ -1,0 +1,92 @@
+PROMPT 09 — JAVASCRIPT/AJAX + JSON + UPLOAD + SECURITY
+
+MỤC TIÊU
+Bổ sung minh chứng JS/AJAX/JSON và upload của môn học ở mức vừa sức.
+
+A. AJAX/JSON
+Tạo chức năng:
+"Kiểm tra mã nhân viên đã tồn tại" trên form tạo Employee.
+
+Endpoint:
+GET /hr/employees/check-code?code=...
+Middleware:
+auth + role:admin,hr
+Response JSON:
+{
+  "available": true|false,
+  "message": "..."
+}
+
+Yêu cầu:
+- validate code.
+- không lộ thông tin nhạy cảm.
+- fetch() từ Blade/JS.
+- có message bên dưới input.
+- AJAX chỉ hỗ trợ UX; submit vẫn phải Form Request validation.
+- nếu route resource xung đột, đặt route check-code TRƯỚC resource route.
+
+B. JAVASCRIPT CƠ BẢN
+- confirm action nguy hiểm.
+- window.print report.
+- script qua @push('scripts') hoặc public/js/app.js.
+- không framework JS.
+
+C. UPLOAD AVATAR
+Dùng employees.avatar_path.
+Cho Employee tự upload avatar của chính mình.
+Admin/HR có thể upload trong edit employee nếu gọn.
+
+Validation:
+image
+mimes:jpg,jpeg,png,webp
+max:2048
+
+Storage:
+- disk public.
+- store('avatars','public').
+- php artisan storage:link.
+- asset('storage/...').
+- default avatar nếu null.
+- nếu thay ảnh, xóa file cũ chỉ trong storage public an toàn.
+
+D. SECURITY AUDIT
+Phải bảo đảm:
+- @csrf POST/PATCH/DELETE.
+- @method đúng.
+- Form Request cho nghiệp vụ.
+- Blade {{ }} escape.
+- không {!! user_input !!}.
+- password hash.
+- route auth/role.
+- policy/ownership.
+- mass assignment an toàn.
+- employee self-update whitelist.
+- query không nối raw input.
+- upload MIME/size.
+- .env ignored.
+- APP_DEBUG production=false trong docs.
+
+E. SESSION/COOKIE
+Không tạo cookie nghiệp vụ thừa.
+Trong docs/evidence/security.md ghi Laravel Breeze/session auth là minh chứng quản lý trạng thái.
+
+F. TEST
+- check-code JSON available/unavailable.
+- unauthorized blocked.
+- avatar invalid rejected.
+- valid avatar stored.
+- employee cannot update avatar người khác.
+
+G. STATE
+STEP: 09
+AJAX_STATUS:
+UPLOAD_STATUS:
+SECURITY_STATUS:
+NEXT_STEP: 10_TESTS
+
+OUTPUT
+- AJAX route/controller/js.
+- upload.
+- security checklist.
+- tests.
+- READY FOR PROMPT 10.

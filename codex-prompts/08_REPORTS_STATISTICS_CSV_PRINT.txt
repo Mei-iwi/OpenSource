@@ -1,0 +1,100 @@
+PROMPT 08 — REPORTS + STATISTICS + COUNT/GROUP BY + CSV + PRINT
+
+MỤC TIÊU
+Đáp ứng báo cáo/thống kê, minh chứng SQL nâng cao thông qua Eloquent/Query Builder.
+
+A. HR DASHBOARD KPI
+HrDashboardController:
+- total employees.
+- active.
+- inactive.
+- total departments.
+- employees by department.
+- current month attendance count by status.
+
+Dùng:
+- count()
+- groupBy()
+- selectRaw() chỉ biểu thức cố định nếu cần.
+Không nối input vào raw SQL.
+
+B. ADMIN DASHBOARD
+Thêm:
+- total users.
+- users by role.
+- locked/active accounts.
+- link HR module.
+Không chart library; card/table/progress CSS đủ.
+
+C. REPORT HTML
+ReportController@index filters:
+- month
+- year
+- department_id
+- attendance status
+- employment_status nếu hợp lý
+
+Output:
+- total attendance records.
+- present count.
+- late count.
+- absent count.
+- leave count.
+- detail table.
+- employees per department.
+- giữ filter values.
+
+D. KHÔNG TẠO reports TABLE
+Tất cả report từ employees/departments/attendances.
+
+E. CSV
+GET /hr/reports/export.csv
+- admin/hr only.
+- dùng cùng filter logic.
+- response()->streamDownload().
+- UTF-8 BOM.
+- header tiếng Việt.
+- đúng filter.
+- không package ngoài.
+
+F. PRINT
+GET /hr/reports/print
+- cùng filter.
+- print-friendly Blade.
+- @media print ẩn sidebar/buttons.
+- window.print().
+- trình duyệt Save as PDF.
+Không package PDF.
+
+G. TÁI SỬ DỤNG QUERY
+Có private method/buildReportQuery hoặc scope đơn giản.
+Không tạo service/repository layer lớn.
+
+H. TEST
+- counts đúng fixture.
+- month/year/department/status filter.
+- CSV 200 + content-disposition.
+- CSV đúng filter.
+- employee 403.
+- admin/hr 200.
+
+I. DOC
+docs/evidence/reports.md:
+- query techniques.
+- routes.
+- filter.
+- CSV.
+- print.
+- screenshot checklist.
+
+J. STATE
+STEP: 08
+REPORT_STATUS:
+TEST_RESULTS:
+NEXT_STEP: 09_JS_UPLOAD_SECURITY
+
+OUTPUT
+- dashboard/report files.
+- query techniques.
+- tests.
+- READY FOR PROMPT 09.

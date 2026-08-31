@@ -1,0 +1,100 @@
+PROMPT 11 — UI POLISH + RUBRIC EVIDENCE
+
+MỤC TIÊU
+Tối ưu Giao diện 30%; chuẩn hóa screenshot và rubric evidence.
+
+A. AUDIT CÁC TRANG THẬT
+- login
+- admin dashboard
+- admin users
+- hr dashboard
+- departments
+- employees
+- attendances
+- reports
+- employee dashboard
+- employee profile
+- employee attendances
+
+Kiểm tra:
+- title.
+- navbar/sidebar.
+- active menu.
+- page header.
+- flash.
+- validation.
+- table responsive.
+- empty state.
+- pagination.
+- filter reset.
+- buttons.
+- badge.
+- mobile width.
+- không link chết.
+
+B. KHÔNG REDESIGN LỚN
+- chỉ sửa consistency.
+- không đổi CSS framework.
+- không chart/animation package.
+
+C. ACCESSIBILITY CƠ BẢN
+- label for input.
+- button/link text rõ.
+- alt cho avatar.
+- th cho table.
+- status có text, không chỉ màu.
+
+D. SCREENSHOT CHECKLIST
+Tạo docs/evidence/screenshot-checklist.md:
+01_login.png
+02_admin_dashboard.png
+03_admin_users.png
+04_role_403.png
+05_hr_dashboard.png
+06_departments.png
+07_department_validation.png
+08_employees_filter.png
+09_employee_create.png
+10_attendance_hr.png
+11_attendance_validation.png
+12_report_filter.png
+13_report_csv.png
+14_report_print.png
+15_employee_profile.png
+16_employee_attendance.png
+17_ajax_check_code.png
+18_avatar_upload.png
+19_mobile_view.png
+20_git_history.png
+
+Codex không tự bịa screenshot.
+Nếu không có browser automation, chỉ ghi URL + thao tác để người dùng chụp.
+
+E. RUBRIC MATRIX
+Tạo docs/evidence/rubric-matrix.md:
+Tiêu chí | Trọng số | Yêu cầu mức 8.5–10 | Source minh chứng | Screenshot/Test | Trạng thái
+
+Đúng 5 tiêu chí:
+- Hình thức 10.
+- Nội dung 10.
+- Giao diện 30.
+- Sản phẩm 40.
+- Teamwork 10.
+
+F. FINAL UI CHECK
+php artisan route:list
+php artisan test
+php artisan view:cache
+php artisan view:clear
+
+G. STATE
+STEP: 11
+UI_STATUS:
+RUBRIC_EVIDENCE_STATUS:
+NEXT_STEP: 12_DOCS
+
+OUTPUT
+- UI fixes.
+- evidence docs.
+- test summary.
+- READY FOR PROMPT 12.

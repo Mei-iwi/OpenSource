@@ -1,0 +1,104 @@
+BỘ QUY TẮC NỀN — CODEX LUNA 5.6
+DỰ ÁN: WEBSITE QUẢN LÝ NHÂN SỰ — LARAVEL 12 + MYSQL
+MÔN: LẬP TRÌNH MÃ NGUỒN MỞ
+
+MỤC TIÊU
+- Hoàn thiện đồ án ở mức sinh viên, ưu tiên đạt 80–100% yêu cầu Rubric.
+- Không over-engineer; không DDD/Hexagonal/Microservice/SPA.
+- Dùng đúng công nghệ và kỹ thuật của môn học.
+- Prompt được viết để Codex Luna 5.6 làm theo trực tiếp, hạn chế suy luận và tiết kiệm quota.
+
+3 ROLE BẮT BUỘC
+1) admin
+- Toàn quyền hệ thống.
+- Quản lý tài khoản, role, khóa/mở tài khoản.
+- Truy cập toàn bộ chức năng HR.
+2) hr
+- Quản lý phòng ban, nhân viên, chấm công, báo cáo/thống kê.
+- Không được tạo/chỉnh role admin.
+3) employee
+- Chỉ xem hồ sơ và chấm công của chính mình.
+- Chỉ cập nhật trường cá nhân cho phép.
+- Không sửa role, employee_code, department, position, hire_date, employment_status.
+
+KỸ THUẬT MÔN HỌC PHẢI CÓ MINH CHỨNG
+- PHP + OOP trong Laravel 12.
+- Laravel MVC.
+- Routing, named routes, route group, Resource Controller.
+- Blade Layout + partial + component.
+- Form @csrf; PUT/PATCH/DELETE có @method.
+- MySQL.
+- Eloquent ORM.
+- Migration.
+- Seeder + Factory.
+- Quan hệ Eloquent.
+- Form Request / Validation.
+- Middleware.
+- Authentication bằng Laravel Breeze Blade nếu project chưa có auth tương đương.
+- Authorization bằng Middleware + Policy/Gate/ownership server-side.
+- Search + filter + pagination.
+- Eloquent/Query Builder với COUNT/GROUP BY.
+- JavaScript cơ bản + ít nhất 01 Fetch/AJAX + JSON.
+- Upload ảnh đại diện bằng Storage public + validate MIME/size.
+- Session authentication.
+- Artisan CLI.
+- Git/GitLab.
+- Feature Test + test thủ công.
+- README, ERD, kiến trúc, screenshot checklist, deployment checklist.
+
+RUBRIC
+- Hình thức báo cáo: 10%.
+- Nội dung/chất lượng báo cáo: 10%.
+- Giao diện: 30%.
+- Sản phẩm: 40%.
+- Tham gia/tương tác nhóm: 10%.
+
+NGUYÊN TẮC SOURCE
+- Trước khi sửa: đọc project hiện tại và git status.
+- Không xóa/ghi đè source nếu chưa đọc.
+- Không db:wipe.
+- Chỉ migrate:fresh --seed khi xác nhận DB dev/demo.
+- Không commit .env/token/password thật.
+- Không force push.
+- Không bịa Git remote.
+- Không cài package ngoài nếu Laravel/PHP chuẩn làm được.
+- Không đổi version Laravel/PHP.
+- Gặp mâu thuẫn/lỗi môi trường: báo BLOCKED, không tự đổi kiến trúc.
+
+QUY TẮC TIẾT KIỆM QUOTA
+- Dùng cùng một phiên Codex nếu có thể.
+- Không giải thích dài trước khi code.
+- Không paste toàn bộ file sau khi sửa.
+- Không scan toàn repo ở mỗi bước.
+- Trước mỗi prompt sau Prompt 01 chỉ đọc docs/codex-state.md và file liên quan.
+- Sau mỗi prompt cập nhật docs/codex-state.md gồm:
+  STEP
+  COMPLETED
+  FILES_CHANGED
+  COMMANDS_RUN
+  TEST_RESULTS
+  OPEN_ISSUES
+  NEXT_STEP
+- Output cuối mỗi prompt tối đa khoảng 30 dòng.
+- Không tự làm bước tiếp theo.
+
+UI
+- Blade server-rendered.
+- Nếu project chưa có CSS stack: ưu tiên Bootstrap 5 CDN.
+- Nếu Breeze/Tailwind đã chạy ổn định: giữ nguyên.
+- Không đổi CSS framework giữa chừng.
+- Responsive desktop + mobile cơ bản.
+- Layout, navbar/sidebar, card, table, form, alert, badge, pagination thống nhất.
+
+KHÔNG BẮT BUỘC
+- Payroll/KPI/tuyển dụng/thuế/bảo hiểm.
+- QR/GPS/face/fingerprint.
+- Microservice/Redis/queue/WebSocket.
+- React/Vue SPA.
+- Package Excel/PDF nặng; CSV + print/Save as PDF là đủ.
+
+CÁCH DÙNG
+1. Dán file này một lần vào đầu phiên Codex Luna 5.6.
+2. Chạy lần lượt Prompt 01 -> 13.
+3. Nếu mở phiên mới: dán lại file 00 rồi yêu cầu đọc docs/codex-state.md.
+4. Nếu bước trước BLOCKED thì không chạy bước sau.

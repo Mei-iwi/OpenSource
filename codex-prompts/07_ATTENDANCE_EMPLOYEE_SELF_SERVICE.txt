@@ -1,0 +1,105 @@
+PROMPT 07 — ATTENDANCE + EMPLOYEE SELF-SERVICE + OWNERSHIP
+
+A. HR/ADMIN ATTENDANCE
+AttendanceController cho admin+hr:
+- index
+- create
+- store
+- edit
+- update
+Không cần hard delete.
+
+Index filters:
+- month
+- year
+- department_id
+- employee_id hoặc search employee
+- status
+- pagination
+
+Form:
+employee_id
+work_date
+check_in
+check_out
+status
+note
+
+BUSINESS RULES
+- unique employee_id + work_date.
+- status in: present,late,absent,leave.
+- nếu check_in và check_out đều có: check_out >= check_in.
+- absent/leave có thể không có giờ.
+- employee_id exists.
+- server-side validation.
+
+B. EMPLOYEE PROFILE
+Employee\ProfileController:
+show/edit/update.
+Lấy employee bằng auth()->user()->employee.
+
+Employee chỉ update:
+- phone
+- address
+- date_of_birth
+Avatar làm ở Prompt 09.
+
+Không nhận/update:
+- user_id
+- role
+- employee_code
+- department_id
+- position
+- hire_date
+- employment_status
+
+Nếu request cố gửi các field trên, chúng không được thay đổi.
+
+C. EMPLOYEE ATTENDANCE HISTORY
+EmployeeAttendanceController@index:
+- current user employee.
+- chỉ own attendance.
+- month/year filter.
+- pagination nếu cần.
+- KHÔNG cho truyền employee_id để xem người khác.
+
+D. AUTHORIZATION
+Tạo ít nhất 01 Policy thật để minh chứng:
+EmployeePolicy:
+- view(User $user, Employee $employee)
+- update(User $user, Employee $employee)
+Cho phép employee chỉ self; admin/hr dùng route quản trị riêng.
+Dùng authorize()/Gate server-side.
+Không chỉ @can ở Blade.
+
+E. EDGE CASE
+Nếu employee user chưa có employee profile:
+- hiển thị thông báo cấu hình thiếu.
+- không 500.
+
+F. UI
+- HR attendance filter/table/create/edit.
+- profile có khối read-only thông tin công việc + form cá nhân.
+- employee attendance filter month/year.
+- status badge.
+
+G. TEST
+- HR create/update attendance.
+- duplicate same employee/day rejected.
+- check_out earlier rejected.
+- employee sees own only.
+- employee cannot HR attendance.
+- safe fields update.
+- protected fields unchanged.
+- policy ownership pass/fail.
+
+H. STATE
+STEP: 07
+ATTENDANCE_STATUS:
+SELF_SERVICE_STATUS:
+NEXT_STEP: 08_REPORTS
+
+OUTPUT
+- controllers/requests/policy/views/routes.
+- tests.
+- READY FOR PROMPT 08.
