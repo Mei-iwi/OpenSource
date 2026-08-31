@@ -1,4 +1,4 @@
-STEP: Prompt 09
+STEP: 10
 PROJECT_STATUS: Hoàn thành AJAX availability, avatar upload và security polish; chưa triển khai Prompt 10.
 LARAVEL_VERSION: 12.65.0
 PHP_VERSION: Local 8.3.30; CI PHP 8.3.
@@ -43,7 +43,17 @@ COMMANDS_RUN:
 TEST_RESULTS: SecurityPolishTest 3 passed, 18 assertions; toàn bộ Feature Tests MySQL 60 passed, 218 assertions; route:list 61 routes; view:cache PASS.
 BUILD_RESULTS: composer validate PASS; npm run build PASS; public/storage link PASS.
 OPEN_ISSUES: Git còn thay đổi Prompt 09 chưa commit; Composer autoload warning cũ không làm fail kiểm tra; Prompt 10 chưa triển khai.
-NEXT_STEP: Prompt 10
+NEXT_STEP: 11_UI_RUBRIC
+
+TEST_SUITE_STATUS: PASS
+TOTAL_TESTS: 61
+FAILURES: 0
+TEST_DATABASE: MySQL hr_management_testing; khong fallback SQLite.
+MANUAL_EVIDENCE: docs/test/manual-test-cases.md; docs/test/bug-log.md
+PROMPT_10_FILES_CHANGED: docs/test/manual-test-cases.md; docs/test/bug-log.md; docs/codex-state.md
+PROMPT_10_COMMANDS: composer validate; php artisan route:list; php artisan view:cache; php artisan test (MySQL hr_management_testing); cmd.exe /c npm run build
+PROMPT_10_RESULTS: composer PASS; route:list PASS (61 routes); view:cache PASS; 61 tests/222 assertions PASS; frontend build PASS via cmd.exe.
+PROMPT_10_NOTE: npm run build trực tiếp trong PowerShell bị chặn bởi chữ ký npm.ps1; chạy lại qua cmd.exe thành công. Manual mobile screenshots chưa được tạo.
 
 ADDITIONAL_CHANGE: Bổ sung chức năng đăng xuất trên navbar dùng chung.
 LOGOUT_STATUS: POST /logout qua Laravel Breeze; form có @csrf; controller invalidate session và regenerate token.
