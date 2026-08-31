@@ -1,0 +1,43 @@
+<?php
+
+return [
+    'accepted' => ':attribute phải được chấp nhận.',
+    'after' => ':attribute phải là ngày sau :date.',
+    'after_or_equal' => ':attribute phải là ngày sau hoặc bằng :date.',
+    'before' => ':attribute phải là ngày trước :date.',
+    'before_or_equal' => ':attribute phải là ngày trước hoặc bằng :date.',
+    'confirmed' => 'Xác nhận :attribute không khớp.',
+    'current_password' => 'Mật khẩu hiện tại không chính xác.',
+    'date' => ':attribute không phải ngày hợp lệ.',
+    'email' => ':attribute phải là địa chỉ email hợp lệ.',
+    'exists' => ':attribute đã chọn không hợp lệ.',
+    'image' => ':attribute phải là hình ảnh.',
+    'in' => ':attribute đã chọn không hợp lệ.',
+    'integer' => ':attribute phải là số nguyên.',
+    'max' => [
+        'file' => ':attribute không được lớn hơn :max kilobyte.',
+        'string' => ':attribute không được dài hơn :max ký tự.',
+        'array' => ':attribute không được có quá :max phần tử.',
+    ],
+    'mimes' => ':attribute phải có định dạng: :values.',
+    'min' => [
+        'string' => ':attribute phải có ít nhất :min ký tự.',
+    ],
+    'required' => 'Vui lòng nhập :attribute.',
+    'required_if' => 'Vui lòng nhập :attribute.',
+    'same' => ':attribute phải khớp với :other.',
+    'string' => ':attribute phải là chuỗi ký tự.',
+    'unique' => ':attribute đã tồn tại.',
+    'uploaded' => 'Không thể tải :attribute lên.',
+    'url' => ':attribute phải là URL hợp lệ.',
+    'attributes' => [
+        'name' => 'họ và tên', 'email' => 'email', 'password' => 'mật khẩu',
+        'password_confirmation' => 'mật khẩu xác nhận', 'role' => 'vai trò',
+        'employee_code' => 'mã nhân viên', 'department_id' => 'phòng ban',
+        'position' => 'chức vụ', 'hire_date' => 'ngày vào làm',
+        'employment_status' => 'trạng thái làm việc', 'phone' => 'số điện thoại',
+        'address' => 'địa chỉ', 'date_of_birth' => 'ngày sinh',
+        'work_date' => 'ngày làm việc', 'status' => 'trạng thái',
+        'check_in' => 'giờ vào', 'check_out' => 'giờ ra', 'avatar' => 'ảnh đại diện',
+    ],
+];

@@ -1,4 +1,4 @@
-# Report outline
+# Đề cương báo cáo
 
 ## Chapter 1. Overview
 1.1 Motivation; 1.2 Objectives; 1.3 Scope; 1.4 User groups.

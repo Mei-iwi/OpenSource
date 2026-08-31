@@ -1,4 +1,4 @@
-# Screenshot checklist
+# Checklist ảnh chụp màn hình
 
 Capture real screenshots only after manual verification. Store them under `docs/evidence/` using these names:
 

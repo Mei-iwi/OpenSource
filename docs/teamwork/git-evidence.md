@@ -1,4 +1,4 @@
-# Git evidence template
+# Mẫu minh chứng Git
 
 | Branch | Commit | Pull Request | CI result | Contributor | Feature |
 |---|---|---|---|---|---|

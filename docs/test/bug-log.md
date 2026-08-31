@@ -1,4 +1,4 @@
-# Bug log
+# Nhật ký lỗi
 
 | ID | Mô tả | Mức độ | Nguyên nhân | Cách sửa | Trạng thái |
 |---|---|---|---|---|---|

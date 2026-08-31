@@ -66,3 +66,21 @@ PRODUCTION_FIXES: none; no production bug found during final audit.
 OPEN_ISSUES_PROMPT_13: Real screenshots, verified teamwork details and post-push CI confirmation remain manual actions.
 MANUAL_ACTIONS_REQUIRED: Capture real screenshots; fill verified team contribution data; verify final GitHub Actions run; prepare report Word/PDF if required.
 FINAL_STATUS: Source/runtime/security audit PASS; ready for final human demo/submission actions.
+
+STEP: Prompt 14 - Vietnamese Localization
+UI_LANGUAGE: Vietnamese for shared layout, navigation, dashboards, authentication, profile and module screens
+VALIDATION_LANGUAGE: Vietnamese `lang/vi/validation.php` with translated attributes and common rules
+FLASH_MESSAGES: Existing status codes preserved; authentication/password translations added
+AUTH_LANGUAGE: Vietnamese labels/messages for login, registration, password reset, verification and logout
+REPORT_LANGUAGE: Vietnamese report labels and status badges; CSV/print identifiers preserved
+CSV_LANGUAGE: Vietnamese headers/content labels with UTF-8 handling preserved
+README_LANGUAGE: Vietnamese
+DOCS_LANGUAGE: Vietnamese headings and project-facing documentation; technical names preserved
+TECHNICAL_IDENTIFIERS_PRESERVED: Routes, controller/model names, role/status values, database columns, environment variables and commands
+FILES_CHANGED: README.md, config/app.php, .env.example, lang/vi.json, lang/vi/*.php, resources/views/auth, profile, dashboard, welcome, layouts/navigation, partials/sidebar, components/status-badge, selected docs/*.md
+TEST_RESULTS: 61 tests, 222 assertions, 0 failures on MySQL hr_management_testing
+BUILD_RESULTS: composer validate PASS; optimize:clear PASS; route:list PASS (61 routes); view:clear PASS; view:cache PASS; npm run build PASS
+ENGLISH_UI_STRINGS_REMAINING: No known active English navigation/auth labels; technical terms such as Email, HR, CSV, PDF and Blade remain where appropriate
+OPEN_ISSUES: Real screenshots, verified teamwork details and post-push CI confirmation remain manual actions
+MANUAL_ACTIONS_REQUIRED: Capture real screenshots and complete verified team/report submission details
+FINAL_STATUS: Vietnamese localization PASS; no business, schema, route, authz or CI changes made
