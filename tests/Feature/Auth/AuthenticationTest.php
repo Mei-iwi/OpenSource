@@ -42,6 +42,21 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_employee_login_cannot_redirect_to_forbidden_intended_url(): void
+    {
+        $user = User::factory()->create(['role' => 'employee']);
+
+        $this->get('/admin/dashboard')->assertRedirect('/login');
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect('/dashboard');
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
@@ -49,7 +64,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('login'));
     }
 
     public function test_authenticated_layout_displays_logout_form(): void

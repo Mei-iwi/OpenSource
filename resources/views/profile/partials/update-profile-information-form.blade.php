@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
@@ -45,6 +45,20 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="avatar" value="Ảnh đại diện" />
+            <div class="mt-2 flex items-center gap-4">
+                @if ($user->avatar_path)
+                    <img src="{{ Storage::disk('public')->url($user->avatar_path) }}" alt="Ảnh đại diện {{ $user->name }}" class="h-16 w-16 rounded-full object-cover">
+                @else
+                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-xl font-bold text-sky-700">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+                @endif
+                <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full text-sm text-gray-600">
+            </div>
+            <p class="mt-1 text-xs text-gray-500">JPG, PNG hoặc WEBP; tối đa 2 MB. Ảnh lưu trong thư mục Storage public.</p>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
 
         <div class="flex items-center gap-4">
