@@ -22,4 +22,4 @@ Capture real screenshots only after manual verification. Store them under `docs/
 - [ ] `18-github-actions-pass.png` — successful CI run
 - [ ] `19-tests-pass.png` — local test summary
 
-Required viewport spot checks: approximately 375px, 768px and at least 1280px. This checklist is not evidence of a screenshot having been captured.
+Required viewport spot checks: approximately 375px, 768px and at least 1280px. This checklist is not evidence that an image has been captured.
