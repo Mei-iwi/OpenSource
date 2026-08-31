@@ -21,7 +21,34 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'account_status',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isHr(): bool
+    {
+        return $this->role === 'hr';
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role === 'employee';
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        return in_array($this->role, (array) $roles, true);
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
