@@ -54,8 +54,5 @@ Route::middleware(['auth', 'account.active'])->group(function () {
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::view('/preview/admin', 'dashboard.admin')->name('preview.admin');
-Route::view('/preview/hr', 'dashboard.hr')->name('preview.hr');
-Route::view('/preview/employee', 'dashboard.employee')->name('preview.employee');
 
 require __DIR__.'/auth.php';
