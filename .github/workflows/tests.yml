@@ -15,24 +15,45 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    name: PHP 8.3 + MySQL 8.4
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: hr_management_testing
+      DB_USERNAME: root
+      DB_PASSWORD: ci_root_password
 
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [8.3]
-
-    name: PHP ${{ matrix.php }}
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: hr_management_testing
+          MYSQL_ROOT_PASSWORD: ci_root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci_root_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql
           coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
@@ -41,7 +62,13 @@ jobs:
         run: cp .env.example .env
 
       - name: Generate app key
-        run: php artisan key:generate
+        run: php artisan key:generate --ansi
 
-      - name: Execute tests
-        run: vendor/bin/phpunit
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Execute Feature Tests
+        run: php artisan test
