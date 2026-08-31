@@ -51,4 +51,16 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_authenticated_layout_displays_logout_form(): void
+    {
+        $user = User::factory()->create(['role' => 'employee']);
+
+        $this->actingAs($user)
+            ->get(route('employee.dashboard'))
+            ->assertOk()
+            ->assertSee('action="'.route('logout').'"', false)
+            ->assertSee('Đăng xuất')
+            ->assertSee('name="_token"', false);
+    }
 }

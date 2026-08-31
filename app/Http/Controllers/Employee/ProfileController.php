@@ -7,6 +7,8 @@ use App\Http\Requests\EmployeeProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -31,7 +33,18 @@ class ProfileController extends Controller
         }
 
         Gate::authorize('update', $employee);
-        $employee->update($request->validated());
+        $oldAvatar = $employee->avatar_path;
+        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : $oldAvatar;
+        try {
+            $profileData = $request->validated();
+            unset($profileData['avatar']);
+            $profileData['avatar_path'] = $newAvatar;
+            $employee->update($profileData);
+        } catch (Throwable $exception) {
+            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk('public')->delete($newAvatar);
+            throw $exception;
+        }
+        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk('public')->delete($oldAvatar);
         return redirect()->route('employee.profile.show')->with('success', 'Đã cập nhật thông tin cá nhân.');
     }
 }
