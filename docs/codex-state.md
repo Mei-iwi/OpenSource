@@ -1,42 +1,36 @@
-STEP: 07-CI-STABILIZATION
-PROJECT_STATUS: Prompt 01-07 hoàn thành; CI workflow đã chuẩn hóa; chưa triển khai Prompt 08.
+STEP: 08
+PROJECT_STATUS: Hoàn thành dashboard KPI, báo cáo thống kê, CSV và giao diện in; chưa triển khai Prompt 09.
 LARAVEL_VERSION: 12.65.0
-PHP_VERSION: Local 8.3.30; GitHub Actions PHP 8.3.
+PHP_VERSION: Local 8.3.30; CI PHP 8.3.
 CSS_STACK: Tailwind CSS 4 + Vite, giữ nguyên.
-AUTH_STATUS: Laravel Breeze Blade; Authentication, 3 role và protected routes đang hoạt động.
-ROLE_STATUS: Admin/HR quản trị HR; Employee self-service có ownership server-side.
-DATABASE_STATUS: Runtime development MySQL 8.4.3 `hr_management`; CI/test MySQL 8.4 `hr_management_testing` tại 127.0.0.1:3306; không dùng SQLite fallback.
+AUTH_STATUS: Laravel Breeze Blade; Authentication và protected routes đang hoạt động.
+ROLE_STATUS: Admin/HR truy cập báo cáo; Employee bị chặn server-side bằng role middleware.
+DATABASE_STATUS: Runtime MySQL 8.4.3 `hr_management`; test MySQL `hr_management_testing` tại 127.0.0.1:3306.
 SEED_STATUS: Dữ liệu demo Prompt 04 được giữ nguyên.
 
 COMPLETED:
-- Đọc state và kiểm tra toàn bộ .github/workflows trước khi sửa.
-- Xác định workflow cũ có lịch sử matrix PHP 8.2/8.3/8.4; PHP 8.2 không tương thích Pint v1.30.5 yêu cầu PHP ^8.3.
-- Xác định workflow hiện tại thiếu MySQL service và vẫn dùng extensions sqlite/pdo_sqlite.
-- Cập nhật `.github/workflows/tests.yml`: chỉ PHP 8.3, extensions pdo_mysql/mbstring, MySQL 8.4 health check và database test riêng.
-- CI dùng `composer install --prefer-dist --no-interaction --no-progress`, tạo `.env` từ `.env.example`, generate APP_KEY.
-- CI dùng `npm ci` và `npm run build`; không chạy composer update, không đổi composer.lock.
-- Giữ nguyên RefreshDatabase/test framework; không thêm migration dư thừa trước test.
+- Đã resolve conflict sau stash pop, giữ cả routes Prompt 07 và Prompt 08.
+- Dashboard HR: tổng nhân viên, active/inactive, phòng ban và attendance theo status tháng hiện tại.
+- Dashboard Admin: tổng user, active/locked và user theo role, link HR module.
+- ReportController dùng chung query filter cho HTML, CSV và print; không tạo bảng reports.
+- Báo cáo filter tháng/năm/phòng ban/nhân viên/status chấm công/employment status; aggregate COUNT/GROUP BY.
+- CSV stream download có UTF-8 BOM, header tiếng Việt và đúng tập dữ liệu sau filter.
+- Blade print view có CSS @media print và window.print(), dùng browser Save as PDF.
+- Eager loading employee.user/department, pagination, empty state, badge và filter/reset UI.
+- Feature Tests KPI, aggregation/filter, CSV, print và authorization đạt.
 
 FILES_CHANGED:
-- .github/workflows/tests.yml
+- routes/web.php
 - docs/codex-state.md
+- Các file Prompt 08 đã có trong working tree/staging: dashboard controllers/views, ReportController, report views, ReportsTest, docs/evidence/reports.md.
 
 COMMANDS_RUN:
-- Get-Content docs/codex-state.md
-- Get-ChildItem/.github/workflows và Get-Content toàn bộ workflow
-- git status --short; git log -5 --oneline -- .github/workflows; git diff
-- gh run list --limit 10 (bị chặn mạng, không lấy được remote log)
-- composer validate
-- php artisan route:list
-- php artisan view:cache
-- cmd /c npm run build
-- set DB_CONNECTION=mysql ... DB_DATABASE=hr_management_testing ... php artisan test
+- git status; git diff --cc; git ls-files -u
+- apply conflict resolution for routes/web.php and docs/codex-state.md
 
-TEST_RESULTS: composer validate đạt; route:list hiển thị 60 routes; view:cache đạt; npm build đạt; toàn bộ Feature Tests MySQL đạt 51 tests, 147 assertions.
-CI_STATUS: Workflow dùng PHP 8.3 + MySQL 8.4 service, health check trước test, `hr_management_testing`, 127.0.0.1, không SQLite.
+TEST_RESULTS: Conflict đã được resolve ở working tree; cần chạy lại route:list, view:cache và Feature Tests sau khi resolve.
 OPEN_ISSUES:
-- Không truy cập được GitHub Actions remote logs do mạng môi trường bị chặn; root cause xác định qua workflow/lịch sử local.
-- Git còn thay đổi chưa commit từ Prompt 01 đến bước CI; không commit/push theo quy tắc.
-- Composer autoload warning cũ không làm fail các kiểm tra đã chạy.
-- Prompt 08 chưa triển khai theo phạm vi yêu cầu.
-NEXT_STEP: 08_REPORTS
+- Chưa commit hoặc push; branch local và origin/feat/hr-reports-statistics vẫn diverged.
+- Cần kiểm tra lại toàn bộ test sau merge trước khi commit.
+- Prompt 09 chưa triển khai.
+NEXT_STEP: VERIFY_AFTER_CONFLICT
