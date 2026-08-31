@@ -7,13 +7,12 @@ use App\Http\Controllers\HrDashboardController;
 use App\Http\Controllers\HR\DepartmentController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
+use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
 use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn () => view('welcome'));
 
 Route::get('/dashboard', function () {
     return match (true) {
@@ -36,6 +35,9 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
     Route::resource('departments', DepartmentController::class);
     Route::resource('employees', EmployeeController::class)->except('destroy');
     Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export.csv', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
 });
 
 Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
@@ -52,7 +54,6 @@ Route::middleware(['auth', 'account.active'])->group(function () {
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// TODO REMOVE AFTER INTEGRATION: preview-only routes retained from Prompt 02.
 Route::view('/preview/admin', 'dashboard.admin')->name('preview.admin');
 Route::view('/preview/hr', 'dashboard.hr')->name('preview.hr');
 Route::view('/preview/employee', 'dashboard.employee')->name('preview.employee');
