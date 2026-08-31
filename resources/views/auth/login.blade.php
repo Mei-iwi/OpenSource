@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <div class="mb-8 text-center"><span class="inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-bold tracking-wide text-blue-700">QUẢN LÝ NHÂN SỰ</span><h1 class="mt-5 text-3xl font-bold text-slate-900">Chào mừng bạn trở lại</h1><p class="mt-2 text-sm text-slate-500">Đăng nhập để tiếp tục quản lý công việc của bạn.</p></div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -24,7 +25,7 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
+        <!-- Ghi nhớ đăng nhập -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
@@ -39,7 +40,7 @@
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="ms-3 bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:ring-blue-400">
                 Đăng nhập
             </x-primary-button>
         </div>

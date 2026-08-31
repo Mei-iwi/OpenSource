@@ -28,7 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Always resolve the dashboard through the authenticated user's role.
+        // This prevents an Employee from being redirected back to a forbidden
+        // Admin/HR URL stored in the session as the intended destination.
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -42,6 +45,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

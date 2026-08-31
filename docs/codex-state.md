@@ -84,3 +84,36 @@ ENGLISH_UI_STRINGS_REMAINING: No known active English navigation/auth labels; te
 OPEN_ISSUES: Real screenshots, verified teamwork details and post-push CI confirmation remain manual actions
 MANUAL_ACTIONS_REQUIRED: Capture real screenshots and complete verified team/report submission details
 FINAL_STATUS: Vietnamese localization PASS; no business, schema, route, authz or CI changes made
+
+STEP: UI Redesign A
+UI_FOUNDATION: Chuẩn hóa nền slate sáng, màu nhấn cam, card/border/spacing; bổ sung dark mode cơ bản
+LOGIN: Card responsive, nhận diện Quản lý nhân sự, tiêu đề chào mừng, form tiếng Việt và lỗi rõ ràng
+SIDEBAR: Desktop expanded/collapsed 72/288px, icon/title tooltip, localStorage; mobile drawer/backdrop hiện có được giữ nguyên
+THEME: Light/dark mode bằng Tailwind class và localStorage `hr-theme`; không thêm package
+FILES_CHANGED: tailwind.config.js, resources/css/app.css, resources/js/app.js, layouts/app.blade.php, layouts/guest.blade.php, partials/navbar.blade.php, partials/sidebar.blade.php, auth/login.blade.php, dashboard views, lang/vi, selected docs
+TEST_RESULTS: Auth/runtime targeted 21 tests, 71 assertions, 0 failures trên MySQL hr_management_testing
+OPEN_ISSUES: Chưa chạy browser thủ công ở 375px/768px/1280px; accent switching chưa triển khai
+NEXT_STEP: Prompt B
+
+UI_LOGIN_ADJUSTMENT: Đã bỏ hoàn toàn application logo khỏi guest/login; nền login dùng gradient CSS sáng amber/orange/cyan, không dùng ảnh nền; card và CTA dùng màu cam tươi.
+UI_LOGIN_CHECK: Auth/Runtime 7 tests, 41 assertions, 0 failures; view clear/cache, npm build và git diff --check PASS. Một lượt chạy song song trước đó gặp Windows file-lock khi compile view, đã chạy lại tuần tự thành công.
+UI_LOGIN_COLOR_UPDATE: Nền xanh blue sáng hơn; form mở rộng max-w-xl, căn giữa cân đối; viền gradient blue/sky/cyan; CTA xanh đậm chữ trắng; thêm họa tiết hoa/lá SVG inline, không dùng background image.
+UI_LOGIN_UPDATE_CHECK: AuthenticationTest 5 tests, 12 assertions, 0 failures; view:clear, view:cache và npm run build PASS.
+UI_LOGIN_BRIGHT_BLUE_UPDATE: Khung login dùng nền xanh sáng, nhãn Email/Mật khẩu/Ghi nhớ đăng nhập màu trắng, input nền trắng và viền gradient conic-gradient chuyển động quanh form bằng CSS animation.
+UI_LOGIN_BRIGHT_BLUE_CHECK: AuthenticationTest 5 tests, 12 assertions, 0 failures; view clear/cache, npm build và git diff --check PASS.
+UI_LOGIN_LED_BORDER_UPDATE: Form được cố định; chỉ pseudo-element viền gradient conic-gradient xoay như LED quanh khung, nội dung không chuyển động.
+UI_GLOBAL_POLISH: Nền các trang chuyển sang sky-50/gradient sáng; sidebar collapsed chỉ hiện icon và title tooltip, có transition width/ease mượt; KPI dashboard có hover nhẹ và mũi tên nối dạng luồng ở màn hình lớn.
+LOGIN_DIAGNOSTIC: Runtime database `hr_management` bị thiếu dữ liệu users (0 user), không phải lỗi Authentication. Đã chạy `php artisan db:seed --class=DatabaseSeeder` trên database development đã xác nhận; hiện có 15 users active, gồm admin@example.com, hr@example.com, hr2@example.com và employee1@example.com.
+LOGIN_CHECK: AuthenticationTest và RoleAuthorizationTest PASS; tài khoản demo dùng mật khẩu `Password123!` theo DatabaseSeeder.
+LOGIN_ROOT_CAUSE: phpunit.xml thiếu cấu hình database test nên RefreshDatabase đã dùng nhầm `hr_management`, làm sạch users runtime. Đã bổ sung MySQL `hr_management_testing` vào phpunit.xml.
+EMPLOYEE_403_REGRESSION_CHECK: Bản sửa redirect ban đầu dùng nhầm named parameter `absolute` cho `redirect()->route()` và gây 500; đã sửa thành `redirect()->route('dashboard')`.
+LOGIN_RECOVERY: Đã seed lại database development `hr_management`; hiện có 15 users, tài khoản demo active. Auth/Role tests 11 passed, 23 assertions; runtime còn 15 users sau test.
+CSRF_419_RECHECK: Sau `optimize:clear`, curl tới cả `http://localhost:8000/login` và `http://127.0.0.1:8000/login` đều trả 200 và phát hành đủ `XSRF-TOKEN`/`laravel_session`; 419 phát sinh khi client gửi POST không kèm token/session tương ứng, cần dùng một hostname nhất quán và tải lại trang login.
+EMPLOYEE_403_FIX: Login không còn dùng `redirect()->intended()`; luôn đi qua `/dashboard` để phân giải dashboard theo role, tránh Employee quay lại URL Admin/HR bị cấm trong session.
+THEME_CONTRAST_UPDATE: Theme tối dùng nền xanh sáng tương phản, surface/card xanh blue, chữ sáng, input và border riêng; bổ sung transition màu 240ms và nút chuyển đổi hiển thị `Sáng/Tối` rõ ràng.
+PROFILE_ALL_ROLES_UPDATE: Hồ sơ chung của Admin/HR hỗ trợ upload avatar vào `storage/app/public/avatars`, validate MIME/size, xóa ảnh cũ và hiển thị ảnh sau cập nhật; Employee tiếp tục dùng luồng avatar ownership hiện có.
+FIXED_SHELL_UPDATE: Header sticky, sidebar desktop cố định theo chiều cao màn hình và chỉ vùng main overflow-y-auto; nội dung dài cuộn bên dưới header.
+PROFILE_SHELL_CHECK: Migration avatar PASS; Profile/Attendance/Runtime 12 tests, 72 assertions, 0 failures; view cache, npm build và git diff --check PASS.
+AVATAR_URL_FIX: Public disk dùng URL root-relative `/storage`, tránh ghép `APP_URL` thiếu port/khác hostname; symbolic link `public/storage` tồn tại và ảnh đã lưu trong `storage/app/public/avatars`.
+LOGOUT_REDIRECT_UPDATE: Logout vẫn POST/CSRF và invalidate session, nhưng redirect về route `login` thay vì `/` để không hiện trang mặc định Laravel “Let's get started”.
+CSRF_419_DIAGNOSTIC: Đã xác nhận APP_KEY hợp lệ, session database `hr_management.sessions` hoạt động, GET `/login` trả 200 và phát hành XSRF-TOKEN/laravel_session; optimize:clear đã chạy. AuthenticationTest 5/12 PASS. Không phát hiện lỗi source.
