@@ -17,7 +17,7 @@
         <div>
             <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Khu vực quản lý</p>
             <div class="mt-2 space-y-1">
-                <a href="{{ route('preview.admin') }}#users" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Tài khoản & vai trò</a>
+                <a href="{{ Route::has('admin.users.index') ? route('admin.users.index') : route('preview.admin') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Tài khoản & vai trò</a>
                 <a href="{{ route('preview.hr') }}#departments" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Phòng ban</a>
                 <a href="{{ route('preview.hr') }}#employees" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Nhân viên</a>
                 <a href="{{ route('preview.hr') }}#attendances" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Chấm công</a>

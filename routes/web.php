@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HrDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,9 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+    Route::patch('/users/{user}/lock', [UserController::class, 'lock'])->name('users.lock');
+    Route::patch('/users/{user}/unlock', [UserController::class, 'unlock'])->name('users.unlock');
+    Route::resource('users', UserController::class);
 });
 
 Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->name('hr.')->group(function () {
