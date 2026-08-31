@@ -1,4 +1,4 @@
-# How to capture evidence
+# Cách ghi nhận minh chứng
 
 1. Start the app with `php artisan serve` and `npm run dev`, then log in with a seeded Admin, HR or Employee account documented in the README.
 2. Open the real routes: `/admin/dashboard`, `/admin/users`, `/hr/dashboard`, `/hr/departments`, `/hr/employees`, `/hr/attendances`, `/hr/reports`, `/employee/dashboard`, `/employee/profile` or `/employee/attendances`.

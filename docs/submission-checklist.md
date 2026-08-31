@@ -1,4 +1,4 @@
-# Submission checklist
+# Checklist nộp bài
 
 - [ ] Source code reviewed and working tree reviewed
 - [ ] README and installation guide included

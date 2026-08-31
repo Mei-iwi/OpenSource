@@ -1,4 +1,4 @@
-# Evidence index
+# Danh mục minh chứng
 
 - UI evidence: [ui-rubric.md](ui-rubric.md), [screenshot-checklist.md](screenshot-checklist.md)
 - Database evidence: [database.md](database.md), [ERD](../diagrams/erd.md)

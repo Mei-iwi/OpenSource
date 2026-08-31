@@ -1,4 +1,4 @@
-# Demo checklist
+# Checklist trình diễn
 
 Use this flow for the final presentation. Demo credentials are development-only and are documented in `README.md`.
 

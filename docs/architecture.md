@@ -1,6 +1,6 @@
-# Architecture
+# Kiến trúc
 
-This is a conventional Laravel MVC application suitable for a student project. It is not a microservice, DDD or Clean Architecture application.
+Đây là ứng dụng Laravel MVC thông thường, phù hợp với đồ án sinh viên; không sử dụng microservice, DDD hay Clean Architecture.
 
 ```text
 Browser -> Routes -> Middleware (auth, account.active, role)
@@ -8,4 +8,4 @@ Browser -> Routes -> Middleware (auth, account.active, role)
         -> Eloquent Model -> MySQL -> Blade Response
 ```
 
-The employee-code availability interaction uses Blade JavaScript/Fetch, a JSON endpoint, controller validation/query and MySQL. Shared Blade layouts and partials provide the presentation. Eloquent relationships connect User, Employee, Department and Attendance.
+Chức năng kiểm tra mã nhân viên dùng JavaScript/Fetch trong Blade, endpoint JSON, validation/query và MySQL. Layout/partial Blade dùng chung cho phần trình bày. Quan hệ Eloquent kết nối User, Employee, Department và Attendance.

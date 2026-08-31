@@ -1,10 +1,10 @@
-# Basic deployment guide
+# Hướng dẫn triển khai cơ bản
 
-## Requirements
+## Yêu cầu
 
 PHP >= 8.3, Composer, MySQL, a web server, and Node/npm for building assets.
 
-## Install and build
+## Cài đặt và build
 
 ```bash
 composer install --no-dev --optimize-autoloader
@@ -19,7 +19,7 @@ php artisan view:cache
 
 Set `APP_ENV=production` and `APP_DEBUG=false`. Configure MySQL through environment variables; never place real credentials in source control.
 
-## Production checklist
+## Checklist production
 
 - [ ] `APP_DEBUG=false`
 - [ ] `APP_KEY` configured

@@ -1,4 +1,4 @@
-# Runtime smoke test
+# Kiểm tra nhanh runtime
 
 The smoke test uses Laravel HTTP requests on MySQL `hr_management_testing` and covers the real populated pages used by the application.
 

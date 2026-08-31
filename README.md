@@ -1,41 +1,24 @@
-# Website Quan ly Nhan su
+# Website Quản lý Nhân sự
 
-## 1. Gioi thieu
+Website Laravel MVC render bằng Blade cho đồ án quản lý tài khoản, phòng ban, nhân viên, chấm công và báo cáo.
 
-A server-rendered human resources management website for a student open-source programming project.
+## Chức năng
 
-## 2. Muc tieu
+- Đăng nhập, đăng xuất, mật khẩu và hồ sơ cá nhân.
+- Admin quản lý tài khoản HR/Employee, tìm kiếm, lọc, phân trang, đổi vai trò và khóa/mở tài khoản.
+- Admin/HR CRUD phòng ban, nhân viên và chấm công.
+- Employee chỉ xem hồ sơ và lịch sử chấm công của mình.
+- Dashboard, thống kê, CSV theo bộ lọc, giao diện in, Fetch/JSON kiểm tra mã nhân viên và tải ảnh đại diện.
 
-Provide a clear workflow for account management, departments, employees, attendance and basic reports.
+## Vai trò
 
-## 3. Chuc nang
+- `admin`: toàn quyền, gồm quản lý tài khoản và vai trò.
+- `hr`: quản lý phòng ban, nhân viên, chấm công và báo cáo; không quản lý vai trò admin.
+- `employee`: chỉ dùng các chức năng cá nhân được cấp quyền.
 
-- Login, logout, password and profile management.
-- Admin user management: create HR/Employee accounts, search, filter, pagination, role and account lock/unlock.
-- Department and Employee CRUD for Admin/HR.
-- Attendance management for Admin/HR and self-service history for Employee.
-- Admin/HR dashboards, statistics, filtered CSV export and browser print view.
-- Employee-code availability via Fetch/JSON and avatar upload via public Storage.
+## Công nghệ và cài đặt
 
-## 4. Roles
-
-- `admin`: full system access, including user and role management.
-- `hr`: manages departments, employees, attendance and reports; cannot manage the admin role.
-- `employee`: views and updates permitted personal fields and sees only their own attendance.
-
-## 5. Cong nghe
-
-PHP 8.3, Laravel 12.65, Laravel Breeze Blade, MySQL 8.4, Blade, Tailwind CSS, Vite, Alpine.js, JavaScript/Fetch API, Composer, npm, Git and GitHub Actions.
-
-## 6. Yeu cau moi truong
-
-- PHP 8.3+
-- Composer
-- MySQL 8.4 (or compatible MySQL)
-- Node.js and npm for frontend build
-- Web server or PHP Artisan server
-
-## 7. Cai dat
+PHP 8.3, Laravel 12.65, Laravel Breeze Blade, MySQL 8.4, Tailwind CSS, Vite, Alpine.js, Composer, npm, Git và GitHub Actions.
 
 ```bash
 git clone <repository-url>
@@ -46,11 +29,9 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-On Windows, use `Copy-Item .env.example .env` instead of `cp`.
+Trên Windows dùng `Copy-Item .env.example .env` thay cho `cp`.
 
-## 8. Database
-
-Configure `.env` with a development MySQL database:
+## Database
 
 ```dotenv
 DB_CONNECTION=mysql
@@ -61,61 +42,24 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Run `php artisan migrate --seed` and, once per installation, `php artisan storage:link`. The project uses `users`, `departments`, `employees` and `attendances`; there is no `reports` table.
+Chạy `php artisan migrate --seed` và `php artisan storage:link`. Project dùng `users`, `departments`, `employees`, `attendances`, không có bảng `reports`.
 
-## 9. Seed demo data
+Tài khoản demo: `admin@example.com`, `hr@example.com`, `hr2@example.com`, `employee1@example.com` ... `employee12@example.com`; mật khẩu `Password123!`. Chỉ dùng cho development/demo, không dùng trong production.
 
-`DatabaseSeeder` creates 1 Admin, 2 HR users, 12 Employee users, 4 departments and attendance records for the recent 45 days. Demo password is fixed by the Seeder and is for development/demo only:
-
-| Role | Email | Password | Purpose |
-|---|---|---|---|
-| Admin | `admin@example.com` | `Password123!` | System administration |
-| HR | `hr@example.com` | `Password123!` | HR management |
-| HR | `hr2@example.com` | `Password123!` | HR management |
-| Employee | `employee1@example.com` ... `employee12@example.com` | `Password123!` | Self-service |
-
-Do not use demo credentials in production.
-
-## 10. Chay ung dung
-
-Terminal 1:
+## Chạy và kiểm thử
 
 ```bash
 php artisan serve
-```
-
-Terminal 2:
-
-```bash
 npm run dev
-```
-
-Open `http://127.0.0.1:8000`.
-
-## 11. Chay tests
-
-Tests use MySQL database `hr_management_testing`, not SQLite:
-
-```bash
 php artisan test
 ```
 
-The latest verified suite has 61 tests, 222 assertions and 0 failures.
+Tests dùng MySQL `hr_management_testing`, không fallback SQLite. Bộ test đã xác nhận: 61 tests, 222 assertions, 0 failures.
 
-## 12. GitHub Actions
+GitHub Actions dùng PHP 8.3, MySQL 8.4, `pdo_mysql`, `mbstring`, `npm ci`, `npm run build` và test database `hr_management_testing`.
 
-`.github/workflows/tests.yml` runs PHP 8.3, MySQL 8.4, Composer install, `npm ci`, `npm run build` and Feature Tests against `hr_management_testing`.
+## Tài liệu và triển khai
 
-## 13. Cau truc project
+Xem `docs/architecture.md`, `docs/diagrams/erd.md`, `docs/report-outline.md`, `docs/requirements-matrix.md`, `docs/test/`, `docs/evidence/` và `docs/deployment.md`.
 
-Key directories are `app/Http/Controllers`, `app/Http/Requests`, `app/Models`, `app/Policies`, `database/migrations`, `database/factories`, `database/seeders`, `resources/views`, `routes`, `tests/Feature` and `docs`.
-
-## 14. Tai lieu
-
-See `docs/architecture.md`, `docs/diagrams/erd.md`, `docs/report-outline.md`, `docs/requirements-matrix.md`, `docs/test/`, `docs/evidence/` and `docs/deployment.md`.
-
-## 15. Deployment
-
-See `docs/deployment.md` for the basic production checklist. Never commit `.env`, real passwords, tokens or production credentials.
-
-`php artisan migrate:fresh --seed` deletes existing database data and must only be used with an explicitly confirmed development/demo database.
+Không commit `.env`, mật khẩu thật, token hoặc thông tin production. `php artisan migrate:fresh --seed` xóa dữ liệu và chỉ dùng với database development/demo đã xác nhận.

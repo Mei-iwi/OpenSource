@@ -1,4 +1,4 @@
-# UI rubric evidence
+# Minh chứng rubric giao diện
 
 | Rubric criterion | Implementation | Page/route | Evidence filename | Status |
 |---|---|---|---|---|

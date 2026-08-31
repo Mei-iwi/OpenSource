@@ -1,4 +1,4 @@
-# Manual test cases
+# Các ca kiểm thử thủ công
 
 Phạm vi: Laravel 12, PHP 8.3, MySQL `hr_management_testing` cho automated test. Các bước UI thực hiện trên môi trường development đã seed dữ liệu demo; không dùng SQLite.
 

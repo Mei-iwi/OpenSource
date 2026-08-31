@@ -7,7 +7,7 @@
 
 <div class="flex min-h-full flex-col">
     <div class="border-b border-slate-200 px-6 py-6">
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Workspace</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Không gian làm việc</p>
         <h2 class="mt-2 text-xl font-bold text-slate-900">Quản lý nhân sự</h2>
         <p class="mt-1 text-sm text-slate-500">Hệ thống vận hành</p>
     </div>
@@ -17,11 +17,11 @@
             <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Tổng quan</p>
             <div class="mt-2 space-y-1">
                 @if ($role === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="{{ $link('admin.dashboard') }}">Dashboard Admin</a>
+                    <a href="{{ route('admin.dashboard') }}" class="{{ $link('admin.dashboard') }}">Tổng quan</a>
                 @elseif ($role === 'hr')
-                    <a href="{{ route('hr.dashboard') }}" class="{{ $link('hr.dashboard') }}">Dashboard HR</a>
+                    <a href="{{ route('hr.dashboard') }}" class="{{ $link('hr.dashboard') }}">Tổng quan</a>
                 @elseif ($role === 'employee')
-                    <a href="{{ route('employee.dashboard') }}" class="{{ $link('employee.dashboard') }}">Dashboard Employee</a>
+                    <a href="{{ route('employee.dashboard') }}" class="{{ $link('employee.dashboard') }}">Tổng quan</a>
                 @endif
             </div>
         </div>
@@ -31,12 +31,12 @@
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Khu vực quản lý</p>
                 <div class="mt-2 space-y-1">
                     @if ($role === 'admin')
-                        <a href="{{ route('admin.users.index') }}" class="{{ $link('admin.users.*') }}">User Management</a>
+                        <a href="{{ route('admin.users.index') }}" class="{{ $link('admin.users.*') }}">Quản lý tài khoản</a>
                     @endif
-                    <a href="{{ route('hr.departments.index') }}" class="{{ $link('hr.departments.*') }}">Departments</a>
-                    <a href="{{ route('hr.employees.index') }}" class="{{ $link('hr.employees.*') }}">Employees</a>
-                    <a href="{{ route('hr.attendances.index') }}" class="{{ $link('hr.attendances.*') }}">Attendance</a>
-                    <a href="{{ route('hr.reports.index') }}" class="{{ $link('hr.reports.*') }}">Reports</a>
+                    <a href="{{ route('hr.departments.index') }}" class="{{ $link('hr.departments.*') }}">Phòng ban</a>
+                    <a href="{{ route('hr.employees.index') }}" class="{{ $link('hr.employees.*') }}">Nhân viên</a>
+                    <a href="{{ route('hr.attendances.index') }}" class="{{ $link('hr.attendances.*') }}">Chấm công</a>
+                    <a href="{{ route('hr.reports.index') }}" class="{{ $link('hr.reports.*') }}">Báo cáo</a>
                 </div>
             </div>
         @endif
@@ -45,8 +45,8 @@
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Cá nhân</p>
                 <div class="mt-2 space-y-1">
-                    <a href="{{ route('employee.profile.show') }}" class="{{ $link('employee.profile.*') }}">My Profile</a>
-                    <a href="{{ route('employee.attendances.index') }}" class="{{ $link('employee.attendances.*') }}">My Attendance</a>
+                    <a href="{{ route('employee.profile.show') }}" class="{{ $link('employee.profile.*') }}">Hồ sơ của tôi</a>
+                    <a href="{{ route('employee.attendances.index') }}" class="{{ $link('employee.attendances.*') }}">Chấm công của tôi</a>
                 </div>
             </div>
         @endif
@@ -55,7 +55,7 @@
     <div class="border-t border-slate-200 p-4">
         <div class="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
             Vai trò hiện tại:
-            <span class="font-semibold uppercase text-slate-700">{{ $role }}</span>
+            <span class="font-semibold text-slate-700">{{ ['admin' => 'Quản trị viên', 'hr' => 'Nhân sự', 'employee' => 'Nhân viên'][$role] ?? $role }}</span>
         </div>
     </div>
 </div>
