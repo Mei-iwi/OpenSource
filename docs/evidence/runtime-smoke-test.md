@@ -1,8 +1,8 @@
 # Runtime smoke test
 
-The preview routes were removed because the real role dashboards now receive their data from controllers. The smoke test uses Laravel HTTP requests on the MySQL test database and covers populated GET pages plus removed preview URLs.
+The smoke test uses Laravel HTTP requests on MySQL `hr_management_testing` and covers the real populated pages used by the application.
 
-| URL | role | expected status | actual status | result |
+| URL | Role | Expected status | Actual status | Result |
 |---|---|---:|---:|---|
 | `/` | public | 200 | 200 | PASS |
 | `/login` | public | 200 | 200 | PASS |
@@ -11,4 +11,3 @@ The preview routes were removed because the real role dashboards now receive the
 | `/hr/attendances`, `/hr/reports` | hr | 200 | 200 | PASS |
 | `/hr/reports/export.csv`, `/hr/reports/print` | hr | 200 | 200 | PASS |
 | `/employee/dashboard`, `/employee/profile`, `/employee/attendances` | employee | 200 | 200 | PASS |
-| `/preview/admin`, `/preview/hr`, `/preview/employee` | public | 404 | 404 | PASS |
