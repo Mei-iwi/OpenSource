@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EmployeeProfileUpdateRequest extends FormRequest
+class EmployeeCodeAvailabilityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isEmployee() ?? false;
+        return $this->user()?->hasRole(['admin', 'hr']) ?? false;
     }
 
     /**
@@ -23,10 +23,8 @@ class EmployeeProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['nullable', 'string', 'max:500'],
-            'date_of_birth' => ['nullable', 'date', 'before_or_equal:today'],
-            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'employee_code' => ['required', 'string', 'max:30'],
+            'employee_id' => ['nullable', 'integer', 'exists:employees,id'],
         ];
     }
 }

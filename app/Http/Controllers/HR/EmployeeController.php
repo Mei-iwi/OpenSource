@@ -4,6 +4,7 @@ namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\EmployeeCodeAvailabilityRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Department;
 use App\Models\Employee;
@@ -11,6 +12,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
+use Throwable;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
@@ -29,6 +33,18 @@ class EmployeeController extends Controller
         return view('hr.employees.index', compact('employees', 'departments'));
     }
 
+    public function checkCode(EmployeeCodeAvailabilityRequest $request): JsonResponse
+    {
+        $employee = Employee::where('employee_code', $request->validated('employee_code'))
+            ->when($request->validated('employee_id'), fn ($query, $id) => $query->where('id', '!=', $id))
+            ->first();
+
+        return response()->json([
+            'available' => $employee === null,
+            'message' => $employee ? 'Mã nhân viên đã tồn tại.' : 'Mã nhân viên có thể sử dụng.',
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -44,10 +60,18 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        DB::transaction(function () use ($data) {
-            $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password']), 'role' => 'employee', 'account_status' => 'active']);
-            $user->employee()->create(collect($data)->except(['name', 'email', 'password', 'password_confirmation'])->all());
-        });
+        $avatarPath = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : null;
+        try {
+            DB::transaction(function () use ($data, $avatarPath) {
+                $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password']), 'role' => 'employee', 'account_status' => 'active']);
+                $employeeData = collect($data)->except(['name', 'email', 'password', 'password_confirmation', 'avatar'])->all();
+                $employeeData['avatar_path'] = $avatarPath;
+                $user->employee()->create($employeeData);
+            });
+        } catch (Throwable $exception) {
+            if ($avatarPath) Storage::disk('public')->delete($avatarPath);
+            throw $exception;
+        }
         return redirect()->route('hr.employees.index')->with('success', 'Đã tạo tài khoản và hồ sơ nhân viên.');
     }
 
@@ -76,10 +100,20 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
     {
         $data = $request->validated();
-        DB::transaction(function () use ($data, $employee) {
-            $employee->user->update(['name' => $data['name'], 'email' => $data['email']]);
-            $employee->update(collect($data)->except(['name', 'email'])->all());
-        });
+        $oldAvatar = $employee->avatar_path;
+        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : $oldAvatar;
+        try {
+            DB::transaction(function () use ($data, $employee, $newAvatar) {
+                $employee->user->update(['name' => $data['name'], 'email' => $data['email']]);
+                $employeeData = collect($data)->except(['name', 'email', 'avatar'])->all();
+                $employeeData['avatar_path'] = $newAvatar;
+                $employee->update($employeeData);
+            });
+        } catch (Throwable $exception) {
+            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk('public')->delete($newAvatar);
+            throw $exception;
+        }
+        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk('public')->delete($oldAvatar);
         return redirect()->route('hr.employees.index')->with('success', 'Đã cập nhật nhân viên.');
     }
 
