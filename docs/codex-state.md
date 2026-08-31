@@ -44,6 +44,18 @@ TEST_RESULTS: SecurityPolishTest 3 passed, 18 assertions; toàn bộ Feature Tes
 BUILD_RESULTS: composer validate PASS; npm run build PASS; public/storage link PASS.
 OPEN_ISSUES: Git còn thay đổi Prompt 09 chưa commit; Composer autoload warning cũ không làm fail kiểm tra; Prompt 10 chưa triển khai.
 NEXT_STEP: 11_UI_RUBRIC
+PROMPT_11_STEP: Prompt 11 - UI Polish & Rubric Evidence
+UI_AUDIT: Shared layout, consistent navbar/sidebar, active role navigation, status badges, flash messages, empty states, responsive tables/forms and print CSS reviewed.
+RESPONSIVE: Mobile menu opens through Alpine; desktop sidebar remains visible; content/tables use responsive Tailwind classes.
+COMPONENTS: Reused page-header, status-badge, empty-state and shared flash components; no new frontend framework or package.
+ROUTES_SMOKE_TESTED: All 61 routes listed successfully; existing runtime smoke tests pass without HTTP 500.
+RUBRIC_EVIDENCE: docs/evidence/ui-rubric.md
+SCREENSHOT_CHECKLIST: docs/evidence/screenshot-checklist.md; real screenshots remain pending and none were fabricated.
+TEST_RESULTS_PROMPT_11: MySQL hr_management_testing; 61 tests, 222 assertions, 0 failures.
+BUILD_RESULTS_PROMPT_11: composer validate PASS; optimize:clear PASS; route:list PASS; view:clear PASS; view:cache PASS; npm build PASS via cmd.exe.
+FILES_CHANGED_PROMPT_11: resources/views/layouts/app.blade.php; resources/views/partials/navbar.blade.php; resources/views/partials/sidebar.blade.php; docs/evidence/ui-rubric.md; docs/evidence/screenshot-checklist.md; docs/codex-state.md
+OPEN_ISSUES_PROMPT_11: Manual browser screenshots and GitHub Actions screenshot are pending collection; no runtime/test failures.
+NEXT_STEP_PROMPT_11: Prompt 12
 
 TEST_SUITE_STATUS: PASS
 TOTAL_TESTS: 61
