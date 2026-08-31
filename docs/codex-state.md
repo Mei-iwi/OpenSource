@@ -1,5 +1,5 @@
-STEP: 04
-PROJECT_STATUS: Đã hoàn thành database schema, Eloquent relations, factory và demo seeder trên MySQL; chưa triển khai CRUD.
+STEP: 05
+PROJECT_STATUS: Đã hoàn thành quản trị tài khoản Admin; chưa triển khai CRUD Department/Employee/Attendance.
 LARAVEL_VERSION: 12.65.0
 CSS_STACK: Tailwind CSS 4 + Vite scaffold hiện có; giữ nguyên.
 AUTH_STATUS: Laravel Breeze Blade đã cài; login/logout/register/password flows hoạt động.
@@ -7,6 +7,13 @@ ROLE_STATUS: Đã có admin/hr/employee, User helpers, RoleMiddleware và Accoun
 DATABASE_STATUS: Runtime development dùng MySQL 8.4.3 tại 127.0.0.1:3306, database `hr_management`; `.env` không commit.
 SEED_STATUS: Đã seed thành công dữ liệu demo vào `hr_management`.
 COMPLETED:
+- Đọc `docs/codex-state.md`, toàn bộ `codex-prompts/00_QUY_TAC_CHUNG_LUNA56.txt` và `codex-prompts/05_ADMIN_USER_ROLE_MANAGEMENT.txt`.
+- Tạo `Admin\\UserController` resource với danh sách, search/filter/pagination, show/create/update/delete có bảo vệ user gắn Employee.
+- Tạo Store/Update Form Request với validation email, role, password và account_status.
+- Thêm route resource `admin.users.*` và PATCH lock/unlock, bảo vệ bằng auth + account.active + role:admin.
+- Hoàn thiện UI Blade danh sách/form/chi tiết tài khoản, badge, validation error, CSRF/method spoofing và confirm lock/unlock.
+- Bảo vệ server-side: chỉ Admin truy cập; chỉ tạo HR/Employee; không tự hạ quyền/khóa/xóa Admin đang đăng nhập.
+- Thêm Feature Tests cho Admin user management.
 - Đọc `docs/codex-state.md`, toàn bộ `codex-prompts/00_QUY_TAC_CHUNG_LUNA56.txt` và `codex-prompts/04_DATABASE_ELOQUENT_MIGRATION_SEEDER_FACTORY.txt`.
 - Xác nhận MySQL Laragon hoạt động trên port 3306; tạo database development `hr_management` và database test riêng `hr_management_testing`.
 - Cấu hình `.env` dùng MySQL; `.env.example` có mẫu MySQL không chứa mật khẩu thật.
@@ -75,6 +82,15 @@ FILES_CHANGED:
 - docs/diagrams/erd.md
 - docs/evidence/database.md
 - tests/Feature/DatabaseSchemaTest.php
+- app/Http/Controllers/Admin/UserController.php
+- app/Http/Requests/StoreUserRequest.php
+- app/Http/Requests/UpdateUserRequest.php
+- resources/views/admin/users/index.blade.php
+- resources/views/admin/users/_form.blade.php
+- resources/views/admin/users/create.blade.php
+- resources/views/admin/users/edit.blade.php
+- resources/views/admin/users/show.blade.php
+- tests/Feature/AdminUserManagementTest.php
 - .env (ignored, not committed)
 - .env.example
 COMMANDS_RUN:
@@ -100,10 +116,14 @@ COMMANDS_RUN:
 - php artisan migrate:status
 - mysql seed count/relation/duplicate checks
 - set DB_CONNECTION=mysql ... DB_DATABASE=hr_management_testing && php artisan test
-TEST_RESULTS: MySQL runtime confirmed by `php artisan about`; `migrate:status` toàn bộ 7 migration Ran; seed counts 4 departments, 12 employees, 540 attendances, roles 1/2/12, duplicate attendance 0; toàn bộ Feature Tests trên MySQL test DB đạt 33 tests, 77 assertions.
+- php artisan route:list
+- php artisan view:cache
+- composer validate
+- set DB_CONNECTION=mysql ... DB_DATABASE=hr_management_testing && php artisan test
+TEST_RESULTS: `route:list`, `view:cache`, `composer validate` đạt; toàn bộ Feature Tests trên MySQL test DB đạt 39 tests, 98 assertions; Admin user management tests đạt.
 OPEN_ISSUES:
 - Git có thay đổi Prompt 01 và Prompt 02 chưa commit; không commit/push.
 - Composer autoload báo warning class resolution trùng lặp Flysystem/AppServiceProvider, không làm fail lệnh.
 - Tinker count check không chạy do PsySH không được phép ghi `C:/Users/admin/AppData/Roaming/PsySH`; đã xác minh bằng MySQL client và Feature Test.
-- Chưa làm CRUD/query nghiệp vụ.
-NEXT_STEP: 05_ADMIN
+- Chưa triển khai CRUD Department/Employee/Attendance của Prompt 06.
+NEXT_STEP: 06_HR
