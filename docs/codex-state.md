@@ -106,6 +106,7 @@ UI_GLOBAL_POLISH: Nền các trang chuyển sang sky-50/gradient sáng; sidebar 
 LOGIN_DIAGNOSTIC: Runtime database `hr_management` bị thiếu dữ liệu users (0 user), không phải lỗi Authentication. Đã chạy `php artisan db:seed --class=DatabaseSeeder` trên database development đã xác nhận; hiện có 15 users active, gồm admin@example.com, hr@example.com, hr2@example.com và employee1@example.com.
 LOGIN_CHECK: AuthenticationTest và RoleAuthorizationTest PASS; tài khoản demo dùng mật khẩu `Password123!` theo DatabaseSeeder.
 LOGIN_ROOT_CAUSE: phpunit.xml thiếu cấu hình database test nên RefreshDatabase đã dùng nhầm `hr_management`, làm sạch users runtime. Đã bổ sung MySQL `hr_management_testing` vào phpunit.xml.
+LOGOUT_419_CHECK: Đã xóa session runtime cũ trong `hr_management.sessions` và chạy `php artisan optimize:clear`; Authentication/Role tests 12 passed, 30 assertions.
 EMPLOYEE_403_REGRESSION_CHECK: Bản sửa redirect ban đầu dùng nhầm named parameter `absolute` cho `redirect()->route()` và gây 500; đã sửa thành `redirect()->route('dashboard')`.
 LOGIN_RECOVERY: Đã seed lại database development `hr_management`; hiện có 15 users, tài khoản demo active. Auth/Role tests 11 passed, 23 assertions; runtime còn 15 users sau test.
 CSRF_419_RECHECK: Sau `optimize:clear`, curl tới cả `http://localhost:8000/login` và `http://127.0.0.1:8000/login` đều trả 200 và phát hành đủ `XSRF-TOKEN`/`laravel_session`; 419 phát sinh khi client gửi POST không kèm token/session tương ứng, cần dùng một hostname nhất quán và tải lại trang login.
