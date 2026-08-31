@@ -4,6 +4,8 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HrDashboardController;
+use App\Http\Controllers\HR\DepartmentController;
+use App\Http\Controllers\HR\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +30,8 @@ Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->na
 
 Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->name('hr.')->group(function () {
     Route::get('/dashboard', HrDashboardController::class)->name('dashboard');
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('employees', EmployeeController::class)->except('destroy');
 });
 
 Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
