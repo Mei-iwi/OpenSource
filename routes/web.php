@@ -13,6 +13,7 @@ use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController
 use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
 use App\Http\Controllers\SelfAttendanceController;
 use App\Http\Controllers\AttendanceProofController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'account.active'])->prefix('me')->name('me.')->group(
 });
 
 Route::middleware(['auth', 'account.active'])->get('/attendance/{attendance}/proof/{type}', [AttendanceProofController::class, 'show'])->name('attendance.proof');
+Route::middleware(['auth', 'account.active'])->get('/avatar/{user}', [AvatarController::class, 'show'])->name('avatar.show');
 
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
