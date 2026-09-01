@@ -26,12 +26,11 @@ class AdminDashboardController extends Controller
             ->selectRaw('departments.name, COUNT(employees.id) as total')->groupBy('departments.id', 'departments.name')->orderBy('departments.name')->get();
         $trendStart = $periodStart->copy()->subMonths(5)->startOfMonth();
         $trendRows = Attendance::whereBetween('work_date', [$trendStart->toDateString(), $periodEnd->toDateString()])
-            ->selectRaw('YEAR(work_date) as report_year, MONTH(work_date) as report_month, status, COUNT(*) as total')
-            ->groupByRaw('YEAR(work_date), MONTH(work_date), status')->get();
+            ->get(['work_date', 'status'])->groupBy(fn (Attendance $row) => $row->work_date->format('Y-m'));
         $trend = collect(range(0, 5))->map(function (int $offset) use ($trendStart, $trendRows): array {
             $date = $trendStart->copy()->addMonths($offset);
-            $rows = $trendRows->where('report_year', $date->year)->where('report_month', $date->month);
-            return ['label' => $date->format('m/Y'), 'present' => (int) $rows->where('status', 'present')->sum('total'), 'late' => (int) $rows->where('status', 'late')->sum('total'), 'absent' => (int) $rows->where('status', 'absent')->sum('total')];
+            $rows = $trendRows->get($date->format('Y-m'), collect());
+            return ['label' => $date->format('m/Y'), 'present' => $rows->where('status', 'present')->count(), 'late' => $rows->where('status', 'late')->count(), 'absent' => $rows->where('status', 'absent')->count()];
         })->values();
         $recentAttendance = Attendance::with('employee.user', 'employee.department')->latest('work_date')->latest('id')->limit(6)->get();
 

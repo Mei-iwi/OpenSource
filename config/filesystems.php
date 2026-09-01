@@ -14,8 +14,8 @@ return [
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
-    'avatar_disk' => env('AVATAR_DISK', 'public'),
-    'attendance_proof_disk' => env('ATTENDANCE_PROOF_DISK', 'local'),
+    'avatar_disk' => env('AVATAR_DISK', env('MEDIA_DISK', 'persistent_uploads')),
+    'attendance_proof_disk' => env('ATTENDANCE_PROOF_DISK', env('MEDIA_DISK', 'persistent_uploads')),
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     | may even configure multiple disks for the same driver. Examples for
     | most supported storage drivers are configured here for reference.
     |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Supported drivers: "local", "ftp", "sftp"
     |
     */
 
@@ -40,26 +40,9 @@ return [
             'report' => false,
         ],
 
-        'public' => [
+        'persistent_uploads' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            // Use a root-relative URL so images work on localhost, custom
-            // ports and Laragon virtual hosts without a stale APP_URL host.
-            'url' => '/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-        ],
-
-        's3' => [
-            'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'root' => env('UPLOAD_STORAGE_PATH', storage_path('app/private/uploads')),
             'throw' => false,
             'report' => false,
         ],

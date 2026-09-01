@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+upload_root="${UPLOAD_STORAGE_PATH:-/var/data/uploads}"
+mkdir -p "$upload_root/avatars" "$upload_root/attendance-proofs"
+chown -R www-data:www-data "$upload_root"
+
 php artisan optimize:clear
 php artisan migrate --force
 
