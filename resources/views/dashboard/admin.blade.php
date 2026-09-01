@@ -20,6 +20,7 @@
     ['Vắng hôm nay', $absentToday, 'text-red-600', 'Chấm công hôm nay'],
 ])
 <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">@foreach($kpis as $kpi)<div class="app-panel flex min-h-32 items-start justify-between p-5"><div><p class="text-sm font-medium text-[var(--app-muted)]">{{ $kpi[0] }}</p><p class="mt-3 text-3xl font-bold {{ $kpi[2] }}">{{ $kpi[1] }}</p><p class="mt-1 text-xs text-[var(--app-muted)]">{{ $kpi[3] }}</p></div><span class="rounded-xl bg-orange-50 px-2.5 py-2 text-orange-600" aria-hidden="true">◆</span></div>@endforeach</div>
+<div class="app-panel mt-6 flex flex-wrap items-center justify-between gap-4 p-5"><div><h2 class="app-heading">Đơn nghỉ chờ duyệt</h2><p class="app-subtitle">{{ $pendingLeaveRequests->count() }} đơn gần nhất cần xem xét</p></div><a href="{{ route('hr.leave-requests.index', ['status' => 'pending']) }}" class="app-button-secondary">Mở danh sách đơn nghỉ</a></div>
 
 <div class="mt-6 grid gap-6 xl:grid-cols-2">
     <div class="app-panel p-5 sm:p-6"><div class="flex items-start justify-between"><div><h2 class="app-heading">Tình trạng chấm công tháng {{ sprintf('%02d/%d', $selectedMonth, $selectedYear) }}</h2><p class="app-subtitle">Tổng hợp theo trạng thái</p></div><span class="app-badge app-badge-info">Thống kê</span></div><div class="relative mt-5 h-72">@if($periodStatus->sum())<canvas id="attendance-status-chart" aria-label="Biểu đồ tình trạng chấm công"></canvas>@else<x-empty-state title="Chưa có dữ liệu thống kê trong khoảng thời gian này." /></div>@endif</div>

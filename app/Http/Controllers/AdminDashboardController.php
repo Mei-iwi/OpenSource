@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\LeaveRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -40,7 +41,7 @@ class AdminDashboardController extends Controller
             'usersByRole' => $usersByRole,
             'totalEmployees' => Employee::count(), 'activeEmployees' => Employee::where('employment_status', 'active')->count(), 'inactiveEmployees' => Employee::where('employment_status', 'inactive')->count(),
             'presentToday' => Attendance::whereDate('work_date', $today)->where('status', 'present')->count(), 'lateToday' => Attendance::whereDate('work_date', $today)->where('status', 'late')->count(), 'absentToday' => Attendance::whereDate('work_date', $today)->where('status', 'absent')->count(),
-            'periodStatus' => $periodStatus, 'employeesByDepartment' => $employeesByDepartment, 'trend' => $trend, 'recentAttendance' => $recentAttendance, 'selectedMonth' => $month, 'selectedYear' => $year,
+            'periodStatus' => $periodStatus, 'employeesByDepartment' => $employeesByDepartment, 'trend' => $trend, 'recentAttendance' => $recentAttendance, 'pendingLeaveRequests' => LeaveRequest::where('status', 'pending')->latest()->limit(5)->with('employee.user')->get(), 'selectedMonth' => $month, 'selectedYear' => $year,
         ]);
     }
 }

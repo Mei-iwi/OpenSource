@@ -151,3 +151,41 @@ TEST_RESULTS: Targeted 12 tests, 64 assertions, 0 failures; full suite 62 tests,
 BUILD_RESULTS: php artisan view:clear PASS; php artisan view:cache PASS; npm run build PASS; git diff --check PASS.
 OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; chưa kiểm tra chuyển theme khi chart đang hiển thị.
 NEXT_STEP: UI-04
+
+COMBINED_SECTION_1: PASS - UI-03 dashboard Admin/HR, KPI, Chart.js, aggregate query và authorization đã được xác nhận.
+COMBINED_SECTION_2: PASS - Employee dashboard dùng dữ liệu Attendance thật, profile/avatar có placeholder, preview local và field protection giữ nguyên.
+SECTION_2_TESTS: 10 tests, 69 assertions, 0 failures; view cache, npm build và runtime smoke PASS.
+SECTION_2_OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px.
+COMBINED_NEXT_SECTION: SECTION 3 - UI-05 CRUD/Table/Form/Filter/Modal polish
+COMBINED_SECTION_3: PASS - CRUD tables, filters, forms, badges và action styling đã polish bằng CSS dùng chung; backend semantics giữ nguyên.
+SECTION_3_TESTS: 18 tests, 70 assertions, 0 failures; view cache, npm build và diff check PASS.
+SECTION_3_OPEN_ISSUES: Các action nguy hiểm hiện vẫn dùng confirm native ở một số màn hình legacy; không phát sinh lỗi runtime.
+COMBINED_NEXT_SECTION: SECTION 4 - UI-06 Attendance/Reports/CSV/Print UX
+COMBINED_SECTION_4: PASS - Attendance KPI/filter/table và Reports heading/chart/CSV/Print UX đã hoàn thiện; backend filter giữ nguyên.
+SECTION_4_TESTS: 15 tests, 57 assertions, 0 failures; view cache, npm build và diff check PASS.
+SECTION_4_OPEN_ISSUES: Chưa kiểm tra browser thủ công chức năng Print ở nhiều kích thước.
+COMBINED_NEXT_SECTION: SECTION 5 - UI-07 Leave Request tối giản
+COMBINED_SECTION_5: PASS - Leave Request độc lập với Attendance, employee create/list/detail/cancel pending, HR/Admin review pending và overlap validation đã hoàn thành.
+SECTION_5_TESTS: 10 leave tests, 35 assertions; full suite 72 tests, 264 assertions, 0 failures trên MySQL hr_management_testing.
+SECTION_5_OPEN_ISSUES: Chưa kiểm tra browser thủ công flow đơn nghỉ; không phát hiện lỗi automated.
+COMBINED_NEXT_SECTION: SECTION 6 - UI-08 Final UI/UX regression + docs
+STEP: Combined UI-03 to UI-08
+DASHBOARD_ADMIN_HR: Dashboard Admin/HR đã có KPI thật, Chart.js tối đa 3 biểu đồ, filter tháng/năm, pending leave count và quick links.
+EMPLOYEE_DASHBOARD: Employee dashboard dùng aggregate tháng thật, hồ sơ riêng, KPI chấm công, chỉ số khách quan và 7 bản ghi gần nhất.
+PROFILE: Profile UI hiển thị đầy đủ thông tin read-only/editable theo ownership; avatar có placeholder và local preview.
+AVATAR: Giữ Storage public, validation MIME/size và ownership; tests avatar PASS.
+CRUD_UI: Chuẩn hóa style table/form/filter/badge/button responsive bằng CSS dùng chung; giữ backend semantics.
+ATTENDANCE_UI: Attendance có filter, KPI status, table responsive và empty state.
+REPORT_UI: Reports có tiêu đề, summary, chart status, filter, CSV UTF-8 và Print/Save PDF.
+CHARTS: Chart.js dùng dữ liệu COUNT/GROUP BY MySQL, legend tiếng Việt và màu tương thích dark mode.
+LEAVE_REQUEST: Đã thêm migration/model/factory, employee create/list/detail/cancel pending, HR/Admin list/detail approve/reject, overlap validation, ownership và dashboard links.
+SIDEBAR: Bổ sung menu Đơn nghỉ đúng role, giữ expanded/collapsed/mobile drawer và active state.
+THEME: Light/Dark localStorage giữ nguyên; panel/table/form/chart/modal có style dark tương thích.
+AUTH_UI: Login/show-hide password/remember/error và logout confirm POST+CSRF giữ nguyên sau regression.
+SECURITY: Middleware role, ownership, Form Request, CSRF, mass assignment và leave review authorization được giữ/kiểm tra.
+TEST_RESULTS: Full suite 72 tests, 264 assertions, 0 failures trên MySQL hr_management_testing.
+BUILD_RESULTS: composer validate, optimize:clear, route:list 69 routes, view:clear, view:cache, npm run build và git diff --check PASS.
+FILES_CHANGED: Dashboard/controllers/views, Employee profile, Attendance/Reports views/controller, Leave Request source/tests/migration/factory/views, shared CSS/sidebar, README/docs/diagrams/checklists.
+MANUAL_ACTIONS_REQUIRED: Chụp screenshot thật theo docs/evidence/screenshot-checklist.md; kiểm tra browser các viewport 375px/768px/1280px, theme/chart và flow leave; xác minh CI sau push.
+OPEN_ISSUES: Không có lỗi automated; pending manual browser screenshots/CI verification.
+FINAL_STATUS: Combined UI-03 đến UI-08 automated regression PASS; chưa commit/push.

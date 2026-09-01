@@ -8,4 +8,4 @@ Browser -> Routes -> Middleware (auth, account.active, role)
         -> Eloquent Model -> MySQL -> Blade Response
 ```
 
-Chức năng kiểm tra mã nhân viên dùng JavaScript/Fetch trong Blade, endpoint JSON, validation/query và MySQL. Layout/partial Blade dùng chung cho phần trình bày. Quan hệ Eloquent kết nối User, Employee, Department và Attendance.
+Chức năng kiểm tra mã nhân viên dùng JavaScript/Fetch trong Blade, endpoint JSON, validation/query và MySQL. Layout/partial Blade dùng chung cho phần trình bày. Quan hệ Eloquent kết nối User, Employee, Department, Attendance và LeaveRequest; LeaveRequest độc lập với Attendance.

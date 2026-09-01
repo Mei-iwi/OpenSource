@@ -10,6 +10,8 @@ use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
 use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
 use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
+use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
+use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -39,6 +41,9 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export.csv', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
+    Route::get('/leave-requests', [HrLeaveRequestController::class, 'index'])->name('leave-requests.index');
+    Route::get('/leave-requests/{leave_request}', [HrLeaveRequestController::class, 'show'])->name('leave-requests.show');
+    Route::patch('/leave-requests/{leave_request}/review', [HrLeaveRequestController::class, 'review'])->name('leave-requests.review');
 });
 
 Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
@@ -47,6 +52,8 @@ Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee
     Route::get('/profile/edit', [EmployeeProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [EmployeeProfileController::class, 'update'])->name('profile.update');
     Route::get('/attendances', [EmployeeAttendanceController::class, 'index'])->name('attendances.index');
+    Route::resource('leave-requests', EmployeeLeaveRequestController::class)->only(['index', 'create', 'store', 'show']);
+    Route::patch('/leave-requests/{leave_request}/cancel', [EmployeeLeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
 });
 
 Route::middleware(['auth', 'account.active'])->group(function () {

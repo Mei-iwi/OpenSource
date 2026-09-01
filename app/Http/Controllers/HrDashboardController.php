@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
@@ -40,7 +41,7 @@ class HrDashboardController extends Controller
             'totalDepartments' => Department::count(),
             'employeesByDepartment' => $employeesByDepartment,
             'attendanceByStatus' => $attendanceByStatus,
-            'currentMonth' => $periodStart->format('m/Y'), 'selectedMonth' => $month, 'selectedYear' => $year, 'trend' => $trend, 'recentAttendance' => $recentAttendance,
+            'currentMonth' => $periodStart->format('m/Y'), 'selectedMonth' => $month, 'selectedYear' => $year, 'trend' => $trend, 'recentAttendance' => $recentAttendance, 'pendingLeaveCount' => LeaveRequest::where('status', 'pending')->count(),
         ]);
     }
 }

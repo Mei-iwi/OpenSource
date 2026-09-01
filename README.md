@@ -2,7 +2,7 @@
 
 ## 1. Giới thiệu ngắn
 
-Website Quản lý Nhân sự là ứng dụng web xây dựng bằng Laravel 12, Blade và MySQL. Project hỗ trợ quản lý tài khoản, phòng ban, nhân viên, chấm công và báo cáo theo ba vai trò `admin`, `hr` và `employee`.
+Website Quản lý Nhân sự là ứng dụng web xây dựng bằng Laravel 12, Blade và MySQL. Project hỗ trợ quản lý tài khoản, phòng ban, nhân viên, chấm công, đơn nghỉ và báo cáo theo ba vai trò `admin`, `hr` và `employee`.
 
 Hướng dẫn dưới đây dành cho thành viên mới clone project về máy và chạy môi trường development/demo.
 
@@ -184,12 +184,13 @@ Quyền được kiểm tra ở server-side bằng authentication, middleware v�
 - Xuất CSV theo tập dữ liệu đã lọc và giao diện Print/Save as PDF bằng trình duyệt.
 - Kiểm tra mã nhân viên bằng Fetch/AJAX và JSON.
 - Upload ảnh đại diện vào storage public.
+- Employee gửi đơn nghỉ; Admin/HR xem xét, duyệt hoặc từ chối đơn đang chờ.
 - Giao diện Blade responsive, Tailwind CSS 4 và Vite.
 
 ### 4.4. Công nghệ và cấu trúc
 
 - Backend: PHP 8.3, Laravel 12, Laravel MVC.
-- Database: MySQL; Eloquent ORM và quan hệ `User`, `Employee`, `Department`, `Attendance`.
+- Database: MySQL; Eloquent ORM và quan hệ `User`, `Employee`, `Department`, `Attendance`, `LeaveRequest`.
 - Frontend: Blade, Tailwind CSS 4, Vite và JavaScript cơ bản.
 - Kiểm thử: PHPUnit/Pest Feature Tests với database MySQL `hr_management_testing`.
 - CI: GitHub Actions dùng PHP 8.3 và MySQL test database riêng.
