@@ -21,5 +21,20 @@ Capture real screenshots only after manual verification. Store them under `docs/
 - [ ] `17-mobile-layout.png` — approximately 375px mobile viewport
 - [ ] `18-github-actions-pass.png` — successful CI run
 - [ ] `19-tests-pass.png` — local test summary
+- [ ] `login-redesign.png` — login redesign
+- [ ] `sidebar-expanded.png` — sidebar mở rộng
+- [ ] `sidebar-collapsed.png` — sidebar thu gọn
+- [ ] `dark-theme.png` — dark theme
+- [ ] `admin-dashboard-charts.png` — Admin dashboard và charts
+- [ ] `hr-dashboard.png` — HR dashboard
+- [ ] `employee-dashboard.png` — Employee dashboard
+- [ ] `employee-profile-avatar.png` — profile/avatar
+- [ ] `employee-list.png` — employee list
+- [ ] `attendance-page.png` — attendance page
+- [ ] `report-chart.png` — report chart
+- [ ] `print-preview.png` — print preview
+- [ ] `leave-form.png` — leave form
+- [ ] `hr-leave-approval.png` — HR leave approval
+- [ ] `mobile-layout.png` — mobile layout
 
 Required viewport spot checks: approximately 375px, 768px and at least 1280px. This checklist is not evidence that an image has been captured.

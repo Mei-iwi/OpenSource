@@ -20,5 +20,7 @@ Use this flow for the final presentation. Demo credentials are development-only 
 | 14 | Employee | `/employee/profile` | View and update permitted fields | Own profile is shown and editable safely | `15-employee-profile.png` |
 | 15 | Employee | `/employee/attendances` | Filter attendance history | Only own history is visible | `08-attendance.png` |
 | 16 | Employee | Admin/HR route | Open a management URL directly | Server returns 403 | `19-tests-pass.png` |
+| 17 | Employee | `/employee/leave-requests` | Create and cancel a pending leave request | Leave request workflow works | `leave-form.png` |
+| 18 | HR | `/hr/leave-requests` | Review a pending request | Approve/reject and note are saved | `hr-leave-approval.png` |
 
 Before presenting, confirm the database is the development database `hr_management`, not the test database.

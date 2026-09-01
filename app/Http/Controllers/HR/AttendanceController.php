@@ -15,19 +15,21 @@ class AttendanceController extends Controller
 {
     public function index(): View
     {
-        $attendances = Attendance::with(['employee.user', 'employee.department'])
+        $filtered = Attendance::query()
             ->when(request('month'), fn ($query, $month) => $query->whereMonth('work_date', $month))
             ->when(request('year'), fn ($query, $year) => $query->whereYear('work_date', $year))
             ->when(request('department_id'), fn ($query, $id) => $query->whereHas('employee', fn ($employee) => $employee->where('department_id', $id)))
             ->when(request('employee_id'), fn ($query, $id) => $query->where('employee_id', $id))
             ->when(request('search'), fn ($query, $search) => $query->whereHas('employee', fn ($employee) => $employee->where('employee_code', 'like', "%{$search}%")->orWhereHas('user', fn ($user) => $user->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))))
-            ->when(request('status'), fn ($query, $status) => $query->where('status', $status))
-            ->latest('work_date')->latest('id')->paginate(15)->withQueryString();
+            ->when(request('status'), fn ($query, $status) => $query->where('status', $status));
+        $counts = (clone $filtered)->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $attendances = $filtered->with(['employee.user', 'employee.department'])->latest('work_date')->latest('id')->paginate(15)->withQueryString();
 
         return view('hr.attendances.index', [
             'attendances' => $attendances,
             'departments' => Department::orderBy('name')->get(),
             'employees' => Employee::with('user')->orderBy('employee_code')->get(),
+            'counts' => $counts,
         ]);
     }
 

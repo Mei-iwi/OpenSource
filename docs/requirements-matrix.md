@@ -14,3 +14,4 @@
 | R10 | AJAX employee-code check | Admin/HR | `/hr/employees/check-code` | Fetch JSON endpoint | SecurityPolishTest | ui-rubric | PASS |
 | R11 | Avatar upload | Admin/HR/Employee | employee forms/profile | Public Storage and MIME/size validation | SecurityPolishTest | screenshot checklist | PASS |
 | R12 | CI and test evidence | Maintainers | GitHub Actions/docs | PHP 8.3, MySQL 8.4 workflow | Full suite | evidence index | PASS |
+| R13 | Leave Request workflow | Employee/Admin/HR | `/employee/leave-requests`, `/hr/leave-requests` | Form Request, ownership, overlap and review status | LeaveRequestTest | leave flow diagram | PASS |
