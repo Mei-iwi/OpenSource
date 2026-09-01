@@ -36,6 +36,7 @@
                     <a href="{{ route('hr.departments.index') }}" title="Phòng ban" aria-label="Phòng ban" class="{{ $link('hr.departments.*') }}"><span class="sidebar-icon">▦</span><span class="sidebar-label">Phòng ban</span></a>
                     <a href="{{ route('hr.employees.index') }}" title="Nhân viên" aria-label="Nhân viên" class="{{ $link('hr.employees.*') }}"><span class="sidebar-icon">♙</span><span class="sidebar-label">Nhân viên</span></a>
                     <a href="{{ route('hr.attendances.index') }}" title="Chấm công" aria-label="Chấm công" class="{{ $link('hr.attendances.*') }}"><span class="sidebar-icon">◷</span><span class="sidebar-label">Chấm công</span></a>
+                    <a href="{{ route('me.attendance.index') }}" title="Chấm công của tôi" aria-label="Chấm công của tôi" class="{{ $link('me.attendance.*') }}"><span class="sidebar-icon">◉</span><span class="sidebar-label">Chấm công của tôi</span></a>
                     <a href="{{ route('hr.reports.index') }}" title="Báo cáo" aria-label="Báo cáo" class="{{ $link('hr.reports.*') }}"><span class="sidebar-icon">⌁</span><span class="sidebar-label">Báo cáo</span></a>
                     <a href="{{ route('hr.leave-requests.index') }}" title="Đơn nghỉ" aria-label="Đơn nghỉ" class="{{ $link('hr.leave-requests.*') }}"><span class="sidebar-icon">▣</span><span class="sidebar-label">Đơn nghỉ</span></a>
                 </div>
@@ -48,6 +49,7 @@
                 <div class="mt-2 space-y-1">
                     <a href="{{ route('employee.profile.show') }}" title="Hồ sơ của tôi" aria-label="Hồ sơ của tôi" class="{{ $link('employee.profile.*') }}"><span class="sidebar-icon">♙</span><span class="sidebar-label">Hồ sơ của tôi</span></a>
                     <a href="{{ route('employee.attendances.index') }}" title="Chấm công của tôi" aria-label="Chấm công của tôi" class="{{ $link('employee.attendances.*') }}"><span class="sidebar-icon">◷</span><span class="sidebar-label">Chấm công của tôi</span></a>
+                    <a href="{{ route('me.attendance.index') }}" title="Tự chấm công" aria-label="Tự chấm công" class="{{ $link('me.attendance.*') }}"><span class="sidebar-icon">◉</span><span class="sidebar-label">Tự chấm công</span></a>
                     <a href="{{ route('employee.leave-requests.index') }}" title="Đơn nghỉ của tôi" aria-label="Đơn nghỉ của tôi" class="{{ $link('employee.leave-requests.*') }}"><span class="sidebar-icon">▣</span><span class="sidebar-label">Đơn nghỉ của tôi</span></a>
                 </div>
             </div>

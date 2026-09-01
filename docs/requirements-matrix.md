@@ -15,3 +15,11 @@
 | R11 | Avatar upload | Admin/HR/Employee | employee forms/profile | Public Storage and MIME/size validation | SecurityPolishTest | screenshot checklist | PASS |
 | R12 | CI and test evidence | Maintainers | GitHub Actions/docs | PHP 8.3, MySQL 8.4 workflow | Full suite | evidence index | PASS |
 | R13 | Leave Request workflow | Employee/Admin/HR | `/employee/leave-requests`, `/hr/leave-requests` | Form Request, ownership, overlap and review status | LeaveRequestTest | leave flow diagram | PASS |
+## ATT-05 regression coverage
+
+| Requirement | Implementation/evidence | Status |
+|---|---|---|
+| Self attendance for three roles | Shared `/me/attendance` routes with Employee-profile ownership | Automated PASS |
+| Private attendance proof | Local private disk and protected stream endpoint | Automated PASS |
+| Navigation positions/states | `hr-nav-position` and `hr-nav-state` localStorage preferences | Manual browser check pending |
+| Reduced motion/responsive layout | CSS media query and responsive shell rules | Manual browser check pending |

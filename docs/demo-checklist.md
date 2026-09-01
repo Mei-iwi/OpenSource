@@ -24,3 +24,11 @@ Use this flow for the final presentation. Demo credentials are development-only 
 | 18 | HR | `/hr/leave-requests` | Review a pending request | Approve/reject and note are saved | `hr-leave-approval.png` |
 
 Before presenting, confirm the database is the development database `hr_management`, not the test database.
+## ATT-05 final demo checklist
+
+- [ ] Sign in as Employee, HR and Admin accounts with Employee profiles; verify self check-in/out.
+- [ ] Verify upload and camera flows, retake/preview, permission-denied fallback and camera track stop.
+- [ ] Verify HR/Admin proof access and Employee own-only proof access.
+- [ ] Switch menu through left/right/top/bottom and expanded/collapsed/hidden; reload and verify preferences remain.
+- [ ] Check 375px, 768px and 1280px+ for attendance, modal, tables, dashboard and forms in light/dark mode.
+- [ ] Attach real screenshots from the screenshot checklist; do not use generated placeholders.

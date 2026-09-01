@@ -189,3 +189,93 @@ FILES_CHANGED: Dashboard/controllers/views, Employee profile, Attendance/Reports
 MANUAL_ACTIONS_REQUIRED: Chụp screenshot thật theo docs/evidence/screenshot-checklist.md; kiểm tra browser các viewport 375px/768px/1280px, theme/chart và flow leave; xác minh CI sau push.
 OPEN_ISSUES: Không có lỗi automated; pending manual browser screenshots/CI verification.
 FINAL_STATUS: Combined UI-03 đến UI-08 automated regression PASS; chưa commit/push.
+
+STEP: ATT-01
+ATTENDANCE_MODEL: Attendance thuộc Employee qua employee_id; User -> Employee -> Attendances; giữ unique employee_id + work_date và status present/late/absent/leave.
+ROLE_SELF_ATTENDANCE: Admin/HR/Employee chỉ đủ điều kiện tự chấm công khi có Employee profile; ownership server-side; ATT-01 chưa thêm route/check-in/check-out.
+ADMIN_EMPLOYEE_PROFILE: Seeder tạo profile ADM-0001 cho admin@example.com.
+HR_EMPLOYEE_PROFILE: Seeder tạo profile HR-0001/HR-0002 cho hr@example.com/hr2@example.com.
+PHOTO_SCHEMA: Đã thêm nullable check_in_photo_path, check_out_photo_path, check_in_method, check_out_method; method dự kiến camera/upload; không lưu base64/raw binary/biometric.
+PRIVATE_STORAGE_DECISION: ATT-02 sẽ lưu proof ở private storage theo logical path attendance-proofs/{employee_id}/{year}/{month}; không dùng public URL như avatar.
+FILES_CHANGED: database/migrations/2026_09_01_130000_add_proof_fields_to_attendances_table.php, app/Models/Attendance.php, database/seeders/DatabaseSeeder.php, tests/Feature/AttendanceAuditTest.php, docs/codex-state.md
+TEST_RESULTS: composer validate PASS; php artisan migrate:status PASS (10 migrations Ran); php artisan test --filter=Attendance PASS (10 tests, 39 assertions); git diff --check PASS.
+OPEN_ISSUES: Chưa triển khai camera/upload/check-in/check-out; database dev hiện đã migrate proof columns nhưng chưa reseed các demo profile trong DB hiện tại.
+NEXT_STEP: ATT-02
+
+STEP: ATT-02
+SELF_ATTENDANCE: ÄÃ£ triá»ƒn khai page "Cháº¥m cÃ´ng cá»§a tÃ´i" vÃ  route dÃ¹ng chung cho Admin/HR/Employee cÃ³ Employee profile.
+ROUTES: GET me/attendance; POST me/attendance/check-in; POST me/attendance/check-out; auth + account.active; khÃ´ng nháº­n employee_id Ä‘á»ƒ xÃ¡c Ä‘á»‹nh ownership.
+CHECK_IN_OUT: Check-in táº¡o duy nháº¥t attendance ngÃ y hiá»‡n táº¡i; check-out yÃªu cáº§u check-in trÆ°á»›c vÃ  khÃ´ng cho submit láº¡i; server vÃ  unique constraint cÃ¹ng báº£o vá»‡ duplicate.
+CAMERA_UPLOAD: Modal chá»n Chụp ảnh/Tải ảnh lên; camera dÃ¹ng MediaDevices getUserMedia video-only, capture frame, preview, stop tracks; upload lÃ  fallback khi camera khÃ´ng há»— trá»£/bá»‹ tá»« chá»‘i.
+PHOTO_STORAGE: Storage local private disk storage/app/private/attendance-proofs/employee-{id}/YYYY/MM; database chá»‰ lÆ°u path vÃ  method camera/upload; khÃ´ng public URL, base64, raw binary hay biometric.
+VALIDATION: SelfAttendanceRequest báº¯t buá»™c image, mimes jpeg/jpg/png/webp, max 3072KB, method camera/upload; filename Ä‘Æ°á»£c sinh ngáº«u nhiÃªn phÃ­a server.
+FILES_CHANGED: app/Http/Controllers/SelfAttendanceController.php, app/Http/Requests/SelfAttendanceRequest.php, resources/views/attendance/self.blade.php, routes/web.php, resources/views/partials/sidebar.blade.php, tests/Feature/SelfAttendanceTest.php, docs/codex-state.md
+TEST_RESULTS: php artisan test --filter=SelfAttendance PASS (8 tests, 36 assertions); full php artisan test PASS (84 tests, 316 assertions) trÃªn MySQL hr_management_testing; php artisan view:cache PASS; npm run build PASS; git diff --check PASS.
+OPEN_ISSUES: ChÆ°a kiá»ƒm tra webcam thá»±c táº¿ trÃªn trÃ¬nh duyá»‡t/thiáº¿t bá»‹; cÃ¡c test camera PHPUnit Ä‘Æ°á»£c thay báº±ng backend upload/method camera, theo yÃªu cáº§u khÃ´ng test webcam tháº­t.
+NEXT_STEP: ATT-03
+
+STEP: ATT-03
+ATTENDANCE_MANAGEMENT: HR/Admin attendance list now shows compact proof indicators and check-in/check-out methods; manual attendance remains valid without photos.
+PROOF_ENDPOINT: GET /attendance/{attendance}/proof/{type}, type check-in/check-out; streams inline from local private storage without exposing storage path.
+AUTHORIZATION: Admin/HR can view managed attendance proofs; Employee can view only own attendance proof; arbitrary ownership and invalid proof types return 403/404.
+EMPLOYEE_HISTORY: Employee attendance history shows check-in/out methods and links to own available proof images; missing proof renders safely.
+PRIVATE_STORAGE: Proof files remain under storage/app/private and are not exposed through public/storage symlink.
+FILES_CHANGED: app/Http/Controllers/AttendanceProofController.php, routes/web.php, resources/views/hr/attendances/index.blade.php, resources/views/employee/attendances/index.blade.php, tests/Feature/AttendanceProofTest.php, docs/codex-state.md
+TEST_RESULTS: php artisan test --filter=Attendance PASS (22 tests, 87 assertions); full php artisan test PASS (88 tests, 328 assertions) on MySQL hr_management_testing; php artisan view:cache PASS; npm run build PASS; git diff --check PASS.
+OPEN_ISSUES: No automated issues; browser/manual verification of private image display remains a manual action.
+NEXT_STEP: ATT-04
+
+STEP: ATT-04
+HEADER_CLEANUP: Topbar now has one contextual SVG module icon, page title, avatar/name/role and focused user dropdown; decorative and duplicate icon clutter was reduced.
+USER_AREA: Dropdown includes profile, theme preference, navigation position/state controls and POST/CSRF logout confirmation.
+NAV_STATE: expanded/collapsed/hidden stored in localStorage key hr-nav-state; legacy collapsed key remains synchronized; hidden mode always exposes a reopen button.
+NAV_POSITION: left/right/top/bottom stored in localStorage key hr-nav-position; layout changes shell direction/flow rather than only transforming the sidebar.
+RESPONSIVE: Left/right remain drawer-based on mobile; top/bottom use horizontal overflow; bottom navigation includes safe-area padding and content remains scrollable.
+TRANSITIONS: Navigation width/height/transform/opacity transitions target 200-300ms; prefers-reduced-motion disables nonessential motion.
+ICON_CLEANUP: Shared page header has one functional contextual SVG icon; existing module/status icons and accessibility controls retained.
+FILES_CHANGED: resources/views/layouts/app.blade.php, resources/views/partials/navbar.blade.php, resources/views/partials/sidebar.blade.php, resources/views/components/page-header.blade.php, resources/css/app.css, docs/codex-state.md
+TEST_RESULTS: Full php artisan test PASS (88 tests, 328 assertions); php artisan view:cache PASS; npm run build PASS; git diff --check PASS.
+OPEN_ISSUES: Browser verification of all four navigation positions and reduced-motion preference remains a manual action; no automated/runtime errors.
+NEXT_STEP: ATT-05
+
+STEP: ATT-05 Final
+SELF_ATTENDANCE: Automated coverage confirms Employee, HR and Admin with Employee profiles can check in/out through shared self-attendance routes; missing profiles return friendly 403 instead of 500.
+CAMERA: Browser implementation opens only after click, captures a still frame, supports retake/preview, stops MediaStream tracks and falls back to upload on unsupported/denied camera; real webcam smoke remains manual.
+UPLOAD: Server requires image jpeg/jpg/png/webp up to 3072KB, uses random server filename and private local storage; invalid and oversized files rejected.
+PRIVATE_PHOTO: Proof files remain on local private disk; protected stream endpoint enforces Admin/HR management access and Employee ownership; no public attendance proof URL, face recognition or biometric processing.
+ADMIN_HR_ATTENDANCE: Existing manual HR/Admin CRUD remains functional and manual records may have nullable proof fields.
+HEADER: Single contextual SVG icon + page title on left; avatar/name/role dropdown on right; settings and logout remain in user area.
+NAV_POSITION: left/right/top/bottom implemented with hr-nav-position localStorage and real shell flow changes; responsive horizontal overflow/bottom safe-area rules added.
+NAV_STATE: expanded/collapsed/hidden implemented with hr-nav-state localStorage; hidden mode has reopen control and legacy collapsed preference is synchronized.
+ANIMATION: 200-300ms navigation transitions and prefers-reduced-motion override present.
+RESPONSIVE: CSS covers 375px/768px/1280px+ layouts, but real browser verification is still required for modal/table/menu edge cases.
+SECURITY: CSRF/Form Requests, role middleware, ownership/IDOR checks, mass assignment, MIME/size validation, private storage and no arbitrary employee_id selection audited.
+TEST_RESULTS: composer validate PASS; optimize:clear PASS; route:list PASS (73 routes); view:clear/view:cache PASS; full php artisan test PASS (88 tests, 328 assertions) on MySQL hr_management_testing; git diff --check PASS.
+BUILD_RESULTS: npm run build PASS (Vite 6.4.3).
+FILES_CHANGED: README.md, docs/architecture.md, docs/requirements-matrix.md, docs/demo-checklist.md, docs/evidence/screenshot-checklist.md, docs/codex-state.md.
+MANUAL_ACTIONS_REQUIRED: Capture real browser screenshots listed in docs/evidence/screenshot-checklist.md; verify camera permission/retake/track-stop, navigation positions/states, 375px/768px/1280px+, dark mode and no content overlap.
+OPEN_ISSUES: Manual browser and real-device evidence pending; no automated/runtime/build errors.
+FINAL_STATUS: Automated self-attendance, privacy, authorization, header/navigation regression PASS; final human visual/device evidence remains pending.
+
+UI_LAYOUT_ADJUSTMENT: Menu top sticky below header; menu bottom fixed to viewport with content padding/safe area; left/right collapsed sidebar hides horizontal overflow and uses equal icon cells.
+UI_HEADER_ADJUSTMENT: User area now has orange bordered avatar/name/role trigger; logout dialog is fixed to the full viewport and centered.
+UI_ADJUSTMENT_CHECK: view clear/cache PASS; npm run build PASS; git diff --check PASS.
+LAYOUT_SCROLL_FIX: Header/taskbar is explicitly sticky at viewport top; top navigation stays below it and bottom navigation remains fixed with content clearance.
+EMPLOYEE_DASHBOARD_LAYOUT: Employee KPI cards now use a balanced three-column desktop grid; recent attendance and attendance indicators share equal-width columns with min-width safeguards.
+AVATAR_HEADER_FIX: User now exposes avatar_url from User avatar_path with Employee avatar_path fallback, so the authenticated topbar renders the uploaded avatar instead of the initial letter.
+COLLAPSED_SCROLL_FIX: Collapsed navigation removes main max-width/margins and hides horizontal overflow on the desktop nav, keeping the scrollbar aligned to the content edge.
+LATEST_UI_CHECK: Profile/Security/Authentication targeted tests 14 passed, 58 assertions; view clear/cache PASS; npm run build PASS; git diff --check PASS.
+FIXED_TOP_BOTTOM_NAV: In top/bottom modes header is fixed to viewport; top navigation is fixed below header and workspace/main receive compensating spacing so content remains visible while scrolling.
+FIXED_NAV_CHECK: view clear/cache PASS; npm run build PASS; git diff --check PASS.
+DASHBOARD_GRID_ADJUSTMENT: Admin/HR/Employee dashboard grids use md breakpoints for balanced two/three-column distribution at zoomed desktop widths while retaining one-column mobile layout.
+DASHBOARD_GRID_CHECK: Reports/Role/Runtime targeted tests 12 passed, 64 assertions; view clear/cache PASS; npm run build PASS; git diff --check PASS.
+DASHBOARD_GRID_BREAKPOINT_FIX: HR/Admin chart and quick-link sections now use sm two-column grids; Employee lower dashboard section also uses sm two-column grid so zoomed desktop layouts do not collapse into a left-only stack.
+DASHBOARD_TWO_COLUMN_FIX: Added explicit dashboard-two-column grid (2 equal columns by default, 1 column below 640px) and min-width safeguards to remove unexplained right-side whitespace.
+DASHBOARD_TWO_COLUMN_CHECK: view clear/cache PASS; npm run build PASS; git diff --check PASS.
+DASHBOARD_FLEX_DISTRIBUTION_FIX: Dashboard two-panel sections now use explicit equal flex columns with min-width 0; below 640px they stack to one column. This prevents the second panel from dropping under the first at the current viewport/zoom.
+DASHBOARD_FLEX_CHECK: view clear/cache PASS; npm run build PASS; git diff --check PASS.
+RUNTIME_ROLE_PROFILE_FIX: Development database hr_management had Admin/HR users without Employee rows; inserted missing profiles conditionally for admin@example.com (ADM-0001), hr@example.com (HR-0001) and hr2@example.com (HR-0002), matching the Seeder mapping.
+RUNTIME_ROLE_PROFILE_CHECK: SelfAttendance 8 tests/36 assertions PASS; AttendanceProof 4 tests/12 assertions PASS; view:cache PASS; git diff --check PASS.
+DASHBOARD_WIDTH_FIX: app-main now uses full available workspace width without max-width/margin compression; dashboard two-column panels can occupy both sides.
+NAV_EXPAND_CONTROL_FIX: Header includes an explicit Mở rộng menu/Thu gọn menu control, synchronized with hr-nav-state and localStorage, including when sidebar content is not visible.
+DASHBOARD_WIDTH_CHECK: Reports/Role/Runtime targeted tests 12 passed, 64 assertions; view clear/cache PASS; npm run build PASS; git diff --check PASS.
