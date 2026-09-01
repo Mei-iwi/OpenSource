@@ -19,7 +19,7 @@ class SelfAttendanceTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-09-01 08:00:00');
-        Storage::fake('local');
+        Storage::fake('persistent_uploads');
     }
 
     protected function tearDown(): void
@@ -42,7 +42,7 @@ class SelfAttendanceTest extends TestCase
         $this->assertSame('present', $attendance->status);
         $this->assertSame('upload', $attendance->check_in_method);
         $this->assertStringStartsWith('attendance-proofs/employee-'.$employee->id.'/2026/09/check-in-', $attendance->check_in_photo_path);
-        Storage::disk('local')->assertExists($attendance->check_in_photo_path);
+        Storage::disk('persistent_uploads')->assertExists($attendance->check_in_photo_path);
         $this->assertDatabaseCount('attendances', 1);
     }
 
@@ -60,7 +60,7 @@ class SelfAttendanceTest extends TestCase
         $attendance = Attendance::firstOrFail();
         $this->assertSame('17:00:00', $attendance->check_out);
         $this->assertNotNull($attendance->check_out_photo_path);
-        Storage::disk('local')->assertExists($attendance->check_out_photo_path);
+        Storage::disk('persistent_uploads')->assertExists($attendance->check_out_photo_path);
     }
 
     public function test_hr_and_admin_with_employee_profiles_can_check_in(): void

@@ -16,7 +16,7 @@ class AttendanceProofTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('persistent_uploads');
     }
 
     public function test_admin_and_hr_can_view_private_proof(): void
@@ -71,7 +71,7 @@ class AttendanceProofTest extends TestCase
     private function attendanceWithProof(?Employee $employee = null): Attendance
     {
         $employee ??= Employee::factory()->create();
-        Storage::disk('local')->put('attendance-proofs/test/check-in.jpg', 'proof');
+        Storage::disk('persistent_uploads')->put('attendance-proofs/test/check-in.jpg', 'proof');
 
         return Attendance::factory()->create([
             'employee_id' => $employee->id,

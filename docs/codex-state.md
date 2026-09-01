@@ -101,6 +101,30 @@ MANUAL_R2_ACTIONS: Create bucket/API credentials and set R2 env variables.
 OPEN_ISSUES: Render/R2 runtime smoke requires user-created external resources; Docker Desktop daemon unavailable locally.
 FINAL_STATUS: READY FOR RENDER DEPLOYMENT (source-side only; not deployed successfully).
 
+STEP: RENDER LOCAL STORAGE + POSTGRES ADJUSTMENT
+R2: REMOVED; no production R2/S3 dependency, secrets or documentation remain.
+STORAGE_DRIVER: persistent_uploads local disk.
+PERSISTENT_UPLOAD_ROOT: UPLOAD_STORAGE_PATH; local default storage/app/private/uploads, Render /var/data/uploads.
+AVATAR_STORAGE: persistent_uploads, protected avatar route.
+ATTENDANCE_PROOF_STORAGE: persistent_uploads, private protected stream route.
+PROTECTED_MEDIA: PASS; relative paths only, no storage:link.
+RENDER_DISK_REQUIRED: Yes for durable files; Free plan is DEMO_EPHEMERAL_STORAGE only.
+LOCAL_DATABASE: MySQL.
+PRODUCTION_DATABASE: Render PostgreSQL via DB_CONNECTION=pgsql.
+POSTGRES_SUPPORT: config and Docker pdo_pgsql added; runtime validation pending.
+MYSQL_COMPATIBILITY: Local/CI MySQL retained.
+MYSQL_SPECIFIC_QUERY_FIXES: Dashboard aggregates changed to portable Eloquent/PHP calculations; migration audit found no raw MySQL-only DDL.
+DOCKER: PHP 8.3 CLI image includes pdo_mysql and pdo_pgsql.
+START_SCRIPT: Creates upload directories, runs optimize:clear and migrate --force, optional seed only.
+ENVIRONMENT: Render values documented; no R2/AWS secrets.
+TEST_RESULTS: PASS — 88 tests, 328 assertions on MySQL hr_management_testing.
+BUILD_RESULTS: PASS — composer validate, view cache, npm run build and git diff --check.
+MANUAL_RENDER_ACTIONS: Create Render Postgres, Docker Web Service and Persistent Disk mounted at /var/data.
+POSTGRES_RUNTIME_VALIDATION: PENDING RENDER POSTGRES RUNTIME VALIDATION.
+PERSISTENT_DISK_RUNTIME_VALIDATION: PENDING RENDER PERSISTENT DISK RUNTIME VALIDATION.
+OPEN_ISSUES: Docker Desktop daemon unavailable locally; real Render Postgres and disk smoke tests require user resources.
+FINAL_STATUS: READY FOR RENDER POSTGRES + LOCAL STORAGE DEPLOYMENT (source-side only).
+
 STEP: UI Redesign A
 UI_FOUNDATION: Chuẩn hóa nền slate sáng, màu nhấn cam, card/border/spacing; bổ sung dark mode cơ bản
 LOGIN: Card responsive, nhận diện Quản lý nhân sự, tiêu đề chào mừng, form tiếng Việt và lỗi rõ ràng

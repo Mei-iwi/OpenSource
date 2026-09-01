@@ -29,12 +29,12 @@ class SecurityPolishTest extends TestCase
 
     public function test_hr_can_upload_valid_avatar_and_invalid_uploads_are_rejected(): void
     {
-        Storage::fake('public');
+        Storage::fake('persistent_uploads');
         $department = Department::factory()->create();
         $payload = ['name' => 'Avatar User', 'email' => 'avatar@example.test', 'password' => 'Password123!', 'password_confirmation' => 'Password123!', 'department_id' => $department->id, 'employee_code' => 'EMP-AVATAR', 'hire_date' => '2025-01-01', 'employment_status' => 'active', 'avatar' => UploadedFile::fake()->image('avatar.jpg')];
         $this->actingAs($this->hr())->post('/hr/employees', $payload)->assertRedirect('/hr/employees');
         $employee = Employee::where('employee_code', 'EMP-AVATAR')->firstOrFail();
-        Storage::disk('public')->assertExists($employee->avatar_path);
+        Storage::disk('persistent_uploads')->assertExists($employee->avatar_path);
         $invalid = [...$payload, 'email' => 'invalid@example.test', 'employee_code' => 'EMP-BAD', 'avatar' => UploadedFile::fake()->create('script.php', 10, 'application/x-php')];
         $this->actingAs($this->hr())->post('/hr/employees', $invalid)->assertSessionHasErrors('avatar');
         $oversized = [...$payload, 'email' => 'large@example.test', 'employee_code' => 'EMP-LARGE', 'avatar' => UploadedFile::fake()->image('large.jpg')->size(2049)];
@@ -43,11 +43,11 @@ class SecurityPolishTest extends TestCase
 
     public function test_employee_can_update_own_avatar_but_cannot_manage_other_employee(): void
     {
-        Storage::fake('public');
+        Storage::fake('persistent_uploads');
         $employee = $this->employee();
         $this->actingAs($employee->user)->put('/employee/profile', ['phone' => '0901234567', 'address' => 'Updated', 'date_of_birth' => '1995-02-02', 'avatar' => UploadedFile::fake()->image('self.png')])->assertRedirect('/employee/profile');
         $employee->refresh();
-        Storage::disk('public')->assertExists($employee->avatar_path);
+        Storage::disk('persistent_uploads')->assertExists($employee->avatar_path);
         $other = $this->employee();
         $this->actingAs($employee->user)->get('/hr/employees/'.$other->id.'/edit')->assertForbidden();
     }

@@ -16,8 +16,8 @@ FROM php:8.3-cli
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libonig-dev libzip-dev unzip \
-    && docker-php-ext-install mbstring pdo_mysql zip \
+    && apt-get install -y --no-install-recommends libonig-dev libzip-dev libpq-dev unzip \
+    && docker-php-ext-install mbstring pdo_mysql pdo_pgsql zip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=dependencies /app/vendor ./vendor
