@@ -13,15 +13,15 @@
     @endif
     @stack('styles')
 </head>
-<body class="min-h-screen bg-sky-50 text-slate-900 antialiased">
+<body class="min-h-screen bg-[var(--app-bg)] text-[var(--app-text)] antialiased">
     <div x-data="{ mobileMenuOpen: false, sidebarCollapsed: localStorage.getItem('hr-sidebar-collapsed') === 'true', toggleSidebar() { this.sidebarCollapsed = !this.sidebarCollapsed; localStorage.setItem('hr-sidebar-collapsed', this.sidebarCollapsed); }, dark: document.documentElement.classList.contains('dark'), toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('hr-theme', this.dark ? 'dark' : 'light'); } }" :class="sidebarCollapsed ? 'sidebar-collapsed' : ''" class="min-h-screen lg:flex">
-        <aside class="hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out lg:block">@include('partials.sidebar')</aside>
+        <aside class="hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-[var(--app-border)] bg-[var(--app-surface)] transition-[width] duration-300 ease-in-out lg:block">@include('partials.sidebar')</aside>
         <div class="flex min-w-0 flex-1 flex-col lg:h-screen lg:overflow-hidden">
             @include('partials.navbar')
-            <div x-show="mobileMenuOpen" x-cloak class="border-b border-slate-200 bg-white lg:hidden">
+            <div x-show="mobileMenuOpen" x-cloak class="border-b border-[var(--app-border)] bg-[var(--app-surface)] lg:hidden">
                 @include('partials.sidebar')
             </div>
-            <main class="app-main min-h-0 flex-1 overflow-y-auto mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <main class="app-main min-h-0 flex-1 overflow-y-auto mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
                 @include('partials.flash')
                 @if (isset($slot)){{ $slot }}@else @yield('content')@endif
             </main>
