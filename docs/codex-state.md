@@ -138,3 +138,16 @@ FILES_CHANGED: resources/views/auth/login.blade.php, resources/views/layouts/gue
 TEST_RESULTS: 6 tests, 19 assertions, 0 failures trên MySQL hr_management_testing; view:clear PASS; view:cache PASS; npm run build PASS; git diff --check PASS.
 OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; không phát hiện lỗi auth/view/build trong targeted checks.
 NEXT_STEP: UI-03
+
+STEP: UI-03
+DASHBOARD_ADMIN: Đã nâng cấp dashboard Admin với 6 KPI nhân sự/chấm công, bộ lọc tháng/năm, tài khoản theo role, chấm công gần đây và quick link báo cáo.
+DASHBOARD_HR: Đã nâng cấp dashboard HR tập trung vào nhân sự, chấm công, phòng ban, chuyên cần, quick links và bảng chấm công gần đây; không hiển thị quản trị tài khoản.
+KPI: Tổng nhân viên, đang làm việc, ngừng làm việc, có mặt hôm nay, đi muộn hôm nay, vắng hôm nay; dữ liệu aggregate từ MySQL.
+CHARTS: Thêm duy nhất Chart.js; tối đa 3 chart gồm doughnut trạng thái chấm công, bar nhân sự theo phòng ban và line xu hướng chuyên cần 6 tháng; có legend tiếng Việt/empty state.
+QUERY_OPTIMIZATION: Dùng COUNT/GROUP BY, conditional date range, YEAR/MONTH aggregate và eager loading Attendance -> Employee -> User/Department; không query trong loop.
+DARK_MODE: Chart colors, legend, grid, panel, table và form tương thích Light/Dark tại thời điểm render; theme vẫn dùng localStorage.
+FILES_CHANGED: app/Http/Controllers/AdminDashboardController.php, app/Http/Controllers/HrDashboardController.php, resources/views/dashboard/admin.blade.php, resources/views/dashboard/hr.blade.php, resources/css/app.css, resources/js/app.js, package.json, package-lock.json, docs/codex-state.md
+TEST_RESULTS: Targeted 12 tests, 64 assertions, 0 failures; full suite 62 tests, 229 assertions, 0 failures trên MySQL hr_management_testing.
+BUILD_RESULTS: php artisan view:clear PASS; php artisan view:cache PASS; npm run build PASS; git diff --check PASS.
+OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; chưa kiểm tra chuyển theme khi chart đang hiển thị.
+NEXT_STEP: UI-04
