@@ -17,6 +17,8 @@ html.dark .border-slate-300, html.dark .border-slate-200, html.dark .border-slat
 html.dark input, html.dark select, html.dark textarea { background-color: #16496d; color: #f0f9ff; border-color: #68a8c9; }
 html.dark input::placeholder, html.dark textarea::placeholder { color: #b9d9e9; }
 html.dark .hover\:bg-slate-100:hover { background-color: #286689; }
+.login-shell { background: radial-gradient(circle at 15% 20%, rgb(125 211 252 / 0.9), transparent 30%), radial-gradient(circle at 85% 80%, rgb(103 232 249 / 0.75), transparent 32%), linear-gradient(135deg, #dbeafe, #eff6ff 48%, #cffafe); }
+html.dark .login-shell { background: radial-gradient(circle at 15% 20%, rgb(30 64 175 / 0.9), transparent 30%), radial-gradient(circle at 85% 80%, rgb(14 116 144 / 0.8), transparent 32%), linear-gradient(135deg, #0f172a, #123b5d 48%, #164e63); }
 .app-main { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 1.5rem; }
 .sidebar-icon { display: inline-flex; width: 1.5rem; flex: 0 0 1.5rem; align-items: center; justify-content: center; font-size: 1.25rem; line-height: 1; }
 .sidebar-collapsed .sidebar-icon { margin-inline: auto; }
@@ -61,3 +63,4 @@ html.dark .hover\:bg-slate-100:hover { background-color: #286689; }
 .login-page .login-card .bg-blue-100 { background-color: rgb(255 255 255 / 0.2); color: #fff; }
 .login-page .login-card button.bg-blue-600 { background-color: #0f172a; color: #fff; }
 .login-page .login-card button.bg-blue-600:hover { background-color: #172554; }
+.login-page .login-card input:focus-visible, .login-page .login-card button:focus-visible, .login-page a:focus-visible { outline: 3px solid rgb(165 243 252 / 0.9); outline-offset: 2px; }

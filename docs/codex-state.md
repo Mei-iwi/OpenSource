@@ -128,3 +128,13 @@ COMMANDS_RUN: php artisan view:clear; php artisan view:cache; cmd.exe /c npm run
 TEST_RESULTS: 8 tests, 48 assertions, 0 failures trên MySQL hr_management_testing; view cache PASS; npm build PASS.
 OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; không phát hiện lỗi compile hoặc runtime qua targeted tests.
 NEXT_STEP: UI-02
+
+STEP: UI-02
+LOGIN: Đã làm mới giao diện login responsive, heading/brand rõ ràng, validation và auth error dễ đọc, show/hide password bằng Alpine, giữ remember me và không hiển thị demo credentials.
+LOGOUT_CONFIRM: Đã bổ sung modal xác nhận với nút Hủy/Đăng xuất; logout vẫn dùng POST + CSRF và giữ route hiện tại.
+THEME: Light/Dark dùng localStorage `hr-theme`, đọc theme trước Alpine khởi động; guest/login và app layout đều hỗ trợ nền, card, form, modal tương phản.
+ACCESSIBILITY: Label rõ, focus-visible, aria-label, aria-live cho lỗi đăng nhập, aria-modal/aria-labelledby cho modal, button có nội dung dễ hiểu.
+FILES_CHANGED: resources/views/auth/login.blade.php, resources/views/layouts/guest.blade.php, resources/views/partials/navbar.blade.php, resources/css/app.css, resources/js/app.js, docs/codex-state.md
+TEST_RESULTS: 6 tests, 19 assertions, 0 failures trên MySQL hr_management_testing; view:clear PASS; view:cache PASS; npm run build PASS; git diff --check PASS.
+OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; không phát hiện lỗi auth/view/build trong targeted checks.
+NEXT_STEP: UI-03

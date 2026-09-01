@@ -20,7 +20,7 @@
                 <p class="text-xs text-[var(--app-muted)]">Không gian làm việc</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 sm:gap-3" x-data="{ userMenuOpen: false }">
+        <div class="relative flex items-center gap-2 sm:gap-3" x-data="{ userMenuOpen: false, logoutConfirm: false }">
             <button type="button" @click="toggleTheme()" class="rounded-xl border border-[var(--app-border)] px-3 py-2 text-sm font-medium text-[var(--app-muted)] transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600" :title="dark ? 'Chuyển sang nền sáng' : 'Chuyển sang nền tối'" x-text="dark ? '☀️ Sáng' : '🌙 Tối'" aria-label="Chuyển đổi giao diện sáng tối"></button>
             <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="flex items-center gap-2 rounded-xl p-1.5 transition hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500" aria-label="Mở menu tài khoản">
                 <span class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-orange-100 text-sm font-bold text-orange-700">
@@ -42,10 +42,20 @@
                     <p class="text-xs text-[var(--app-muted)]">{{ $roleLabels[auth()->user()->role] ?? auth()->user()->role }}</p>
                 </div>
                 <a href="{{ route($profileRoute) }}" class="block rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--app-text)] transition hover:bg-orange-50 hover:text-orange-600" role="menuitem">Hồ sơ cá nhân</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50" role="menuitem">Đăng xuất</button>
-                </form>
+                <button type="button" @click="logoutConfirm = true; userMenuOpen = false" class="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50" role="menuitem">Đăng xuất</button>
+            </div>
+            <div x-show="logoutConfirm" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+                <div @click.outside="logoutConfirm = false" class="w-full max-w-md rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-2xl">
+                    <h2 id="logout-title" class="text-lg font-bold text-[var(--app-text)]">Xác nhận đăng xuất</h2>
+                    <p class="mt-2 text-sm text-[var(--app-muted)]">Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?</p>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" @click="logoutConfirm = false" class="rounded-xl border border-[var(--app-border)] px-4 py-2.5 text-sm font-semibold text-[var(--app-text)] transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500">Hủy</button>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">Đăng xuất</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
