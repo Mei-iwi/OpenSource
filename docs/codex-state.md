@@ -118,3 +118,13 @@ PROFILE_SHELL_CHECK: Migration avatar PASS; Profile/Attendance/Runtime 12 tests,
 AVATAR_URL_FIX: Public disk dùng URL root-relative `/storage`, tránh ghép `APP_URL` thiếu port/khác hostname; symbolic link `public/storage` tồn tại và ảnh đã lưu trong `storage/app/public/avatars`.
 LOGOUT_REDIRECT_UPDATE: Logout vẫn POST/CSRF và invalidate session, nhưng redirect về route `login` thay vì `/` để không hiện trang mặc định Laravel “Let's get started”.
 CSRF_419_DIAGNOSTIC: Đã xác nhận APP_KEY hợp lệ, session database `hr_management.sessions` hoạt động, GET `/login` trả 200 và phát hành XSRF-TOKEN/laravel_session; optimize:clear đã chạy. AuthenticationTest 5/12 PASS. Không phát hiện lỗi source.
+
+STEP: UI-01
+LAYOUT: Đã chuẩn hóa nền/surface/border bằng CSS variables; main co giãn theo sidebar, header sticky và vùng nội dung cuộn độc lập.
+SIDEBAR: Desktop expanded/collapsed 288/88px, icon + label, active màu cam, tooltip/title/aria-label, localStorage; mobile drawer/backdrop hiện có được giữ nguyên.
+TOPBAR: Bổ sung page title/breadcrumb ngắn, avatar/ảnh đại diện, họ tên, role tiếng Việt, dropdown hồ sơ và đăng xuất; giữ theme sáng/tối.
+FILES_CHANGED: resources/css/app.css, resources/views/layouts/app.blade.php, resources/views/partials/navbar.blade.php, resources/views/partials/sidebar.blade.php, docs/codex-state.md
+COMMANDS_RUN: php artisan view:clear; php artisan view:cache; cmd.exe /c npm run build; php artisan test tests/Feature/RuntimeSmokeTest.php tests/Feature/Auth/AuthenticationTest.php; git diff --check
+TEST_RESULTS: 8 tests, 48 assertions, 0 failures trên MySQL hr_management_testing; view cache PASS; npm build PASS.
+OPEN_ISSUES: Chưa kiểm tra browser thủ công tại 375px/768px/1280px; không phát hiện lỗi compile hoặc runtime qua targeted tests.
+NEXT_STEP: UI-02

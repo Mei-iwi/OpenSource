@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --app-bg: #f8fafc; --app-surface: #ffffff; --app-text: #0f172a; --app-muted: #64748b; --app-border: #e2e8f0; --app-primary: #ea580c; --app-primary-hover: #c2410c; }
+:root { --app-bg: #f8fafc; --app-surface: #ffffff; --app-text: #0f172a; --app-muted: #64748b; --app-border: #e2e8f0; --app-primary: #f97316; --app-primary-hover: #ea580c; --app-success: #16a34a; --app-warning: #d97706; --app-danger: #dc2626; }
 html.dark { color-scheme: dark; }
 html, body, .app-main, aside, header { transition: background-color 240ms ease, color 240ms ease, border-color 240ms ease; }
 html.dark body { background: #123b5d; color: #f0f9ff; }
@@ -17,7 +17,9 @@ html.dark .border-slate-300, html.dark .border-slate-200, html.dark .border-slat
 html.dark input, html.dark select, html.dark textarea { background-color: #16496d; color: #f0f9ff; border-color: #68a8c9; }
 html.dark input::placeholder, html.dark textarea::placeholder { color: #b9d9e9; }
 html.dark .hover\:bg-slate-100:hover { background-color: #286689; }
-.app-main { background: linear-gradient(180deg, #f0f9ff 0%, #f8fbff 42%, #ffffff 100%); border-radius: 1.5rem; }
+.app-main { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 1.5rem; }
+.sidebar-icon { display: inline-flex; width: 1.5rem; flex: 0 0 1.5rem; align-items: center; justify-content: center; font-size: 1.25rem; line-height: 1; }
+.sidebar-collapsed .sidebar-icon { margin-inline: auto; }
 .sidebar-label { transition: opacity 180ms ease, max-width 250ms ease; }
 @media (min-width: 1024px) {
     .sidebar-collapsed .sidebar-label { display: none; }
