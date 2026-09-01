@@ -51,7 +51,7 @@
             <x-input-label for="avatar" value="Ảnh đại diện" />
             <div class="mt-2 flex items-center gap-4">
                 @if ($user->avatar_path)
-                    <img src="{{ Storage::disk('public')->url($user->avatar_path) }}" alt="Ảnh đại diện {{ $user->name }}" class="h-16 w-16 rounded-full object-cover">
+                    <img src="{{ $user->avatar_url }}" alt="Ảnh đại diện {{ $user->name }}" class="h-16 w-16 rounded-full object-cover">
                 @else
                     <div class="flex h-16 w-16 items-center justify-center rounded-full bg-sky-100 text-xl font-bold text-sky-700">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
                 @endif

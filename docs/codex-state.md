@@ -85,6 +85,22 @@ OPEN_ISSUES: Real screenshots, verified teamwork details and post-push CI confir
 MANUAL_ACTIONS_REQUIRED: Capture real screenshots and complete verified team/report submission details
 FINAL_STATUS: Vietnamese localization PASS; no business, schema, route, authz or CI changes made
 
+STEP: DEP-05 FINAL
+DOCKER: Multi-stage Node 22 + PHP 8.3 CLI; Render start script binds 0.0.0.0 and PORT, runs migrate --force, seed opt-in only.
+RENDER: Source prepared; no Render service or URL created by Codex.
+DATABASE: MySQL; sessions/cache migrations present; CI remains hr_management_testing.
+R2: S3 adapter declared directly; credentials are environment-only.
+AVATAR: Configurable disk, default public locally and s3 in production; protected avatar route.
+ATTENDANCE_PROOF: Configurable private disk, default local locally and s3 in production; protected stream route.
+AUTH: Existing Breeze/auth, roles and account.active middleware retained.
+SECURITY: No secrets committed; uploads validated; proof and avatar routes authenticated.
+TEST_RESULTS: PASS — 88 tests, 328 assertions; composer validate, route list, view cache and git diff --check pass.
+BUILD_RESULTS: PASS — npm run build; Docker build not executable because Docker Desktop Linux daemon is unavailable.
+MANUAL_RENDER_ACTIONS: Create MySQL, Render service, set env, deploy and smoke test /up and /login.
+MANUAL_R2_ACTIONS: Create bucket/API credentials and set R2 env variables.
+OPEN_ISSUES: Render/R2 runtime smoke requires user-created external resources; Docker Desktop daemon unavailable locally.
+FINAL_STATUS: READY FOR RENDER DEPLOYMENT (source-side only; not deployed successfully).
+
 STEP: UI Redesign A
 UI_FOUNDATION: Chuẩn hóa nền slate sáng, màu nhấn cam, card/border/spacing; bổ sung dark mode cơ bản
 LOGIN: Card responsive, nhận diện Quản lý nhân sự, tiêu đề chào mừng, form tiếng Việt và lỗi rõ ràng

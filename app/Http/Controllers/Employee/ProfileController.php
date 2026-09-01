@@ -34,17 +34,18 @@ class ProfileController extends Controller
 
         Gate::authorize('update', $employee);
         $oldAvatar = $employee->avatar_path;
-        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : $oldAvatar;
+        $disk = config('filesystems.avatar_disk');
+        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', $disk) : $oldAvatar;
         try {
             $profileData = $request->validated();
             unset($profileData['avatar']);
             $profileData['avatar_path'] = $newAvatar;
             $employee->update($profileData);
         } catch (Throwable $exception) {
-            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk('public')->delete($newAvatar);
+            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk($disk)->delete($newAvatar);
             throw $exception;
         }
-        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk('public')->delete($oldAvatar);
+        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk($disk)->delete($oldAvatar);
         return redirect()->route('employee.profile.show')->with('success', 'Đã cập nhật thông tin cá nhân.');
     }
 }

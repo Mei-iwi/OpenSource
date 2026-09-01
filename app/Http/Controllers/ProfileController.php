@@ -32,7 +32,7 @@ class ProfileController extends Controller
         $data = $request->safe()->except(['avatar']);
         $oldAvatar = $user->avatar_path;
         $newAvatar = $request->hasFile('avatar')
-            ? $request->file('avatar')->store('avatars', 'public')
+            ? $request->file('avatar')->store('avatars', config('filesystems.avatar_disk'))
             : $oldAvatar;
 
         $data['avatar_path'] = $newAvatar;
@@ -46,13 +46,13 @@ class ProfileController extends Controller
             $user->save();
         } catch (Throwable $exception) {
             if ($newAvatar && $newAvatar !== $oldAvatar) {
-                Storage::disk('public')->delete($newAvatar);
+                Storage::disk(config('filesystems.avatar_disk'))->delete($newAvatar);
             }
             throw $exception;
         }
 
         if ($newAvatar !== $oldAvatar && $oldAvatar) {
-            Storage::disk('public')->delete($oldAvatar);
+            Storage::disk(config('filesystems.avatar_disk'))->delete($oldAvatar);
         }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');

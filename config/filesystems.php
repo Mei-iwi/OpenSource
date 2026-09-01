@@ -14,6 +14,8 @@ return [
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
+    'avatar_disk' => env('AVATAR_DISK', 'public'),
+    'attendance_proof_disk' => env('ATTENDANCE_PROOF_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------

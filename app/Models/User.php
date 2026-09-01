@@ -56,7 +56,7 @@ class User extends Authenticatable
     {
         $path = $this->avatar_path ?: $this->employee?->avatar_path;
 
-        return $path ? Storage::disk('public')->url($path) : null;
+        return $path ? route('avatar.show', $this) : null;
     }
 
     /**

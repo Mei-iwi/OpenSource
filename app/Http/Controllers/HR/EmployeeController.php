@@ -60,7 +60,8 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $avatarPath = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : null;
+        $disk = config('filesystems.avatar_disk');
+        $avatarPath = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', $disk) : null;
         try {
             DB::transaction(function () use ($data, $avatarPath) {
                 $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password']), 'role' => 'employee', 'account_status' => 'active']);
@@ -69,7 +70,7 @@ class EmployeeController extends Controller
                 $user->employee()->create($employeeData);
             });
         } catch (Throwable $exception) {
-            if ($avatarPath) Storage::disk('public')->delete($avatarPath);
+            if ($avatarPath) Storage::disk($disk)->delete($avatarPath);
             throw $exception;
         }
         return redirect()->route('hr.employees.index')->with('success', 'Đã tạo tài khoản và hồ sơ nhân viên.');
@@ -101,7 +102,8 @@ class EmployeeController extends Controller
     {
         $data = $request->validated();
         $oldAvatar = $employee->avatar_path;
-        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', 'public') : $oldAvatar;
+        $disk = config('filesystems.avatar_disk');
+        $newAvatar = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', $disk) : $oldAvatar;
         try {
             DB::transaction(function () use ($data, $employee, $newAvatar) {
                 $employee->user->update(['name' => $data['name'], 'email' => $data['email']]);
@@ -110,10 +112,10 @@ class EmployeeController extends Controller
                 $employee->update($employeeData);
             });
         } catch (Throwable $exception) {
-            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk('public')->delete($newAvatar);
+            if ($newAvatar && $newAvatar !== $oldAvatar) Storage::disk($disk)->delete($newAvatar);
             throw $exception;
         }
-        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk('public')->delete($oldAvatar);
+        if ($newAvatar !== $oldAvatar && $oldAvatar) Storage::disk($disk)->delete($oldAvatar);
         return redirect()->route('hr.employees.index')->with('success', 'Đã cập nhật nhân viên.');
     }
 

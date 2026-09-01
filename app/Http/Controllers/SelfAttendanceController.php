@@ -43,7 +43,7 @@ class SelfAttendanceController extends Controller
                 'check_in_method' => $request->validated('method'),
             ]));
         } catch (Throwable $exception) {
-            Storage::disk('local')->delete($path);
+            Storage::disk(config('filesystems.attendance_proof_disk'))->delete($path);
             if ($exception instanceof QueryException) {
                 throw ValidationException::withMessages(['photo' => 'Bản ghi chấm công hôm nay đã tồn tại.']);
             }
@@ -72,7 +72,7 @@ class SelfAttendanceController extends Controller
                 'check_out_method' => $request->validated('method'),
             ]));
         } catch (Throwable $exception) {
-            Storage::disk('local')->delete($path);
+            Storage::disk(config('filesystems.attendance_proof_disk'))->delete($path);
             throw $exception;
         }
 
@@ -92,6 +92,6 @@ class SelfAttendanceController extends Controller
         $directory = sprintf('attendance-proofs/employee-%d/%s/%s', $employee->id, now()->format('Y'), now()->format('m'));
         $filename = sprintf('%s-%s.%s', $label, Str::uuid(), $photo->extension());
 
-        return Storage::disk('local')->putFileAs($directory, $photo, $filename);
+        return Storage::disk(config('filesystems.attendance_proof_disk'))->putFileAs($directory, $photo, $filename);
     }
 }

@@ -13,3 +13,5 @@ public/storage
 public/build
 docker-compose.yml
 README.md
+codex-prompts
+docs/codex-prompts
