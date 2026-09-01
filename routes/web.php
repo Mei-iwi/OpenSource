@@ -11,6 +11,8 @@ use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
 use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
 use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
+use App\Http\Controllers\SelfAttendanceController;
+use App\Http\Controllers\AttendanceProofController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +26,14 @@ Route::get('/dashboard', function () {
         default => abort(403),
     };
 })->middleware(['auth', 'account.active'])->name('dashboard');
+
+Route::middleware(['auth', 'account.active'])->prefix('me')->name('me.')->group(function () {
+    Route::get('/attendance', [SelfAttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/check-in', [SelfAttendanceController::class, 'checkIn'])->name('attendance.check-in');
+    Route::post('/attendance/check-out', [SelfAttendanceController::class, 'checkOut'])->name('attendance.check-out');
+});
+
+Route::middleware(['auth', 'account.active'])->get('/attendance/{attendance}/proof/{type}', [AttendanceProofController::class, 'show'])->name('attendance.proof');
 
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');

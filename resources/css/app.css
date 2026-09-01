@@ -19,7 +19,7 @@ html.dark input::placeholder, html.dark textarea::placeholder { color: #b9d9e9; 
 html.dark .hover\:bg-slate-100:hover { background-color: #286689; }
 .login-shell { background: radial-gradient(circle at 15% 20%, rgb(125 211 252 / 0.9), transparent 30%), radial-gradient(circle at 85% 80%, rgb(103 232 249 / 0.75), transparent 32%), linear-gradient(135deg, #dbeafe, #eff6ff 48%, #cffafe); }
 html.dark .login-shell { background: radial-gradient(circle at 15% 20%, rgb(30 64 175 / 0.9), transparent 30%), radial-gradient(circle at 85% 80%, rgb(14 116 144 / 0.8), transparent 32%), linear-gradient(135deg, #0f172a, #123b5d 48%, #164e63); }
-.app-main { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 1.5rem; }
+.app-main { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: 1.5rem; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
 .app-panel { border: 1px solid var(--app-border); border-radius: 1rem; background: var(--app-surface); box-shadow: 0 8px 24px rgb(15 23 42 / 0.05); }
 .app-heading { color: var(--app-text); font-size: 1rem; font-weight: 700; }
 .app-subtitle { color: var(--app-muted); font-size: .875rem; margin-top: .25rem; }
@@ -94,3 +94,63 @@ html.dark .app-quick-link:hover { background: #16496d; color: #fed7aa; }
 .login-page .login-card button.bg-blue-600 { background-color: #0f172a; color: #fff; }
 .login-page .login-card button.bg-blue-600:hover { background-color: #172554; }
 .login-page .login-card input:focus-visible, .login-page .login-card button:focus-visible, .login-page a:focus-visible { outline: 3px solid rgb(165 243 252 / 0.9); outline-offset: 2px; }
+
+/* ATT-04 navigation preferences: one shell, four deliberate placements. */
+.app-shell { display: flex; flex-direction: row; }
+.app-shell > .app-workspace > header { position: sticky !important; top: 0; z-index: 60; }
+.dashboard-two-column { display: flex !important; flex-wrap: nowrap; align-items: stretch; }
+.dashboard-two-column > * { min-width: 0; width: 0; flex: 1 1 0%; }
+@media (max-width: 639px) { .dashboard-two-column { flex-direction: column; } .dashboard-two-column > * { width: 100%; flex-basis: auto; } }
+.desktop-nav, .top-nav, .bottom-nav { transition: width 240ms ease, height 240ms ease, transform 240ms ease, opacity 180ms ease; }
+.top-nav, .bottom-nav { display: none; }
+.nav-position-right { flex-direction: row-reverse; }
+.nav-position-top { display: block; }
+.nav-position-top .desktop-nav, .nav-position-bottom .desktop-nav { display: none !important; }
+.nav-position-top .top-nav { display: block; }
+.nav-position-top .app-workspace > header, .nav-position-bottom .app-workspace > header { position: fixed !important; inset: 0 0 auto; z-index: 60; }
+.nav-position-top .top-nav { position: fixed; inset: 4rem 0 auto; z-index: 55; }
+.nav-position-top .app-workspace, .nav-position-bottom .app-workspace { padding-top: 4rem; }
+.nav-position-top .app-main { padding-top: 3.5rem; }
+.nav-position-top .app-workspace { height: auto !important; min-height: 100vh; }
+.nav-position-bottom { flex-direction: column; }
+.nav-position-bottom .app-workspace { height: auto !important; min-height: 0; }
+.nav-position-bottom .bottom-nav { display: block; }
+.nav-position-bottom .bottom-nav { position: fixed; inset: auto 0 0; z-index: 50; box-shadow: 0 -8px 20px rgb(15 23 42 / .08); }
+.nav-position-bottom .app-workspace { padding-bottom: 4.75rem; }
+.nav-position-bottom .app-main { padding-bottom: 6rem; }
+.nav-position-bottom .bottom-nav .border-t { border-top: 0; }
+.nav-position-bottom .bottom-nav .flex { min-height: auto; }
+.nav-position-bottom .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+.nav-state-hidden .desktop-nav, .nav-state-hidden .top-nav, .nav-state-hidden .bottom-nav { display: none !important; }
+.nav-state-collapsed .sidebar-label { display: none; }
+.nav-state-collapsed .desktop-nav { width: 5.5rem; }
+.nav-state-collapsed .desktop-nav { overflow-x: hidden; }
+.nav-state-collapsed .desktop-nav nav { overflow-x: hidden; padding-left: .55rem; padding-right: .55rem; }
+.nav-state-collapsed .desktop-nav nav a { justify-content: center; padding-left: .5rem; padding-right: .5rem; text-align: center; }
+.nav-state-collapsed .desktop-nav nav a { min-height: 2.75rem; width: 100%; }
+.nav-state-collapsed .desktop-nav .border-b { padding-left: .75rem; padding-right: .75rem; }
+.nav-state-collapsed .desktop-nav .sidebar-icon { margin-inline: auto; }
+.nav-state-collapsed .app-main { max-width: none; margin-left: 0; margin-right: 0; }
+.nav-position-right .desktop-nav { border-right: 0; border-left: 1px solid var(--app-border); }
+.top-nav .flex.min-h-full, .bottom-nav .flex.min-h-full { min-height: auto; }
+.top-nav .border-b, .bottom-nav .border-b, .top-nav > .flex > .border-t, .bottom-nav > .flex > .border-t { display: none; }
+.top-nav nav, .bottom-nav nav { display: flex; gap: .5rem; overflow-x: auto; padding: .65rem 1rem; }
+.top-nav nav > div, .bottom-nav nav > div { display: contents; }
+.top-nav nav > div > div, .bottom-nav nav > div > div { display: flex; gap: .4rem; }
+.top-nav nav > div > p, .bottom-nav nav > div > p { display: none; }
+.top-nav nav a, .bottom-nav nav a { flex: 0 0 auto; white-space: nowrap; }
+.bottom-nav nav { justify-content: center; }
+.bottom-nav nav a { padding-top: .65rem; padding-bottom: .65rem; }
+.user-profile-trigger { min-width: 10.25rem; justify-content: flex-start; }
+.user-profile-trigger img { display: block; }
+.logout-dialog { position: fixed !important; inset: 0 !important; width: 100vw; height: 100vh; margin: 0; }
+.app-main { scrollbar-gutter: stable; }
+html.dark .user-profile-trigger { border-color: #fb923c; background: #20577d; }
+@media (max-width: 1023px) {
+    .app-shell.nav-position-left, .app-shell.nav-position-right { display: block; }
+    .nav-position-right .desktop-nav { display: none !important; }
+    .nav-position-bottom .bottom-nav nav { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
