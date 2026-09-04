@@ -6,18 +6,42 @@ use Tests\TestCase;
 
 class RegistrationDisabledTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        putenv('PUBLIC_REGISTRATION_ENABLED=false');
+    private bool $hadEnvValue = false;
 
-        parent::setUpBeforeClass();
+    private mixed $previousEnvValue = null;
+
+    private bool $hadServerValue = false;
+
+    private mixed $previousServerValue = null;
+
+    protected function setUp(): void
+    {
+        $this->hadEnvValue = array_key_exists('PUBLIC_REGISTRATION_ENABLED', $_ENV);
+        $this->previousEnvValue = $_ENV['PUBLIC_REGISTRATION_ENABLED'] ?? null;
+        $this->hadServerValue = array_key_exists('PUBLIC_REGISTRATION_ENABLED', $_SERVER);
+        $this->previousServerValue = $_SERVER['PUBLIC_REGISTRATION_ENABLED'] ?? null;
+
+        $_ENV['PUBLIC_REGISTRATION_ENABLED'] = 'false';
+        $_SERVER['PUBLIC_REGISTRATION_ENABLED'] = 'false';
+
+        parent::setUp();
     }
 
-    public static function tearDownAfterClass(): void
+    protected function tearDown(): void
     {
-        putenv('PUBLIC_REGISTRATION_ENABLED');
+        if ($this->hadEnvValue) {
+            $_ENV['PUBLIC_REGISTRATION_ENABLED'] = $this->previousEnvValue;
+        } else {
+            unset($_ENV['PUBLIC_REGISTRATION_ENABLED']);
+        }
 
-        parent::tearDownAfterClass();
+        if ($this->hadServerValue) {
+            $_SERVER['PUBLIC_REGISTRATION_ENABLED'] = $this->previousServerValue;
+        } else {
+            unset($_SERVER['PUBLIC_REGISTRATION_ENABLED']);
+        }
+
+        parent::tearDown();
     }
 
     public function test_registration_routes_are_unavailable_when_disabled(): void
