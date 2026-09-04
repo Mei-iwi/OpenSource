@@ -9,6 +9,7 @@
 .env
 .env.*
 !.env.example
+!.env.infinityfree.example
 .env.backup
 .env.production
 .phpactor.json
@@ -29,3 +30,4 @@ storage/framework/sessions/*
 storage/framework/testing/*
 storage/framework/views/*
 /codex-prompts/
+/dist/
