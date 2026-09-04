@@ -42,7 +42,7 @@ return [
 
         'persistent_uploads' => [
             'driver' => 'local',
-            'root' => env('UPLOAD_STORAGE_PATH', storage_path('app/private/uploads')),
+            'root' => env('UPLOAD_STORAGE_PATH') ?: storage_path('app/private/uploads'),
             'throw' => false,
             'report' => false,
         ],
