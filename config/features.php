@@ -12,6 +12,9 @@ return [
     |
     */
 
-    'public_registration' => (bool) env('PUBLIC_REGISTRATION_ENABLED', true),
+    'public_registration' => filter_var(
+        env('PUBLIC_REGISTRATION_ENABLED', true),
+        FILTER_VALIDATE_BOOLEAN
+    ),
 
 ];

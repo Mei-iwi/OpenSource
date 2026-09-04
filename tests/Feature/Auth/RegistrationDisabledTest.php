@@ -14,15 +14,22 @@ class RegistrationDisabledTest extends TestCase
 
     private mixed $previousServerValue = null;
 
+    private bool $hadPutenvValue = false;
+
+    private string|false $previousPutenvValue = false;
+
     protected function setUp(): void
     {
         $this->hadEnvValue = array_key_exists('PUBLIC_REGISTRATION_ENABLED', $_ENV);
         $this->previousEnvValue = $_ENV['PUBLIC_REGISTRATION_ENABLED'] ?? null;
         $this->hadServerValue = array_key_exists('PUBLIC_REGISTRATION_ENABLED', $_SERVER);
         $this->previousServerValue = $_SERVER['PUBLIC_REGISTRATION_ENABLED'] ?? null;
+        $this->previousPutenvValue = getenv('PUBLIC_REGISTRATION_ENABLED');
+        $this->hadPutenvValue = $this->previousPutenvValue !== false;
 
         $_ENV['PUBLIC_REGISTRATION_ENABLED'] = 'false';
         $_SERVER['PUBLIC_REGISTRATION_ENABLED'] = 'false';
+        putenv('PUBLIC_REGISTRATION_ENABLED=false');
 
         parent::setUp();
     }
@@ -39,6 +46,12 @@ class RegistrationDisabledTest extends TestCase
             $_SERVER['PUBLIC_REGISTRATION_ENABLED'] = $this->previousServerValue;
         } else {
             unset($_SERVER['PUBLIC_REGISTRATION_ENABLED']);
+        }
+
+        if ($this->hadPutenvValue) {
+            putenv('PUBLIC_REGISTRATION_ENABLED='.$this->previousPutenvValue);
+        } else {
+            putenv('PUBLIC_REGISTRATION_ENABLED');
         }
 
         parent::tearDown();
