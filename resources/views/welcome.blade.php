@@ -57,6 +57,9 @@
                         <span>Bàn làm việc</span>
                     </a>
                 @else
+                    @if (config('features.public_registration', true) && Route::has('register'))
+                        <a href="{{ route('register') }}" class="hidden text-sm font-semibold text-slate-300 transition hover:text-white sm:inline-block">Đăng ký</a>
+                    @endif
                     <a href="{{ route('login') }}" class="inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:scale-[1.02] hover:shadow-indigo-500/50">
                         <span>Đăng nhập</span>
                     </a>
