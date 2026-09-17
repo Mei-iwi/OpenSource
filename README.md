@@ -108,14 +108,18 @@ Không chạy lệnh này trên production hoặc database có dữ liệu thậ
 
 ### 2.5. Tài khoản mặc định sau khi seed
 
-Mật khẩu chung cho các tài khoản demo là `Password123!`.
+Mật khẩu chung cho các tài khoản demo là `Password123!`. Seeder tạo 20 tài khoản: 1 admin, 2 HR và 17 employee.
 
 | Vai trò | Email đăng nhập | Ghi chú |
 |---|---|---|
-| Admin | `admin@example.com` | Toàn quyền hệ thống |
-| HR | `hr@example.com` | Quản lý nghiệp vụ nhân sự |
-| HR | `hr2@example.com` | Tài khoản HR thứ hai |
-| Employee | `employee1@example.com` đến `employee12@example.com` | Chỉ xem và cập nhật dữ liệu cá nhân được phép |
+| Admin | `quan.nm@example.com` | Toàn quyền hệ thống |
+| HR | `anh.tn@example.com` | Quản lý nghiệp vụ nhân sự |
+| HR | `ha.ltt@example.com` | Tài khoản HR thứ hai |
+| Employee | `huy.pq@example.com`, `nam.nh@example.com`, `bao.vg@example.com`, `khoa.dm@example.com` | Nhân viên CNTT |
+| Employee | `anh.td@example.com`, `vy.nt@example.com`, `tuan.lm@example.com`, `linh.bk@example.com`, `khanh.lq@example.com` | Nhân viên Kinh doanh; `khanh.lq@example.com` ở trạng thái inactive |
+| Employee | `huong.nt@example.com`, `duyen.ptm@example.com`, `long.th@example.com` | Nhân viên Tài chính - Kế toán |
+| Employee | `mai.dn@example.com`, `trang.nq@example.com`, `minh.tn@example.com` | Nhân viên Chăm sóc khách hàng |
+| Employee | `tam.nt@example.com`, `yen.hn@example.com` | Nhân viên Hành chính - Nhân sự |
 
 Các tài khoản trên chỉ dùng cho development/demo. Khi triển khai thật cần đổi mật khẩu và không sử dụng thông tin mặc định.
 
@@ -139,17 +143,16 @@ Truy cập `http://localhost:8000`. Nếu dùng `127.0.0.1`, hãy dùng thống 
 
 ## 3. Chạy bằng Docker
 
-Docker Compose cung cấp PHP 8.3 + Apache và MySQL 8.4 riêng cho project. Chỉ cần cài Docker Desktop:
+Docker Compose cung cấp PHP 8.3 (Laravel HTTP server) và MySQL 8.4 riêng cho project. App tự chạy migration khi khởi động; dữ liệu demo phải seed một lần:
 
 ```bash
-docker compose build
-docker compose up -d db
 docker compose up -d --build
-docker compose exec app php artisan migrate --seed
+docker compose ps
+docker compose exec app php artisan db:seed --force
 docker compose exec app php artisan storage:link
 ```
 
-Truy cập `http://localhost:8080`. Container MySQL dùng database `hr_management`, hostname nội bộ `db`, port host `3307` và volume `hr_mysql_data` để lưu dữ liệu.
+Truy cập `http://localhost:8080`. Tài khoản demo ở mục 2.5. Container MySQL dùng database `hr_management`, hostname nội bộ `db`, port host `3307` và volume `hr_mysql_data` để lưu dữ liệu. Chỉ chạy `db:seed` một lần trên volume mới; chạy lại sẽ tạo bản ghi trùng.
 
 ```bash
 docker compose logs -f app

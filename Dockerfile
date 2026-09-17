@@ -24,7 +24,8 @@ COPY --from=dependencies /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
 
-RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && php artisan package:discover --ansi \
     && chmod +x docker/start-render.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 
