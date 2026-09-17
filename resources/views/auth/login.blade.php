@@ -1,24 +1,24 @@
 <x-guest-layout>
     <!-- Outer Card Container with overflow-hidden to prevent spinning gradient diamond from overflowing -->
-    <div class="login-card-container relative z-10 w-full overflow-hidden rounded-[1.75rem] p-[2px] shadow-2xl shadow-indigo-950/80">
+    <div class="login-card-container relative z-10 w-full overflow-hidden rounded-[1.75rem] p-[2px] shadow-xl shadow-indigo-950/50">
         <!-- Spinning Conic Gradient: rotating ring masked strictly inside rounded-[1.75rem] -->
-        <div class="pointer-events-none absolute -inset-[100%] animate-[login-border-spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,#6366f1,#38bdf8,#818cf8,#a855f7,#0ea5e9,#6366f1)] opacity-75"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-500/60 via-sky-400/40 to-indigo-500/60 opacity-60"></div>
 
         <!-- Inner Login Card -->
-        <div class="login-card relative rounded-[1.65rem] border border-white/10 bg-slate-900/95 p-5 sm:p-6 backdrop-blur-2xl transition-all duration-300"
+        <div class="login-card relative rounded-[1.65rem] border border-white/10 bg-slate-900/95 p-8 sm:p-10 transition-all duration-300"
              x-data="{
                 showPassword: false,
                 email: '{{ old('email', '') }}',
                 password: '',
                 fillDemo(role) {
                     if (role === 'admin') {
-                        this.email = 'admin@example.com';
+                        this.email = 'quan.nm@hrm.local';
                         this.password = 'Password123!';
                     } else if (role === 'hr') {
-                        this.email = 'hr@example.com';
+                        this.email = 'anh.tn@hrm.local';
                         this.password = 'Password123!';
                     } else if (role === 'employee') {
-                        this.email = 'employee1@example.com';
+                        this.email = 'huy.pq@hrm.local';
                         this.password = 'Password123!';
                     }
                 }
@@ -35,7 +35,7 @@
                     </svg>
                 </div>
                 <h1 class="mt-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl">Chào mừng bạn trở lại</h1>
-                <p class="mt-0.5 text-xs text-slate-400">Đăng nhập không gian làm việc số Luna HR.</p>
+                <p class="mt-0.5 text-sm text-slate-400">Đăng nhập vào hệ thống quản lý nhân sự.</p>
             </div>
 
             <!-- Session Status -->
@@ -81,7 +81,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-3">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
                 <!-- Email Address -->
@@ -91,7 +91,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                         </div>
-                        <input id="email" x-model="email" type="email" name="email" required autofocus autocomplete="username" placeholder="name@company.com" class="block w-full rounded-xl border border-white/15 bg-slate-950/60 py-2 pl-9 pr-3 text-xs sm:text-sm text-white placeholder-slate-500 shadow-inner transition focus:border-indigo-400 focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-indigo-400/20">
+                        <input id="email" x-model="email" type="email" name="email" required autofocus autocomplete="username" placeholder="name@company.com" class="block w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-10 pr-3 text-sm text-white placeholder-slate-500 shadow-inner transition focus:border-indigo-400 focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-indigo-400/20">
                     </div>
                 </div>
 
@@ -107,7 +107,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </div>
-                        <input id="password" x-model="password" :type="showPassword ? 'text' : 'password'" name="password" required autocomplete="current-password" placeholder="••••••••" class="block w-full rounded-xl border border-white/15 bg-slate-950/60 py-2 pl-9 pr-9 text-xs sm:text-sm text-white placeholder-slate-500 shadow-inner transition focus:border-indigo-400 focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-indigo-400/20">
+                        <input id="password" x-model="password" :type="showPassword ? 'text' : 'password'" name="password" required autocomplete="current-password" placeholder="••••••••" class="block w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-10 pr-10 text-sm text-white placeholder-slate-500 shadow-inner transition focus:border-indigo-400 focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-indigo-400/20">
                         <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-white" :aria-label="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
                             <svg x-show="!showPassword" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             <svg x-show="showPassword" x-cloak class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
@@ -122,7 +122,7 @@
                 </div>
 
                 <!-- Submit Button (Clean, No Arrow) -->
-                <button type="submit" class="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 py-2.5 px-4 text-xs sm:text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110 hover:shadow-indigo-500/40 active:scale-[0.99] mt-1">
+                <button type="submit" class="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 py-3.5 px-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110 hover:shadow-indigo-500/40 active:scale-[0.99] mt-2">
                     <span>Đăng nhập hệ thống</span>
                 </button>
             </form>
@@ -139,6 +139,7 @@
 
         /* Container chứa các cánh hoa nở */
         .login-bloom-container {
+            display: none !important;
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
@@ -157,7 +158,7 @@
             filter: blur(1.5px);
         }
 
-        /* 6 Cánh hoa đồng bộ hoàn hảo với bảng màu Luna HR Luxury: Electric Indigo, Sky, Violet, Emerald */
+        /* Bảng màu giao diện HR Management */
         .login-bloom-petal:nth-child(1) { background: linear-gradient(135deg, #4f46e5, #6366f1); }
         .login-bloom-petal:nth-child(2) { background: linear-gradient(135deg, #0284c7, #38bdf8); }
         .login-bloom-petal:nth-child(3) { background: linear-gradient(135deg, #7c3aed, #a855f7); }
@@ -232,6 +233,8 @@
 
             if (form && submitBtn) {
                 form.addEventListener('submit', function(e) {
+                    // Submit immediately; keep the login flow clear and responsive.
+                    return;
                     if (!form.checkValidity()) return;
 
                     e.preventDefault();

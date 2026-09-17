@@ -57,7 +57,10 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Tiếp nhận yêu cầu, hỗ trợ và duy trì quan hệ với khách hàng.',
             ],
         ])->mapWithKeys(function (array $data) {
-            $department = Department::create($data);
+            $department = Department::updateOrCreate(
+                ['code' => $data['code']],
+                $data
+            );
 
             return [$data['code'] => $department];
         });
@@ -68,16 +71,20 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        $admin = User::create([
+        $adminAttributes = [
             'name' => 'Nguyễn Minh Quân',
             'email' => 'quan.nm@hrm.local',
             'password' => $password,
             'role' => 'admin',
             'account_status' => 'active',
             'email_verified_at' => now(),
-        ]);
+        ];
+        $admin = User::where('email', $adminAttributes['email'])
+            ->orWhereHas('employee', fn ($query) => $query->where('employee_code', 'ADM-0001'))
+            ->first();
+        $admin ? $admin->update($adminAttributes) : $admin = User::create($adminAttributes);
 
-        $admin->employee()->create([
+        $admin->employee()->updateOrCreate([], [
             'department_id' => $departments['PB-CNTT']->id,
             'employee_code' => 'ADM-0001',
             'phone' => '0901000001',
@@ -118,16 +125,20 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($hrData as $item) {
-            $user = User::create([
+            $userAttributes = [
                 'name' => $item['name'],
                 'email' => $item['email'],
                 'password' => $password,
                 'role' => 'hr',
                 'account_status' => 'active',
                 'email_verified_at' => now(),
-            ]);
+            ];
+            $user = User::where('email', $userAttributes['email'])
+                ->orWhereHas('employee', fn ($query) => $query->where('employee_code', $item['employee_code']))
+                ->first();
+            $user ? $user->update($userAttributes) : $user = User::create($userAttributes);
 
-            $user->employee()->create([
+            $user->employee()->updateOrCreate([], [
                 'department_id' => $departments['PB-HCNS']->id,
                 'employee_code' => $item['employee_code'],
                 'phone' => $item['phone'],
@@ -356,7 +367,7 @@ class DatabaseSeeder extends Seeder
         foreach ($employees as $index => $data) {
             $employmentStatus = $data['employment_status'] ?? 'active';
 
-            $user = User::create([
+            $userAttributes = [
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => $password,
@@ -365,9 +376,13 @@ class DatabaseSeeder extends Seeder
                     ? 'active'
                     : 'inactive',
                 'email_verified_at' => now(),
-            ]);
+            ];
+            $user = User::where('email', $userAttributes['email'])
+                ->orWhereHas('employee', fn ($query) => $query->where('employee_code', $data['code']))
+                ->first();
+            $user ? $user->update($userAttributes) : $user = User::create($userAttributes);
 
-            $employee = $user->employee()->create([
+            $employee = $user->employee()->updateOrCreate([], [
                 'department_id' => $departments[$data['department']]->id,
                 'employee_code' => $data['code'],
                 'phone' => $data['phone'],
@@ -496,8 +511,9 @@ class DatabaseSeeder extends Seeder
                 ])->random();
             }
 
-            $employee->attendances()->create([
+            $employee->attendances()->updateOrCreate([
                 'work_date' => $date->toDateString(),
+            ], [
                 'check_in' => $checkIn,
                 'check_out' => $checkOut,
                 'status' => $status,

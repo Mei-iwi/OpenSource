@@ -152,7 +152,7 @@ docker compose exec app php artisan db:seed --force
 docker compose exec app php artisan storage:link
 ```
 
-Truy cập `http://localhost:8080`. Tài khoản demo ở mục 2.5. Container MySQL dùng database `hr_management`, hostname nội bộ `db`, port host `3307` và volume `hr_mysql_data` để lưu dữ liệu. Chỉ chạy `db:seed` một lần trên volume mới; chạy lại sẽ tạo bản ghi trùng.
+Truy cập `http://localhost:8080`. Tài khoản demo ở mục 2.5. Container MySQL dùng database `hr_management`, hostname nội bộ `db`, port host `3307` và volume `hr_mysql_data` để lưu dữ liệu. Seeder có thể chạy lại an toàn để cập nhật dữ liệu demo; các bản ghi được cập nhật theo mã định danh thay vì tạo trùng. Nếu `storage:link` báo link đã tồn tại thì có thể bỏ qua.
 
 ```bash
 docker compose logs -f app

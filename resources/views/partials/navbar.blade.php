@@ -24,7 +24,7 @@
                 <div>
                     <h1 class="text-sm font-bold tracking-tight text-[var(--app-text)] sm:text-base">{{ $pageTitle }}</h1>
                     <div class="hidden items-center gap-1.5 text-xs text-[var(--app-muted)] sm:flex">
-                        <span>Luna HR</span>
+                        <span>HR Management</span>
                         <span>/</span>
                         <span class="text-indigo-600 dark:text-indigo-400 font-medium">Workspace</span>
                     </div>
@@ -47,7 +47,7 @@
             }
         }" class="hidden items-center gap-3 rounded-full border border-[var(--app-border)] bg-[var(--app-surface)]/60 px-4 py-1.5 shadow-xs md:flex">
             <span class="relative flex h-2 w-2">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40"></span>
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
             </span>
             <span class="text-xs font-semibold text-[var(--app-text)] font-mono" x-text="time">--:--:--</span>
@@ -75,7 +75,7 @@
             <!-- User Profile Menu Wrapper -->
             <div class="relative" x-data="{ userMenuOpen: false }">
                 <!-- User Menu Trigger -->
-                <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="user-profile-trigger flex items-center gap-2.5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-1.5 pr-3 shadow-xs transition hover:border-indigo-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Mở menu tài khoản">
+                <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="user-profile-trigger flex items-center gap-2.5 border-0 bg-transparent p-0 shadow-none transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Mở menu tài khoản">
                     <span class="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-xs font-bold text-white shadow-sm">
                         @if (auth()->user()->avatar_url)
                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">

@@ -20,7 +20,7 @@
             document.documentElement.classList.add(`nav-state-${document.documentElement.dataset.navState}`, `nav-position-${document.documentElement.dataset.navPosition}`);
         })();
     </script>
-    <title>@yield('title', config('app.name', 'Luna HR'))</title>
+    <title>@yield('title', config('app.name', 'HR Management'))</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet">
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -52,7 +52,7 @@
                 <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
             </div>
             <h2 id="logout-title" class="text-lg font-bold text-[var(--app-text)]">Xác nhận đăng xuất</h2>
-            <p class="mt-2 text-sm text-[var(--app-muted)]">Bạn có chắc chắn muốn đăng xuất khỏi hệ thống Luna HR?</p>
+            <p class="mt-2 text-sm text-[var(--app-muted)]">Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?</p>
             <div class="mt-6 flex items-center justify-center gap-3">
                 <button type="button" @click="logoutConfirm = false" class="min-w-28 rounded-xl border border-[var(--app-border)] px-5 py-2.5 text-sm font-semibold text-[var(--app-text)] transition hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
                 <form method="POST" action="{{ route('logout') }}">

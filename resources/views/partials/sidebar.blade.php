@@ -22,8 +22,7 @@
                     </div>
                     <div class="sidebar-label">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-base font-extrabold tracking-tight text-[var(--app-text)]">Luna<span class="text-indigo-600 dark:text-indigo-400">HR</span></span>
-                            <span class="rounded-md bg-indigo-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Pro</span>
+                            <span class="text-base font-extrabold tracking-tight text-[var(--app-text)]">HR Management</span>
                         </div>
                         <p class="text-xs font-medium text-[var(--app-muted)]">Enterprise Platform</p>
                     </div>
@@ -181,7 +180,7 @@
 
     <!-- Sidebar Footer -->
     <div class="sidebar-label border-t border-[var(--app-border)] p-4">
-        <div class="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-50 to-indigo-50/40 dark:from-slate-800/60 dark:to-indigo-950/30 p-3 border border-slate-200/60 dark:border-white/5">
+        <div class="flex items-center gap-3 p-2">
             <div class="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 font-bold text-white shadow-sm">
                 @if (auth()->user()->avatar_url)
                     <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">

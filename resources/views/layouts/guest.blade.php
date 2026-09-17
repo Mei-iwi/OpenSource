@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Luna HR') }} — Đăng nhập hệ thống</title>
+    <title>{{ config('app.name', 'HR Management') }} — Đăng nhập hệ thống</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -28,11 +28,7 @@
 <body class="font-sans antialiased text-slate-900 dark:text-slate-100 bg-slate-950 selection:bg-indigo-500 selection:text-white min-h-screen">
     <div x-data="{ dark: document.documentElement.classList.contains('dark'), toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('hr-theme', this.dark ? 'dark' : 'light'); } }" class="relative flex h-screen min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-3 sm:py-6">
         <!-- Ambient Glowing Background Orbs -->
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-indigo-600/25 blur-3xl"></div>
-            <div class="absolute -right-20 -bottom-20 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"></div>
-            <div class="absolute left-1/2 top-1/3 -translate-x-1/2 h-80 w-80 rounded-full bg-purple-600/15 blur-3xl"></div>
-        </div>
+        <div class="pointer-events-none absolute inset-0 bg-slate-900/20"></div>
 
         <!-- Theme Switcher Floating Top Right -->
         <button type="button" @click="toggleTheme()" class="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-slate-900/60 text-slate-300 backdrop-blur-xl transition hover:bg-white/10 hover:text-white" :title="dark ? 'Chuyển sang nền sáng' : 'Chuyển sang nền tối'" aria-label="Chuyển đổi giao diện sáng tối">
@@ -49,7 +45,7 @@
         </a>
 
         <!-- Content Container -->
-        <div class="relative z-10 w-full max-w-[440px] my-auto">
+        <div class="relative z-10 my-auto w-full max-w-[560px]">
             {{ $slot }}
         </div>
     </div>
