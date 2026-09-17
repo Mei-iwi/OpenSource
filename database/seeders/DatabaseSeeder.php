@@ -73,7 +73,7 @@ class DatabaseSeeder extends Seeder
 
         $adminAttributes = [
             'name' => 'Nguyễn Minh Quân',
-            'email' => 'quan.nm@hrm.local',
+            'email' => 'quan.nm@admin.hr-management.com',
             'password' => $password,
             'role' => 'admin',
             'account_status' => 'active',
@@ -104,7 +104,7 @@ class DatabaseSeeder extends Seeder
         $hrData = [
             [
                 'name' => 'Trần Ngọc Anh',
-                'email' => 'anh.tn@hrm.local',
+                'email' => 'anh.tn@hr.hr-management.com',
                 'employee_code' => 'HR-0001',
                 'phone' => '0901000002',
                 'address' => 'Quận Bình Thạnh, TP. Hồ Chí Minh',
@@ -114,7 +114,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Lê Thị Thu Hà',
-                'email' => 'ha.ltt@hrm.local',
+                'email' => 'ha.ltt@hr.hr-management.com',
                 'employee_code' => 'HR-0002',
                 'phone' => '0901000003',
                 'address' => 'TP. Thủ Đức, TP. Hồ Chí Minh',
@@ -160,7 +160,7 @@ class DatabaseSeeder extends Seeder
             // Công nghệ thông tin
             [
                 'name' => 'Phạm Quốc Huy',
-                'email' => 'huy.pq@hrm.local',
+                'email' => 'huy.pq@emp.hr-management.com',
                 'department' => 'PB-CNTT',
                 'code' => 'IT-0001',
                 'phone' => '0902000001',
@@ -171,7 +171,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Nguyễn Hoàng Nam',
-                'email' => 'nam.nh@hrm.local',
+                'email' => 'nam.nh@emp.hr-management.com',
                 'department' => 'PB-CNTT',
                 'code' => 'IT-0002',
                 'phone' => '0902000002',
@@ -182,7 +182,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Võ Gia Bảo',
-                'email' => 'bao.vg@hrm.local',
+                'email' => 'bao.vg@emp.hr-management.com',
                 'department' => 'PB-CNTT',
                 'code' => 'IT-0003',
                 'phone' => '0902000003',
@@ -193,7 +193,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Đặng Minh Khoa',
-                'email' => 'khoa.dm@hrm.local',
+                'email' => 'khoa.dm@emp.hr-management.com',
                 'department' => 'PB-CNTT',
                 'code' => 'IT-0004',
                 'phone' => '0902000004',
@@ -206,7 +206,7 @@ class DatabaseSeeder extends Seeder
             // Kinh doanh
             [
                 'name' => 'Trần Đức Anh',
-                'email' => 'anh.td@hrm.local',
+                'email' => 'anh.td@emp.hr-management.com',
                 'department' => 'PB-KD',
                 'code' => 'KD-0001',
                 'phone' => '0903000001',
@@ -217,7 +217,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Nguyễn Thảo Vy',
-                'email' => 'vy.nt@hrm.local',
+                'email' => 'vy.nt@emp.hr-management.com',
                 'department' => 'PB-KD',
                 'code' => 'KD-0002',
                 'phone' => '0903000002',
@@ -228,7 +228,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Lê Minh Tuấn',
-                'email' => 'tuan.lm@hrm.local',
+                'email' => 'tuan.lm@emp.hr-management.com',
                 'department' => 'PB-KD',
                 'code' => 'KD-0003',
                 'phone' => '0903000003',
@@ -239,7 +239,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Bùi Khánh Linh',
-                'email' => 'linh.bk@hrm.local',
+                'email' => 'linh.bk@emp.hr-management.com',
                 'department' => 'PB-KD',
                 'code' => 'KD-0004',
                 'phone' => '0903000004',
@@ -252,7 +252,7 @@ class DatabaseSeeder extends Seeder
             // Tài chính - Kế toán
             [
                 'name' => 'Nguyễn Thanh Hương',
-                'email' => 'huong.nt@hrm.local',
+                'email' => 'huong.nt@emp.hr-management.com',
                 'department' => 'PB-TCKT',
                 'code' => 'KT-0001',
                 'phone' => '0904000001',
@@ -263,7 +263,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Phan Thị Mỹ Duyên',
-                'email' => 'duyen.ptm@hrm.local',
+                'email' => 'duyen.ptm@emp.hr-management.com',
                 'department' => 'PB-TCKT',
                 'code' => 'KT-0002',
                 'phone' => '0904000002',
@@ -274,7 +274,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Trương Hoàng Long',
-                'email' => 'long.th@hrm.local',
+                'email' => 'long.th@emp.hr-management.com',
                 'department' => 'PB-TCKT',
                 'code' => 'KT-0003',
                 'phone' => '0904000003',
@@ -287,7 +287,7 @@ class DatabaseSeeder extends Seeder
             // Chăm sóc khách hàng
             [
                 'name' => 'Đỗ Ngọc Mai',
-                'email' => 'mai.dn@hrm.local',
+                'email' => 'mai.dn@emp.hr-management.com',
                 'department' => 'PB-CSKH',
                 'code' => 'CS-0001',
                 'phone' => '0905000001',
@@ -298,7 +298,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Nguyễn Quỳnh Trang',
-                'email' => 'trang.nq@hrm.local',
+                'email' => 'trang.nq@emp.hr-management.com',
                 'department' => 'PB-CSKH',
                 'code' => 'CS-0002',
                 'phone' => '0905000002',
@@ -309,7 +309,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Trần Nhật Minh',
-                'email' => 'minh.tn@hrm.local',
+                'email' => 'minh.tn@emp.hr-management.com',
                 'department' => 'PB-CSKH',
                 'code' => 'CS-0003',
                 'phone' => '0905000003',
@@ -322,7 +322,7 @@ class DatabaseSeeder extends Seeder
             // Hành chính - Nhân sự
             [
                 'name' => 'Ngô Thanh Tâm',
-                'email' => 'tam.nt@hrm.local',
+                'email' => 'tam.nt@emp.hr-management.com',
                 'department' => 'PB-HCNS',
                 'code' => 'HC-0001',
                 'phone' => '0906000001',
@@ -333,7 +333,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Hoàng Ngọc Yến',
-                'email' => 'yen.hn@hrm.local',
+                'email' => 'yen.hn@emp.hr-management.com',
                 'department' => 'PB-HCNS',
                 'code' => 'HC-0002',
                 'phone' => '0906000002',
@@ -346,7 +346,7 @@ class DatabaseSeeder extends Seeder
             // Nhân viên đã nghỉ việc để test trạng thái
             [
                 'name' => 'Lâm Quốc Khánh',
-                'email' => 'khanh.lq@hrm.local',
+                'email' => 'khanh.lq@emp.hr-management.com',
                 'department' => 'PB-KD',
                 'code' => 'KD-0005',
                 'phone' => '0903000005',

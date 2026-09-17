@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CommunicationController;
 use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HrDashboardController;
 use App\Http\Controllers\HR\DepartmentController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequest
 use App\Http\Controllers\SelfAttendanceController;
 use App\Http\Controllers\AttendanceProofController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\InboxController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,13 +38,27 @@ Route::middleware(['auth', 'account.active'])->prefix('me')->name('me.')->group(
 
 Route::middleware(['auth', 'account.active'])->get('/attendance/{attendance}/proof/{type}', [AttendanceProofController::class, 'show'])->name('attendance.proof');
 Route::middleware(['auth', 'account.active'])->get('/avatar/{user}', [AvatarController::class, 'show'])->name('avatar.show');
+Route::middleware(['auth', 'account.active', 'role:admin,hr,employee'])
+    ->get('/advertisement/{advertisement}/image', [CommunicationController::class, 'showAdvertisementImage'])
+    ->name('advertisement.image');
+Route::middleware(['auth', 'account.active', 'role:hr,employee'])
+    ->get('/inbox', [InboxController::class, 'index'])
+    ->name('inbox.index');
 
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+    Route::get('/communications', [CommunicationController::class, 'index'])->name('communications.index');
+    Route::post('/communications/messages', [CommunicationController::class, 'sendMessage'])->name('communications.messages.send');
+    Route::post('/communications/advertisement', [CommunicationController::class, 'saveAdvertisement'])->name('communications.advertisement.save');
+    Route::patch('/communications/advertisement/{advertisement}/toggle', [CommunicationController::class, 'toggleAdvertisement'])->name('communications.advertisement.toggle');
     Route::patch('/users/{user}/lock', [UserController::class, 'lock'])->name('users.lock');
     Route::patch('/users/{user}/unlock', [UserController::class, 'unlock'])->name('users.unlock');
     Route::resource('users', UserController::class);
 });
+
+Route::middleware(['auth', 'account.active', 'role:hr,employee'])
+    ->get('/advertisement/active', [CommunicationController::class, 'activeAdvertisement'])
+    ->name('advertisement.active');
 
 Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->name('hr.')->group(function () {
     Route::get('/dashboard', HrDashboardController::class)->name('dashboard');

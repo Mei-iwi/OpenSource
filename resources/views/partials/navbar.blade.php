@@ -24,7 +24,7 @@
                 <div>
                     <h1 class="text-sm font-bold tracking-tight text-[var(--app-text)] sm:text-base">{{ $pageTitle }}</h1>
                     <div class="hidden items-center gap-1.5 text-xs text-[var(--app-muted)] sm:flex">
-                        <span>HR Management</span>
+                        <span>Snake Motion</span>
                         <span>/</span>
                         <span class="text-indigo-600 dark:text-indigo-400 font-medium">Workspace</span>
                     </div>
@@ -76,13 +76,7 @@
             <div class="relative" x-data="{ userMenuOpen: false }">
                 <!-- User Menu Trigger -->
                 <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="user-profile-trigger flex items-center gap-2.5 border-0 bg-transparent p-0 shadow-none transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Mở menu tài khoản">
-                    <span class="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-xs font-bold text-white shadow-sm">
-                        @if (auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
-                        @else
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        @endif
-                    </span>
+                    <x-user-avatar :user="auth()->user()" class="snake-avatar-motion h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 shadow-sm" />
                     <div class="hidden text-left sm:block">
                         <p class="max-w-28 truncate text-xs font-bold text-[var(--app-text)] sm:max-w-36">{{ auth()->user()->name }}</p>
                         <p class="text-[10px] font-medium text-[var(--app-muted)]">{{ $roleLabels[auth()->user()->role] ?? auth()->user()->role }}</p>

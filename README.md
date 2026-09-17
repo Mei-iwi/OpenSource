@@ -112,14 +112,14 @@ Mật khẩu chung cho các tài khoản demo là `Password123!`. Seeder tạo 2
 
 | Vai trò | Email đăng nhập | Ghi chú |
 |---|---|---|
-| Admin | `quan.nm@hrm.local` | Toàn quyền hệ thống |
-| HR | `anh.tn@hrm.local` | Quản lý nghiệp vụ nhân sự |
-| HR | `ha.ltt@hrm.local` | Tài khoản HR thứ hai |
-| Employee | `huy.pq@hrm.local`, `nam.nh@hrm.local`, `bao.vg@hrm.local`, `khoa.dm@hrm.local` | Nhân viên CNTT |
-| Employee | `anh.td@hrm.local`, `vy.nt@hrm.local`, `tuan.lm@hrm.local`, `linh.bk@hrm.local`, `khanh.lq@hrm.local` | Nhân viên Kinh doanh; `khanh.lq@hrm.local` ở trạng thái inactive |
-| Employee | `huong.nt@hrm.local`, `duyen.ptm@hrm.local`, `long.th@hrm.local` | Nhân viên Tài chính - Kế toán |
-| Employee | `mai.dn@hrm.local`, `trang.nq@hrm.local`, `minh.tn@hrm.local` | Nhân viên Chăm sóc khách hàng |
-| Employee | `tam.nt@hrm.local`, `yen.hn@hrm.local` | Nhân viên Hành chính - Nhân sự |
+| Admin | `quan.nm@admin.hr-management.com` | Toàn quyền hệ thống |
+| HR | `anh.tn@hr.hr-management.com` | Quản lý nghiệp vụ nhân sự |
+| HR | `ha.ltt@hr.hr-management.com` | Tài khoản HR thứ hai |
+| Employee | `huy.pq@emp.hr-management.com`, `nam.nh@emp.hr-management.com`, `bao.vg@emp.hr-management.com`, `khoa.dm@emp.hr-management.com` | Nhân viên CNTT |
+| Employee | `anh.td@emp.hr-management.com`, `vy.nt@emp.hr-management.com`, `tuan.lm@emp.hr-management.com`, `linh.bk@emp.hr-management.com`, `khanh.lq@emp.hr-management.com` | Nhân viên Kinh doanh; `khanh.lq@emp.hr-management.com` ở trạng thái inactive |
+| Employee | `huong.nt@emp.hr-management.com`, `duyen.ptm@emp.hr-management.com`, `long.th@emp.hr-management.com` | Nhân viên Tài chính - Kế toán |
+| Employee | `mai.dn@emp.hr-management.com`, `trang.nq@emp.hr-management.com`, `minh.tn@emp.hr-management.com` | Nhân viên Chăm sóc khách hàng |
+| Employee | `tam.nt@emp.hr-management.com`, `yen.hn@emp.hr-management.com` | Nhân viên Hành chính - Nhân sự |
 
 Các tài khoản trên chỉ dùng cho development/demo. Khi triển khai thật cần đổi mật khẩu và không sử dụng thông tin mặc định.
 
@@ -190,7 +190,13 @@ Quyền được kiểm tra ở server-side bằng authentication, middleware v�
 - Employee gửi đơn nghỉ; Admin/HR xem xét, duyệt hoặc từ chối đơn đang chờ.
 - Giao diện Blade responsive, Tailwind CSS 4 và Vite.
 
-### 4.4. Công nghệ và cấu trúc
+### 4.4. Truyền thông Admin và quảng cáo
+
+- Admin có thể gửi thư với tiêu đề, nội dung và nhóm nhận `all`, `hr`, `employee` hoặc từng tài khoản. Thư dùng Laravel Mail; đổi `MAIL_MAILER` và thông số SMTP trong `.env` để gửi ra email thật (mặc định `log` chỉ ghi thư vào log local).
+- Admin có thể bật/tắt một thông báo quảng cáo, đặt thời gian hiển thị và chu kỳ lặp. Thông báo tự hiện trên tài khoản HR/Employee và đồng bộ trạng thái định kỳ để dừng khi Admin tắt.
+- HR và Employee xem thư đã nhận trong menu **Hộp thư**. Quảng cáo hỗ trợ upload ảnh JPG, PNG hoặc WEBP và hiển thị ảnh kèm nội dung trong popup.
+
+### 4.5. Công nghệ và cấu trúc
 
 - Backend: PHP 8.3, Laravel 12, Laravel MVC.
 - Database: MySQL; Eloquent ORM và quan hệ `User`, `Employee`, `Department`, `Attendance`, `LeaveRequest`.

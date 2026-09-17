@@ -12,13 +12,13 @@
                 password: '',
                 fillDemo(role) {
                     if (role === 'admin') {
-                        this.email = 'quan.nm@hrm.local';
+                        this.email = 'quan.nm@admin.hr-management.com';
                         this.password = 'Password123!';
                     } else if (role === 'hr') {
-                        this.email = 'anh.tn@hrm.local';
+                        this.email = 'anh.tn@hr.hr-management.com';
                         this.password = 'Password123!';
                     } else if (role === 'employee') {
-                        this.email = 'huy.pq@hrm.local';
+                        this.email = 'huy.pq@emp.hr-management.com';
                         this.password = 'Password123!';
                     }
                 }
@@ -26,13 +26,8 @@
 
             <!-- Logo & Header -->
             <div class="mb-4 text-center">
-                <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 text-white shadow-lg shadow-indigo-500/35 ring-2 ring-indigo-500/20">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
+                <div class="snake-avatar-motion mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-lime-500 text-white shadow-lg shadow-emerald-900/35 ring-2 ring-emerald-500/20" aria-label="Ảnh rắn chuyển động">
+                    <img src="{{ asset('images/default-employee.png') }}" alt="Ảnh rắn chuyển động" class="h-full w-full object-cover">
                 </div>
                 <h1 class="mt-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl">Chào mừng bạn trở lại</h1>
                 <p class="mt-0.5 text-sm text-slate-400">Đăng nhập vào hệ thống quản lý nhân sự.</p>
@@ -158,7 +153,7 @@
             filter: blur(1.5px);
         }
 
-        /* Bảng màu giao diện HR Management */
+        /* Bảng màu giao diện Snake Motion */
         .login-bloom-petal:nth-child(1) { background: linear-gradient(135deg, #4f46e5, #6366f1); }
         .login-bloom-petal:nth-child(2) { background: linear-gradient(135deg, #0284c7, #38bdf8); }
         .login-bloom-petal:nth-child(3) { background: linear-gradient(135deg, #7c3aed, #a855f7); }
