@@ -132,23 +132,21 @@
 </div>
 
 <!-- Pending Leave Requests Alert Banner -->
-@if($pendingLeaveRequests->count() > 0)
-    <div class="app-panel mt-6 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-500/5 via-[var(--app-surface)] to-[var(--app-surface)] p-5">
-        <div class="flex items-center gap-3.5">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
-            </div>
-            <div>
-                <h2 class="text-sm font-bold text-[var(--app-text)] sm:text-base">Có {{ $pendingLeaveRequests->count() }} đơn nghỉ phép đang chờ xét duyệt</h2>
-                <p class="text-xs text-[var(--app-muted)]">Các yêu cầu nghỉ phép mới nhất từ nhân viên cần được ban quản lý phê duyệt kịp thời.</p>
-            </div>
+<div class="app-panel mt-6 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-500/5 via-[var(--app-surface)] to-[var(--app-surface)] p-5">
+    <div class="flex items-center gap-3.5">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
         </div>
-        <a href="{{ route('hr.leave-requests.index', ['status' => 'pending']) }}" class="app-button-primary text-xs py-2 px-4">
-            <span>Duyệt đơn ngay</span>
-            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+        <div>
+            <h2 class="text-sm font-bold text-[var(--app-text)] sm:text-base">Đơn nghỉ chờ duyệt</h2>
+            <p class="text-xs text-[var(--app-muted)]">{{ $pendingLeaveRequests->count() }} đơn gần nhất cần xem xét</p>
+        </div>
     </div>
-@endif
+    <a href="{{ route('hr.leave-requests.index', ['status' => 'pending']) }}" class="app-button-primary text-xs py-2 px-4">
+        <span>Mở danh sách đơn nghỉ</span>
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+</div>
 
 <!-- Two Column Charts Section -->
 <div class="dashboard-two-column mt-6 grid gap-6">
@@ -218,7 +216,7 @@
         <div>
             <div class="flex items-center justify-between border-b border-[var(--app-border)] pb-4">
                 <div>
-                    <h2 class="app-heading">Phân bổ tài khoản theo vai trò</h2>
+                    <h2 class="app-heading">Tài khoản theo role</h2>
                     <p class="app-subtitle">Tổng số: {{ $totalUsers }} tài khoản hệ thống</p>
                 </div>
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400">
@@ -250,9 +248,9 @@
         </div>
 
         <div class="mt-6 pt-4 border-t border-[var(--app-border)] flex items-center justify-between">
-            <span class="text-xs text-[var(--app-muted)]">Báo cáo chuyên sâu</span>
+            <span class="text-xs text-[var(--app-muted)]">Module HR</span>
             <a href="{{ route('hr.reports.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
-                <span>Xem phân tích chi tiết</span>
+                <span>Mở báo cáo HR →</span>
             </a>
         </div>
     </div>
