@@ -16,7 +16,7 @@ class AttendanceAuditTest extends TestCase
     public function test_demo_admin_hr_and_employee_accounts_have_employee_profiles(): void
     {
         $this->seed();
-        foreach (['admin@example.com', 'hr@example.com', 'hr2@example.com', 'employee1@example.com'] as $email) {
+        foreach (['quan.nm@admin.hr-management.com', 'anh.tn@hr.hr-management.com', 'ha.ltt@hr.hr-management.com', 'huy.pq@emp.hr-management.com'] as $email) {
             $this->assertNotNull(User::where('email', $email)->firstOrFail()->employee);
         }
         $this->assertSame(User::whereIn('role', ['admin', 'hr', 'employee'])->count(), Employee::count());

@@ -584,6 +584,22 @@ html.dark .app-quick-link:hover {
     justify-content: flex-start;
 }
 
+@keyframes snake-avatar-wiggle {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    50% { transform: rotate(2deg) translateY(-1px); }
+}
+
+.snake-avatar-motion img {
+    animation: snake-avatar-wiggle 2.8s ease-in-out infinite;
+    transform-origin: 50% 85%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snake-avatar-motion img {
+        animation: none;
+    }
+}
+
 .logout-dialog {
     position: fixed !important;
     inset: 0 !important;

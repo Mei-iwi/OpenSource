@@ -9,20 +9,14 @@
 <div class="flex min-h-full flex-col justify-between">
     <div>
         <!-- Brand Header -->
-        <div class="border-b border-[var(--app-border)] px-5 py-5">
-            <div class="flex items-center justify-between">
+        <div class="relative overflow-hidden border-b border-blue-100 px-5 py-5 dark:border-blue-900/50">
+            <img src="{{ asset('images/sidebar-header.png') }}" alt="Không gian làm việc quản trị nhân sự" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_42%] opacity-40" loading="lazy">
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--app-surface)]/75 via-[var(--app-surface)]/35 to-transparent"></div>
+            <div class="relative z-10 flex items-center justify-between">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 text-white shadow-md shadow-indigo-500/25 ring-2 ring-indigo-500/20">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </div>
                     <div class="sidebar-label">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-base font-extrabold tracking-tight text-[var(--app-text)]">HR Management</span>
+                            <span class="text-base font-extrabold tracking-tight text-[var(--app-text)]">Snake Motion</span>
                         </div>
                         <p class="text-xs font-medium text-[var(--app-muted)]">Enterprise Platform</p>
                     </div>
@@ -67,6 +61,19 @@
                 </div>
             </div>
 
+            @if (in_array($role, ['hr', 'employee'], true))
+                <div>
+                    <div class="mt-2 space-y-1">
+                        <a href="{{ route('inbox.index') }}" title="Hộp thư" aria-label="Hộp thư" class="{{ $link('inbox.index') }}">
+                            <span class="sidebar-icon">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H5.5L4 18.5V5Z"/><path d="M8 9h8M8 13h5"/></svg>
+                            </span>
+                            <span class="sidebar-label">Hộp thư</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <!-- Khu vực Quản lý (Admin / HR) -->
             @if (in_array($role, ['admin', 'hr'], true))
                 <div>
@@ -78,6 +85,12 @@
                                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
                                 </span>
                                 <span class="sidebar-label">Quản lý tài khoản</span>
+                            </a>
+                            <a href="{{ route('admin.communications.index') }}" title="Thư và quảng cáo" aria-label="Thư và quảng cáo" class="{{ $link('admin.communications.*') }}">
+                                <span class="sidebar-icon">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.5L4 18.5V4Z"/><path d="M8 8h8M8 12h5"/></svg>
+                                </span>
+                                <span class="sidebar-label">Thư và quảng cáo</span>
                             </a>
                         @endif
 
@@ -178,26 +191,4 @@
         </nav>
     </div>
 
-    <!-- Sidebar Footer -->
-    <div class="sidebar-label border-t border-[var(--app-border)] p-4">
-        <div class="flex items-center gap-3 p-2">
-            <div class="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 font-bold text-white shadow-sm">
-                @if (auth()->user()->avatar_url)
-                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
-                @else
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                @endif
-                <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-slate-900 bg-emerald-500"></span>
-            </div>
-            <div class="min-w-0 flex-1">
-                <p class="truncate text-xs font-bold text-[var(--app-text)]">{{ auth()->user()->name }}</p>
-                <div class="mt-0.5 flex items-center gap-1.5">
-                    <span class="inline-flex items-center rounded-md bg-indigo-500/10 dark:bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">
-                        {{ $roleLabels[$role] ?? ucfirst($role) }}
-                    </span>
-                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">● Online</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

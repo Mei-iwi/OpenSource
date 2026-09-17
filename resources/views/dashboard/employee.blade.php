@@ -20,13 +20,7 @@
 @if($employee)
     <!-- Employee Identity Card -->
     <div class="app-panel mb-6 flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6 bg-gradient-to-r from-slate-50 via-[var(--app-surface)] to-indigo-50/20 dark:from-slate-800/40 dark:via-[var(--app-surface)] dark:to-indigo-950/20">
-        <div class="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 text-2xl font-bold text-white shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15">
-            @if($employee->avatar_path)
-                <img src="{{ $employee->user->avatar_url }}" alt="Ảnh đại diện {{ $employee->user->name }}" class="h-full w-full object-cover">
-            @else
-                {{ strtoupper(substr($employee->user->name, 0, 1)) }}
-            @endif
-        </div>
+        <x-user-avatar :user="$employee->user" class="h-20 w-20 rounded-2xl shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15" />
         <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
                 <h2 class="truncate text-xl font-extrabold text-[var(--app-text)] sm:text-2xl">{{ $employee->user->name }}</h2>

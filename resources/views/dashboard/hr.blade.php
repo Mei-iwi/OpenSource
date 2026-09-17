@@ -242,9 +242,7 @@
                     <tr>
                         <td>
                             <div class="flex items-center gap-3">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-xs font-bold text-white shadow-xs">
-                                    {{ strtoupper(substr($attendance->employee?->user?->name ?? 'N', 0, 1)) }}
-                                </div>
+                                <x-user-avatar :user="$attendance->employee?->user" class="h-8 w-8 rounded-xl shadow-xs" />
                                 <div>
                                     <p class="font-bold text-[var(--app-text)]">{{ $attendance->employee?->user?->name ?? '—' }}</p>
                                     <p class="text-[11px] text-[var(--app-muted)]">{{ $attendance->employee?->employee_code ?? '—' }}</p>

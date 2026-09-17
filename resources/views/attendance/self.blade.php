@@ -17,13 +17,7 @@
         <!-- Identity & Live Clock Banner -->
         <div class="app-panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6 bg-gradient-to-r from-slate-50 via-[var(--app-surface)] to-indigo-50/25 dark:from-slate-800/40 dark:via-[var(--app-surface)] dark:to-indigo-950/25">
             <div class="flex items-center gap-4">
-                <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 text-xl font-bold text-white shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15">
-                    @if ($employee->user->avatar_path)
-                        <img src="{{ $employee->user->avatar_url }}" alt="Ảnh đại diện {{ $employee->user->name }}" class="h-full w-full object-cover">
-                    @else
-                        {{ strtoupper(substr($employee->user->name, 0, 1)) }}
-                    @endif
-                </div>
+                <x-user-avatar :user="$employee->user" class="h-16 w-16 rounded-2xl shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15" />
                 <div>
                     <h2 class="text-lg font-extrabold text-[var(--app-text)] sm:text-xl">{{ $employee->user->name }}</h2>
                     <p class="text-xs font-semibold text-[var(--app-muted)] mt-0.5">
