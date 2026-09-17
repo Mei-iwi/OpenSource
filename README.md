@@ -112,14 +112,14 @@ Mật khẩu chung cho các tài khoản demo là `Password123!`. Seeder tạo 2
 
 | Vai trò | Email đăng nhập | Ghi chú |
 |---|---|---|
-| Admin | `quan.nm@example.com` | Toàn quyền hệ thống |
-| HR | `anh.tn@example.com` | Quản lý nghiệp vụ nhân sự |
-| HR | `ha.ltt@example.com` | Tài khoản HR thứ hai |
-| Employee | `huy.pq@example.com`, `nam.nh@example.com`, `bao.vg@example.com`, `khoa.dm@example.com` | Nhân viên CNTT |
-| Employee | `anh.td@example.com`, `vy.nt@example.com`, `tuan.lm@example.com`, `linh.bk@example.com`, `khanh.lq@example.com` | Nhân viên Kinh doanh; `khanh.lq@example.com` ở trạng thái inactive |
-| Employee | `huong.nt@example.com`, `duyen.ptm@example.com`, `long.th@example.com` | Nhân viên Tài chính - Kế toán |
-| Employee | `mai.dn@example.com`, `trang.nq@example.com`, `minh.tn@example.com` | Nhân viên Chăm sóc khách hàng |
-| Employee | `tam.nt@example.com`, `yen.hn@example.com` | Nhân viên Hành chính - Nhân sự |
+| Admin | `quan.nm@hrm.local` | Toàn quyền hệ thống |
+| HR | `anh.tn@hrm.local` | Quản lý nghiệp vụ nhân sự |
+| HR | `ha.ltt@hrm.local` | Tài khoản HR thứ hai |
+| Employee | `huy.pq@hrm.local`, `nam.nh@hrm.local`, `bao.vg@hrm.local`, `khoa.dm@hrm.local` | Nhân viên CNTT |
+| Employee | `anh.td@hrm.local`, `vy.nt@hrm.local`, `tuan.lm@hrm.local`, `linh.bk@hrm.local`, `khanh.lq@hrm.local` | Nhân viên Kinh doanh; `khanh.lq@hrm.local` ở trạng thái inactive |
+| Employee | `huong.nt@hrm.local`, `duyen.ptm@hrm.local`, `long.th@hrm.local` | Nhân viên Tài chính - Kế toán |
+| Employee | `mai.dn@hrm.local`, `trang.nq@hrm.local`, `minh.tn@hrm.local` | Nhân viên Chăm sóc khách hàng |
+| Employee | `tam.nt@hrm.local`, `yen.hn@hrm.local` | Nhân viên Hành chính - Nhân sự |
 
 Các tài khoản trên chỉ dùng cho development/demo. Khi triển khai thật cần đổi mật khẩu và không sử dụng thông tin mặc định.
 
