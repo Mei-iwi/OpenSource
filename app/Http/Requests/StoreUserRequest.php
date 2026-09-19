@@ -7,6 +7,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
 {
+    use Concerns\EmployeeProfileRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -22,7 +24,7 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return $this->employeeProfileRules() + [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', 'in:hr,employee'],

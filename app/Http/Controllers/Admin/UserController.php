@@ -6,8 +6,10 @@ use App\Actions\SendPasswordResetLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
@@ -36,7 +38,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        return view('admin.users.create');
+        return view('admin.users.create', ['departments' => Department::orderBy('name')->get()]);
     }
 
     /**
@@ -47,9 +49,12 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         $data['account_status'] = 'active';
-        User::create($data);
+        DB::transaction(function () use ($data) {
+            $user = User::create(collect($data)->only(['name', 'email', 'password', 'role', 'account_status'])->all());
+            $user->employee()->create(collect($data)->only(['employee_code', 'department_id', 'hire_date'])->all() + ['employment_status' => 'active']);
+        });
 
-        return redirect()->route('admin.users.index')->with('success', 'Đã tạo tài khoản thành công.');
+        return redirect()->route('admin.users.index')->with('success', 'Đã tạo tài khoản và hồ sơ nhân viên.');
     }
 
     /**
@@ -65,7 +70,9 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        $departments = Department::orderBy('name')->get();
+
+        return view('admin.users.edit', compact('user', 'departments'));
     }
 
     /**
@@ -79,7 +86,12 @@ class UserController extends Controller
             return back()->withErrors(['role' => 'Không thể hạ quyền tài khoản Admin đang đăng nhập.'])->withInput();
         }
 
-        $user->update($data);
+        DB::transaction(function () use ($user, $data) {
+            $user->update(collect($data)->only(['name', 'email', 'role', 'account_status'])->all());
+            if (isset($data['employee_code']) && ! $user->employee()->exists()) {
+                $user->employee()->create(collect($data)->only(['employee_code', 'department_id', 'hire_date'])->all() + ['employment_status' => 'active']);
+            }
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật tài khoản.');
     }
