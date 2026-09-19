@@ -29,11 +29,6 @@
     @stack('styles')
 </head>
 <body class="min-h-screen bg-[var(--app-bg)] text-[var(--app-text)] antialiased">
-    @php
-        $activeAdvertisement = auth()->check() && ! auth()->user()->isAdmin()
-            ? \App\Models\Advertisement::active()->latest('id')->first()
-            : null;
-    @endphp
     <div x-data="{ mobileMenuOpen: false, navState: document.documentElement.dataset.navState || 'expanded', navPosition: document.documentElement.dataset.navPosition || 'left', sidebarCollapsed: (document.documentElement.dataset.navState || 'expanded') === 'collapsed', dark: document.documentElement.classList.contains('dark'), toggleSidebar() { this.setNavState(this.navState === 'collapsed' ? 'expanded' : 'collapsed'); }, setNavState(state) { this.navState = state; this.sidebarCollapsed = state === 'collapsed'; localStorage.setItem('hr-nav-state', state); localStorage.setItem('hr-sidebar-collapsed', state === 'collapsed'); this.syncNavClasses(); }, setNavPosition(position) { this.navPosition = position; localStorage.setItem('hr-nav-position', position); this.syncNavClasses(); }, syncNavClasses() { document.documentElement.classList.remove('nav-state-expanded', 'nav-state-collapsed', 'nav-state-hidden', 'nav-position-left', 'nav-position-right', 'nav-position-top', 'nav-position-bottom'); document.documentElement.classList.add('nav-state-' + this.navState, 'nav-position-' + this.navPosition); }, toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('hr-theme', this.dark ? 'dark' : 'light'); } }" :class="'nav-state-' + navState + ' nav-position-' + navPosition" class="app-shell min-h-screen">
         <aside class="desktop-nav hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-blue-200 bg-[var(--app-surface)] transition-[width] duration-300 ease-in-out dark:border-blue-900/60 lg:block">@include('partials.sidebar')</aside>
         <div class="app-workspace flex min-w-0 flex-1 flex-col lg:h-screen lg:overflow-hidden">
