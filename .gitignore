@@ -1,4 +1,3 @@
-/.phpunit.cache
 /node_modules
 /public/build
 /public/hot
@@ -9,11 +8,9 @@
 .env
 .env.*
 !.env.example
-!.env.infinityfree.example
 .env.backup
 .env.production
 .phpactor.json
-.phpunit.result.cache
 Homestead.json
 Homestead.yaml
 npm-debug.log
@@ -30,4 +27,3 @@ storage/framework/sessions/*
 storage/framework/testing/*
 storage/framework/views/*
 /codex-prompts/
-/dist/

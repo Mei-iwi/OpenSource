@@ -1,52 +1,53 @@
 # Website Quản lý Nhân sự
 
-## 1. Giới thiệu ngắn
+Ứng dụng quản lý nhân sự xây dựng bằng PHP 8.3, Laravel 12, Blade, Tailwind CSS 3, Vite và MySQL 8.4. Hệ thống có ba vai trò `admin`, `hr`, `employee`, hỗ trợ tài khoản, phòng ban, hồ sơ nhân viên, chấm công, đơn nghỉ, báo cáo, thư nội bộ và quảng cáo.
 
-Website Quản lý Nhân sự là ứng dụng web xây dựng bằng Laravel 12, Blade và MySQL. Project hỗ trợ quản lý tài khoản, phòng ban, nhân viên, chấm công, đơn nghỉ và báo cáo theo ba vai trò `admin`, `hr` và `employee`.
+Project có thể chạy theo một trong hai cách:
 
-Hướng dẫn dưới đây dành cho thành viên mới clone project về máy và chạy môi trường development/demo.
+1. Chạy trực tiếp trên máy bằng Laragon/PHP/MySQL/Node.js.
+2. Chạy toàn bộ ứng dụng và MySQL bằng Docker Compose.
 
-## 2. Clone và cấu hình project
+Hai cách dùng database độc lập. Local mặc định dùng MySQL tại cổng `3306`; Docker dùng MySQL trong container và mở cổng host `3307` để kiểm tra khi cần.
 
-### 2.1. Yêu cầu môi trường
-
-- Git.
-- PHP 8.3.x.
-- Composer 2.x.
-- Node.js 22 trở lên và npm.
-- MySQL 8.4 hoặc phiên bản tương thích.
-- Trên Windows có thể dùng Laragon để chạy PHP, Apache và MySQL.
-
-### 2.2. Clone source và cài package
+## 1. Tải source
 
 ```bash
 git clone https://github.com/Mei-iwi/OpenSource.git
 cd OpenSource
 git switch main
+```
+
+Không commit `.env`, mật khẩu thật, `vendor/`, `node_modules/`, file upload hoặc dữ liệu database.
+
+## 2. Cách 1: chạy trực tiếp trên máy
+
+### 2.1. Yêu cầu
+
+- PHP 8.3 với các extension `pdo_mysql`, `mbstring`, `openssl`, `fileinfo` và `zip`.
+- Composer 2.
+- Node.js 22 và npm.
+- MySQL 8.4 hoặc bản tương thích.
+- Git. Trên Windows có thể dùng Laragon để cung cấp PHP, Apache và MySQL.
+
+Kiểm tra công cụ:
+
+```bash
+php --version
+composer --version
+node --version
+npm --version
+```
+
+### 2.2. Cài dependency
+
+```bash
 composer install
 npm ci
 ```
 
-Kiểm tra source sau khi clone:
+### 2.3. Tạo database local
 
-```bash
-git status
-php --version
-composer --version
-```
-
-Nếu làm chức năng mới, tạo branch riêng và không sửa trực tiếp `main`:
-
-```bash
-git fetch origin
-git switch -c feat/ten-chuc-nang
-```
-
-`vendor/` và `node_modules/` không được commit. Hai thư mục này được tạo lại bằng `composer install` và `npm ci`.
-
-### 2.3. Tạo và cấu hình MySQL
-
-Khởi động MySQL trong Laragon, HeidiSQL hoặc MySQL service. Tạo database development:
+Khởi động MySQL trong Laragon hoặc MySQL service, sau đó tạo database:
 
 ```sql
 CREATE DATABASE hr_management
@@ -54,21 +55,28 @@ CREATE DATABASE hr_management
     COLLATE utf8mb4_unicode_ci;
 ```
 
-Tạo file môi trường từ file mẫu:
+### 2.4. Tạo file môi trường
+
+PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 php artisan key:generate
 ```
 
-Mở `.env` và kiểm tra cấu hình MySQL:
+Command Prompt hoặc Git Bash:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Kiểm tra phần database trong `.env`:
 
 ```dotenv
-APP_NAME="Website Quan ly Nhan su"
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
-APP_LOCALE=vi
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -78,202 +86,247 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Nếu MySQL/Laragon có mật khẩu cho user `root`, điền mật khẩu local vào `DB_PASSWORD`. Không commit `.env` hoặc mật khẩu thật.
-
-Kiểm tra Laravel kết nối được database trước khi migrate:
-
-```bash
-php artisan config:clear
-php artisan about
-```
-
-### 2.4. Sinh database và dữ liệu demo
-
-Chạy migration và seeder:
-
-```bash
-php artisan migrate --seed
-php artisan storage:link
-```
-
-Sau bước này, Laravel sẽ tạo các bảng và dữ liệu demo gồm tài khoản, phòng ban, nhân viên và lịch sử chấm công. Dữ liệu được sinh từ migration, factory và `DatabaseSeeder`; không nằm sẵn trong Git.
-
-Nếu database development cần tạo lại hoàn toàn, chỉ dùng lệnh dưới đây sau khi đã xác nhận đúng database `hr_management` là database local/demo:
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-Không chạy lệnh này trên production hoặc database có dữ liệu thật.
-
-### 2.5. Tài khoản mặc định sau khi seed
-
-Mật khẩu chung cho các tài khoản demo là `Password123!`. Seeder tạo 20 tài khoản: 1 admin, 2 HR và 17 employee.
-
-| Vai trò | Email đăng nhập | Ghi chú |
-|---|---|---|
-| Admin | `quan.nm@admin.hr-management.com` | Toàn quyền hệ thống |
-| HR | `anh.tn@hr.hr-management.com` | Quản lý nghiệp vụ nhân sự |
-| HR | `ha.ltt@hr.hr-management.com` | Tài khoản HR thứ hai |
-| Employee | `huy.pq@emp.hr-management.com`, `nam.nh@emp.hr-management.com`, `bao.vg@emp.hr-management.com`, `khoa.dm@emp.hr-management.com` | Nhân viên CNTT |
-| Employee | `anh.td@emp.hr-management.com`, `vy.nt@emp.hr-management.com`, `tuan.lm@emp.hr-management.com`, `linh.bk@emp.hr-management.com`, `khanh.lq@emp.hr-management.com` | Nhân viên Kinh doanh; `khanh.lq@emp.hr-management.com` ở trạng thái inactive |
-| Employee | `huong.nt@emp.hr-management.com`, `duyen.ptm@emp.hr-management.com`, `long.th@emp.hr-management.com` | Nhân viên Tài chính - Kế toán |
-| Employee | `mai.dn@emp.hr-management.com`, `trang.nq@emp.hr-management.com`, `minh.tn@emp.hr-management.com` | Nhân viên Chăm sóc khách hàng |
-| Employee | `tam.nt@emp.hr-management.com`, `yen.hn@emp.hr-management.com` | Nhân viên Hành chính - Nhân sự |
-
-Các tài khoản trên chỉ dùng cho development/demo. Khi triển khai thật cần đổi mật khẩu và không sử dụng thông tin mặc định.
-
-### 2.6. Khởi động ứng dụng
-
-Mở hai terminal tại thư mục project.
-
-Terminal 1:
-
-```bash
-php artisan serve
-```
-
-Terminal 2:
-
-```bash
-npm run dev
-```
-
-Truy cập `http://localhost:8000`. Nếu dùng `127.0.0.1`, hãy dùng thống nhất hostname trong toàn bộ phiên làm việc để tránh lỗi session/CSRF `419 Page Expired`.
-
-## 3. Chạy bằng Docker
-
-Docker Compose cung cấp PHP 8.3 (Laravel HTTP server) và MySQL 8.4 riêng cho project. App tự chạy migration khi khởi động; dữ liệu demo phải seed một lần:
-
-```bash
-docker compose up -d --build
-docker compose ps
-docker compose exec app php artisan db:seed --force
-docker compose exec app php artisan storage:link
-```
-
-Truy cập `http://localhost:8080`. Tài khoản demo ở mục 2.5. Container MySQL dùng database `hr_management`, hostname nội bộ `db`, port host `3307` và volume `hr_mysql_data` để lưu dữ liệu. Seeder có thể chạy lại an toàn để cập nhật dữ liệu demo; các bản ghi được cập nhật theo mã định danh thay vì tạo trùng. Nếu `storage:link` báo link đã tồn tại thì có thể bỏ qua.
-
-```bash
-docker compose logs -f app
-docker compose down
-```
-
-Cấu hình mật khẩu rỗng trong Compose chỉ phục vụ local demo. Production phải dùng secret an toàn và tài khoản database có quyền tối thiểu.
-
-## 4. Giới thiệu chi tiết dự án
-
-### 4.1. Mục đích
-
-Project mô phỏng hệ thống quản lý nhân sự cho doanh nghiệp nhỏ. Mục tiêu là áp dụng Laravel MVC, Eloquent ORM, migration, seeder, factory, Form Request, middleware, policy, Blade, MySQL và kiểm thử Feature trong một ứng dụng thực tế ở mức đồ án sinh viên.
-
-### 4.2. Vai trò và quyền hạn
-
-- `admin`: quản lý tài khoản, role, trạng thái khóa/mở tài khoản và truy cập toàn bộ chức năng HR.
-- `hr`: quản lý phòng ban, nhân viên, chấm công và báo cáo; không được thay đổi role admin.
-- `employee`: xem hồ sơ của mình, cập nhật các trường cá nhân được phép và xem lịch sử chấm công của mình.
-
-Quyền được kiểm tra ở server-side bằng authentication, middleware và policy/ownership; không chỉ ẩn chức năng trên giao diện.
-
-### 4.3. Chức năng chính
-
-- Đăng nhập, đăng xuất và quản lý session.
-- Admin quản lý tài khoản, role, trạng thái hoạt động, tìm kiếm, lọc và phân trang.
-- Admin/HR CRUD phòng ban và nhân viên.
-- Tạo nhân viên đồng thời tạo user role `employee` trong transaction.
-- Quản lý chấm công với các trạng thái `present`, `late`, `absent`, `leave`.
-- Employee tự quản lý thông tin cá nhân được phép và xem chấm công của mình.
-- Dashboard và báo cáo thống kê theo phòng ban, trạng thái, nhân viên và thời gian.
-- Xuất CSV theo tập dữ liệu đã lọc và giao diện Print/Save as PDF bằng trình duyệt.
-- Kiểm tra mã nhân viên bằng Fetch/AJAX và JSON.
-- Upload ảnh đại diện vào storage public.
-- Employee gửi đơn nghỉ; Admin/HR xem xét, duyệt hoặc từ chối đơn đang chờ.
-- Giao diện Blade responsive, Tailwind CSS 4 và Vite.
-
-### 4.4. Truyền thông Admin và quảng cáo
-
-- Admin có thể gửi thư với tiêu đề, nội dung và nhóm nhận `all`, `hr`, `employee` hoặc từng tài khoản. Thư dùng Laravel Mail; đổi `MAIL_MAILER` và thông số SMTP trong `.env` để gửi ra email thật (mặc định `log` chỉ ghi thư vào log local).
-- Admin có thể bật/tắt một thông báo quảng cáo, đặt thời gian hiển thị và chu kỳ lặp. Thông báo tự hiện trên tài khoản HR/Employee và đồng bộ trạng thái định kỳ để dừng khi Admin tắt.
-- HR và Employee xem thư đã nhận trong menu **Hộp thư**. Quảng cáo hỗ trợ upload ảnh JPG, PNG hoặc WEBP và hiển thị ảnh kèm nội dung trong popup.
-
-### 4.5. Công nghệ và cấu trúc
-
-- Backend: PHP 8.3, Laravel 12, Laravel MVC.
-- Database: MySQL; Eloquent ORM và quan hệ `User`, `Employee`, `Department`, `Attendance`, `LeaveRequest`.
-- Frontend: Blade, Tailwind CSS 4, Vite và JavaScript cơ bản.
-- Kiểm thử: PHPUnit/Pest Feature Tests với database MySQL `hr_management_testing`.
-- CI: GitHub Actions dùng PHP 8.3 và MySQL test database riêng.
-
-Source chính nằm trong `app/Http/Controllers`, `app/Http/Requests`, `app/Models`, `database/migrations`, `database/factories`, `database/seeders`, `resources/views`, `routes` và `tests/Feature`.
-
-Tài liệu đồ án nằm trong `docs/`, gồm kiến trúc, ERD, yêu cầu, test, evidence, deployment và các checklist trình diễn.
-
-## 5. Kiểm thử và build frontend
-
-Test bắt buộc dùng MySQL test database riêng, không fallback SQLite:
-
-```sql
-CREATE DATABASE hr_management_testing
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-```
-
-Chạy các kiểm tra:
-
-```bash
-composer validate
-php artisan route:list
-php artisan view:cache
-php artisan test
-npm run build
-```
-
-`phpunit.xml` cấu hình test dùng `DB_CONNECTION=mysql` và database `hr_management_testing`. Không chạy `migrate:fresh --seed` trên database development khi chưa xác nhận đúng môi trường.
-
-## 6. Quy trình đóng góp
-
-1. Cập nhật branch từ `main` trước khi bắt đầu.
-2. Tạo branch theo chức năng, ví dụ `feat/attendance-filter`.
-3. Chạy `git status` trước khi sửa và chạy test/build trước khi commit.
-4. Commit message rõ ràng, ví dụ `feat: add attendance filter` hoặc `docs: update setup guide`.
-5. Push branch và mở Pull Request, ghi rõ file thay đổi, lệnh kiểm tra và ảnh minh chứng nếu có.
-
-Không force-push, không bịa remote, không commit `.env`, APP_KEY, token, mật khẩu thật, dữ liệu production, `vendor/` hoặc `node_modules/`.
-
-## 7. Xử lý lỗi thường gặp
-
-### Lỗi không kết nối được MySQL
-
-Kiểm tra MySQL đang chạy, database đã tồn tại và các biến `DB_*` trong `.env` đúng. Sau khi đổi `.env`, chạy:
-
-```bash
-php artisan config:clear
-php artisan migrate --seed
-```
-
-### Lỗi 419 Page Expired
-
-Dùng thống nhất `localhost` hoặc `127.0.0.1`, kiểm tra `APP_URL`, xóa cache config và tải lại trang đăng nhập:
+Nếu MySQL local có mật khẩu, điền đúng `DB_PASSWORD`. Sau khi sửa `.env`, chạy:
 
 ```bash
 php artisan optimize:clear
 ```
 
-### Thiếu thư mục hoặc package
+### 2.5. Migration và seed dữ liệu local
+
+Lần chạy đầu tiên, tạo bảng và dữ liệu demo bằng một lệnh:
 
 ```bash
-composer install
-npm ci
-php artisan storage:link
+php artisan migrate --seed
 ```
 
-## 8. Lưu ý an toàn
+Nếu đã migrate nhưng chưa có dữ liệu demo, hoặc muốn cập nhật lại dữ liệu demo:
 
-Không commit `.env`, APP_KEY thật, mật khẩu, token, dữ liệu production hoặc file upload cá nhân. Không dùng `db:wipe`. Luôn kiểm tra chính xác `DB_DATABASE` trước khi migrate, seed hoặc reset database.
-## ATT-05 regression notes
+```bash
+php artisan db:seed
+```
 
-- Self attendance supports upload/camera proof for Employee, HR and Admin accounts that have an Employee profile.
-- Attendance proofs are stored on the private local disk; access is authorized by role or ownership through `/attendance/{attendance}/proof/{type}`.
-- Navigation preferences use browser `localStorage`: `hr-nav-position` (`left`, `right`, `top`, `bottom`) and `hr-nav-state` (`expanded`, `collapsed`, `hidden`).
-- Run the final regression with MySQL `hr_management_testing`; do not use SQLite for tests.
-- Browser evidence is intentionally not generated by automation. Capture the files listed in `docs/evidence/screenshot-checklist.md` manually.
+Seeder dùng `updateOrCreate`, vì vậy có thể chạy lại mà không tạo trùng các mã định danh chính.
+
+Chỉ khi muốn xóa toàn bộ database local và tạo lại từ đầu:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+`migrate:fresh` xóa toàn bộ bảng và dữ liệu trong database đang kết nối. Trước khi chạy phải kiểm tra `DB_DATABASE=hr_management` và chắc chắn đây là database local có thể xóa.
+
+### 2.6. Khởi động local
+
+Mở hai terminal tại thư mục project.
+
+Terminal 1 — Laravel:
+
+```bash
+php artisan serve
+```
+
+Terminal 2 — Vite:
+
+```bash
+npm run dev
+```
+
+Truy cập: <http://localhost:8000>
+
+Nếu không cần Vite development server, có thể build frontend rồi chỉ chạy Laravel:
+
+```bash
+npm run build
+php artisan serve
+```
+
+## 3. Cách 2: chạy bằng Docker
+
+### 3.1. Yêu cầu
+
+- Docker Desktop hoặc Docker Engine có Docker Compose v2.
+- Git.
+- Cổng `8080` cho website và `3307` cho MySQL Docker đang trống.
+
+Không cần cài PHP, Composer, Node.js hoặc MySQL trực tiếp trên máy khi dùng cách này.
+
+### 3.2. Build và khởi động container
+
+```bash
+docker compose up -d --build
+```
+
+Kiểm tra trạng thái và log:
+
+```bash
+docker compose ps
+docker compose logs -f app
+```
+
+Khi MySQL sẵn sàng, container `app` tự thực hiện:
+
+1. Tạo APP_KEY local và lưu trong volume nếu chưa cung cấp APP_KEY.
+2. Xóa cache cấu hình và Blade cũ.
+3. Chạy `php artisan migrate --force`.
+4. Khởi động Laravel tại cổng `8000` trong container.
+
+Truy cập website: <http://localhost:8080>
+
+MySQL Docker được ánh xạ ra máy host tại `127.0.0.1:3307`:
+
+| Thông số | Giá trị |
+|---|---|
+| Host từ container app | `db` |
+| Host từ máy thật | `127.0.0.1` |
+| Port từ máy thật | `3307` |
+| Database | `hr_management` |
+| User ứng dụng | `hr_user` |
+| Password ứng dụng | `hr_password` |
+| Root password | `local_root_password` |
+
+Các mật khẩu này chỉ dành cho Docker local và được khai báo trong `docker-compose.yml`.
+
+### 3.3. Seed dữ liệu trong Docker
+
+Migration được chạy tự động khi container khởi động, nhưng seeder không tự chạy. Sau lần khởi động đầu tiên, chạy:
+
+```bash
+docker compose exec app php artisan db:seed --force
+```
+
+Có thể chạy lại cùng lệnh để cập nhật dữ liệu demo.
+
+Nếu muốn xóa toàn bộ database Docker và tạo lại bảng cùng dữ liệu demo:
+
+```bash
+docker compose exec app php artisan migrate:fresh --seed --force
+```
+
+Lệnh trên chỉ nên dùng cho Docker local vì nó xóa toàn bộ dữ liệu trong database Docker.
+
+### 3.4. Các lệnh Docker thường dùng
+
+```bash
+# Xem log
+docker compose logs -f app
+docker compose logs -f db
+
+# Chạy Artisan
+docker compose exec app php artisan route:list
+docker compose exec app php artisan migrate:status
+docker compose exec app php artisan optimize:clear
+
+# Dừng nhưng giữ database và upload
+docker compose down
+
+# Khởi động lại với dữ liệu cũ
+docker compose up -d
+
+# Build lại sau khi source/dependency thay đổi
+docker compose up -d --build
+```
+
+Xóa container và toàn bộ volume database/upload Docker:
+
+```bash
+docker compose down -v
+```
+
+`docker compose down -v` xóa vĩnh viễn database Docker, APP_KEY đã lưu và các file upload trong Docker.
+
+## 4. Dữ liệu demo
+
+Seeder tạo 20 tài khoản gồm 1 Admin, 2 HR và 17 Employee. Mật khẩu chung:
+
+```text
+Password123!
+```
+
+| Vai trò | Email |
+|---|---|
+| Admin | `quan.nm@admin.hr-management.com` |
+| HR | `anh.tn@hr.hr-management.com` |
+| HR | `ha.ltt@hr.hr-management.com` |
+| Employee | `huy.pq@emp.hr-management.com` |
+| Employee | `nam.nh@emp.hr-management.com` |
+
+Các tài khoản demo chỉ dùng cho học tập và phát triển local.
+
+## 5. Chuyển đổi giữa local và Docker
+
+Hai môi trường không dùng chung database:
+
+- Local: MySQL `127.0.0.1:3306`, cấu hình trong `.env`.
+- Docker: MySQL service `db:3306`, ánh xạ ra host `127.0.0.1:3307`.
+
+Chuyển sang local:
+
+```bash
+docker compose down
+php artisan optimize:clear
+php artisan serve
+```
+
+Chuyển sang Docker:
+
+```bash
+docker compose up -d --build
+```
+
+Không đổi `.env` local sang hostname `db`; biến database của Docker đã được khai báo riêng trong `docker-compose.yml`.
+
+## 6. Xử lý lỗi thường gặp
+
+### Local không kết nối được MySQL
+
+- Kiểm tra MySQL/Laragon đang chạy.
+- Kiểm tra database `hr_management` đã tồn tại.
+- Kiểm tra các biến `DB_*` trong `.env`.
+- Chạy `php artisan optimize:clear` sau khi sửa `.env`.
+
+### Docker app chưa healthy
+
+```bash
+docker compose ps
+docker compose logs app
+docker compose logs db
+```
+
+MySQL lần đầu có thể cần vài chục giây để khởi tạo. App chỉ chạy migration sau khi healthcheck MySQL thành công.
+
+### Docker báo cổng đã được sử dụng
+
+Đóng chương trình đang dùng cổng `8080` hoặc `3307`, hoặc đổi phần bên trái của mapping trong `docker-compose.yml`, ví dụ `8081:8000`.
+
+### Lỗi 419 Page Expired
+
+Dùng đúng URL: local là `http://localhost:8000`, Docker là `http://localhost:8080`. Sau đó chạy:
+
+```bash
+# Local
+php artisan optimize:clear
+
+# Docker
+docker compose exec app php artisan optimize:clear
+```
+
+### Source thay đổi nhưng Docker chưa cập nhật
+
+Docker image chứa source và frontend tại thời điểm build. Tạo lại image:
+
+```bash
+docker compose up -d --build
+```
+
+## 7. Cấu trúc chính
+
+- `app/Http/Controllers`: controller theo module Admin, HR và Employee.
+- `app/Http/Requests`: validation và authorization cho form phức tạp.
+- `app/Models`: Eloquent model và relationships.
+- `database/migrations`: cấu trúc database.
+- `database/seeders/DatabaseSeeder.php`: dữ liệu demo.
+- `resources/views`: giao diện Blade.
+- `resources/js`, `resources/css`: JavaScript và Tailwind CSS.
+- `routes/web.php`, `routes/auth.php`: route web và authentication.
+- `Dockerfile`, `docker-compose.yml`, `docker/start.sh`: môi trường Docker local.
