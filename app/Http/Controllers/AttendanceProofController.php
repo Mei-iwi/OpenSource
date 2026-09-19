@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendanceProofController extends Controller
@@ -19,19 +18,8 @@ class AttendanceProofController extends Controller
         abort_unless($isManager || $isOwner, 403);
 
         $path = $type === 'check-in' ? $attendance->check_in_photo_path : $attendance->check_out_photo_path;
-        $disk = Storage::disk(config('filesystems.attendance_proof_disk'));
-        abort_unless($path && $disk->exists($path), 404);
+        abort_unless($path, 404);
 
-        $stream = $disk->readStream($path);
-        abort_unless(is_resource($stream), 404);
-
-        return response()->stream(function () use ($stream): void {
-            fpassthru($stream);
-            fclose($stream);
-        }, 200, [
-            'Content-Type' => $disk->mimeType($path) ?: 'application/octet-stream',
-            'Content-Disposition' => 'inline; filename="'.basename($path).'"',
-            'X-Content-Type-Options' => 'nosniff',
-        ]);
+        return $this->streamStoredFile(config('filesystems.attendance_proof_disk'), $path);
     }
 }

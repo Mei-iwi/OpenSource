@@ -450,21 +450,6 @@ class DatabaseSeeder extends Seeder
             $note = null;
 
             if ($status === 'present') {
-                /*
-                 * Nhân viên thường đến khoảng 07:45 - 08:10.
-                 */
-                $checkIn = Carbon::createFromFormat(
-                    'H:i:s',
-                    sprintf(
-                        '%02d:%02d:00',
-                        7 + (mt_rand(0, 25) >= 15 ? 1 : 0),
-                        mt_rand(45, 59)
-                    )
-                );
-
-                /*
-                 * Chuẩn hóa tránh trường hợp giờ bị lệch quá nhiều.
-                 */
                 $checkIn = sprintf(
                     '07:%02d:00',
                     mt_rand(45, 59)

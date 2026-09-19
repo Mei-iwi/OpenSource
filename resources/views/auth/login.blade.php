@@ -1,10 +1,7 @@
 <x-guest-layout>
-    <!-- Outer Card Container with overflow-hidden to prevent spinning gradient diamond from overflowing -->
     <div class="login-card-container relative z-10 w-full overflow-hidden rounded-[1.75rem] p-[2px] shadow-xl shadow-indigo-950/50">
-        <!-- Spinning Conic Gradient: rotating ring masked strictly inside rounded-[1.75rem] -->
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-500/60 via-sky-400/40 to-indigo-500/60 opacity-60"></div>
 
-        <!-- Inner Login Card -->
         <div class="login-card relative rounded-[1.65rem] border border-white/10 bg-slate-900/95 p-8 sm:p-10 transition-all duration-300"
              x-data="{
                 showPassword: false,
@@ -24,7 +21,6 @@
                 }
              }">
 
-            <!-- Logo & Header -->
             <div class="mb-4 text-center">
                 <div class="snake-avatar-motion mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-lime-500 text-white shadow-lg shadow-emerald-900/35 ring-2 ring-emerald-500/20" aria-label="Ảnh rắn chuyển động">
                     <img src="{{ asset('images/default-employee.png') }}" alt="Ảnh rắn chuyển động" class="h-full w-full object-cover">
@@ -33,7 +29,6 @@
                 <p class="mt-0.5 text-sm text-slate-400">Đăng nhập vào hệ thống quản lý nhân sự.</p>
             </div>
 
-            <!-- Session Status -->
             <x-auth-session-status class="mb-3" :status="session('status')" />
 
             @if ($errors->any())
@@ -46,7 +41,6 @@
                 </div>
             @endif
 
-            <!-- Quick Demo Login Fill Buttons: HR & Employee (Admin Separated) -->
             <div class="mb-3.5 rounded-xl border border-white/10 bg-white/5 p-2.5">
                 <div class="flex items-center justify-between mb-2 px-0.5">
                     <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thử nghiệm nhanh (1-Click Fill)</p>
@@ -79,7 +73,6 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
-                <!-- Email Address -->
                 <div>
                     <label for="email" class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Email tài khoản</label>
                     <div class="relative">
@@ -90,7 +83,6 @@
                     </div>
                 </div>
 
-                <!-- Password -->
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-300">Mật khẩu</label>
@@ -110,180 +102,15 @@
                     </div>
                 </div>
 
-                <!-- Ghi nhớ đăng nhập -->
                 <div class="flex items-center pt-0.5">
                     <input id="remember_me" type="checkbox" name="remember" class="h-3.5 w-3.5 rounded border-white/20 bg-slate-950 text-indigo-600 focus:ring-indigo-500/40">
                     <label for="remember_me" class="ml-2 text-xs font-medium text-slate-300">Ghi nhớ đăng nhập</label>
                 </div>
 
-                <!-- Submit Button (Clean, No Arrow) -->
                 <button type="submit" class="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 py-3.5 px-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110 hover:shadow-indigo-500/40 active:scale-[0.99] mt-2">
                     <span>Đăng nhập hệ thống</span>
                 </button>
             </form>
         </div>
     </div>
-
-    <!-- Styles cho hiệu ứng viền xoay và cánh hoa nở đồng bộ với màu sắc mới -->
-    <style>
-        /* Viền xoay chuyển sắc phía sau Card đăng nhập */
-        @keyframes login-border-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Container chứa các cánh hoa nở */
-        .login-bloom-container {
-            display: none !important;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 99999;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .login-bloom-petal {
-            position: absolute;
-            width: 320px;
-            height: 320px;
-            border-radius: 60% 40% 55% 45% / 50% 55% 45% 50%;
-            opacity: 0;
-            transform-origin: center center;
-            filter: blur(1.5px);
-        }
-
-        /* Bảng màu giao diện Snake Motion */
-        .login-bloom-petal:nth-child(1) { background: linear-gradient(135deg, #4f46e5, #6366f1); }
-        .login-bloom-petal:nth-child(2) { background: linear-gradient(135deg, #0284c7, #38bdf8); }
-        .login-bloom-petal:nth-child(3) { background: linear-gradient(135deg, #7c3aed, #a855f7); }
-        .login-bloom-petal:nth-child(4) { background: linear-gradient(135deg, #059669, #10b981); }
-        .login-bloom-petal:nth-child(5) { background: linear-gradient(135deg, #4338ca, #60a5fa); }
-        .login-bloom-petal:nth-child(6) { background: linear-gradient(135deg, #6d28d9, #818cf8); }
-
-        /* Nhụy hoa ở giữa với quầng sáng tỏa đa tầng */
-        .login-bloom-center {
-            position: absolute;
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #e0e7ff 0%, #818cf8 45%, #4f46e5 100%);
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0);
-            box-shadow: 0 0 70px rgba(99, 102, 241, 0.9), 0 0 140px rgba(56, 189, 248, 0.6);
-        }
-
-        /* Keyframes bung cánh hoa theo 6 hướng */
-        @keyframes petal-bloom-1 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% + 0px), calc(-50% - 55vh)) scale(4.5) rotate(15deg); }
-        }
-        @keyframes petal-bloom-2 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% + 48vw), calc(-50% - 28vh)) scale(4.5) rotate(-10deg); }
-        }
-        @keyframes petal-bloom-3 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% + 48vw), calc(-50% + 28vh)) scale(4.5) rotate(20deg); }
-        }
-        @keyframes petal-bloom-4 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% + 0px), calc(-50% + 55vh)) scale(4.5) rotate(-15deg); }
-        }
-        @keyframes petal-bloom-5 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% - 48vw), calc(-50% + 28vh)) scale(4.5) rotate(10deg); }
-        }
-        @keyframes petal-bloom-6 {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
-            30%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: translate(calc(-50% - 48vw), calc(-50% - 28vh)) scale(4.5) rotate(-20deg); }
-        }
-
-        @keyframes center-bloom {
-            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-            40%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(3.2); }
-        }
-
-        .login-bloom-petal:nth-child(1) { animation: petal-bloom-1 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.00s forwards; }
-        .login-bloom-petal:nth-child(2) { animation: petal-bloom-2 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards; }
-        .login-bloom-petal:nth-child(3) { animation: petal-bloom-3 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards; }
-        .login-bloom-petal:nth-child(4) { animation: petal-bloom-4 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.18s forwards; }
-        .login-bloom-petal:nth-child(5) { animation: petal-bloom-5 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.09s forwards; }
-        .login-bloom-petal:nth-child(6) { animation: petal-bloom-6 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards; }
-        .login-bloom-center { animation: center-bloom 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.00s forwards; }
-    </style>
-
-    <!-- Script kích hoạt hiệu ứng hoa nở và phai mờ mượt mà khi submit -->
-    <script>
-        (function() {
-            const form = document.querySelector('form');
-            const submitBtn = form?.querySelector('button[type="submit"]') || form?.querySelector('button');
-
-            if (form && submitBtn) {
-                form.addEventListener('submit', function(e) {
-                    // Submit immediately; keep the login flow clear and responsive.
-                    return;
-                    if (!form.checkValidity()) return;
-
-                    e.preventDefault();
-
-                    // Lấy tọa độ tâm của card đăng nhập
-                    const cardWrapper = document.querySelector('.login-card-container') || document.querySelector('.login-card') || form;
-                    const rect = cardWrapper.getBoundingClientRect();
-                    const cx = rect.left + rect.width / 2;
-                    const cy = rect.top + rect.height / 2;
-
-                    // Tạo container chứa hiệu ứng hoa nở
-                    const container = document.createElement('div');
-                    container.className = 'login-bloom-container';
-
-                    // Tạo 6 cánh hoa bung tỏa
-                    for (let i = 0; i < 6; i++) {
-                        const petal = document.createElement('div');
-                        petal.className = 'login-bloom-petal';
-                        petal.style.left = cx + 'px';
-                        petal.style.top = cy + 'px';
-                        container.appendChild(petal);
-                    }
-
-                    // Tạo nhụy hoa ở giữa
-                    const center = document.createElement('div');
-                    center.className = 'login-bloom-center';
-                    center.style.left = cx + 'px';
-                    center.style.top = cy + 'px';
-                    container.appendChild(center);
-
-                    document.body.appendChild(container);
-
-                    // Làm mờ card đăng nhập nhẹ nhàng
-                    setTimeout(() => {
-                        const card = document.querySelector('.login-card') || cardWrapper;
-                        if (card) {
-                            card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                            card.style.opacity = '0';
-                            card.style.transform = 'scale(0.96)';
-                        }
-                    }, 300);
-
-                    // Làm mờ toàn bộ nền trang để chuyển hướng mượt mà
-                    setTimeout(() => {
-                        document.body.style.transition = 'opacity 0.4s ease';
-                        document.body.style.opacity = '0';
-                    }, 750);
-
-                    // Submit form thực tế sau khi hiệu ứng hoa nở hoàn tất
-                    setTimeout(() => {
-                        form.submit();
-                    }, 1050);
-                });
-            }
-        })();
-    </script>
 </x-guest-layout>
