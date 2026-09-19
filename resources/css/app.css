@@ -604,9 +604,75 @@ html.dark .app-quick-link:hover {
     transform-origin: 50% 85%;
 }
 
+.login-snake-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    visibility: hidden;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(248, 250, 252, 0.94);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease, visibility 140ms ease;
+}
+
+html.dark .login-snake-transition {
+    background: rgba(9, 13, 22, 0.94);
+}
+
+.login-snake-transition.is-active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.login-snake-runner {
+    width: clamp(8rem, 22vw, 12rem);
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    border-radius: 2rem;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.login-snake-runner img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.login-snake-transition.is-active .login-snake-runner {
+    animation: login-snake-forward 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.login-snake-transition p {
+    position: absolute;
+    bottom: max(2rem, 8vh);
+    color: #475569;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+html.dark .login-snake-transition p {
+    color: #cbd5e1;
+}
+
+@keyframes login-snake-forward {
+    0% { opacity: 0; transform: translateY(18px) scale(0.45); }
+    35% { opacity: 1; transform: translateY(0) scale(0.78); }
+    100% { opacity: 1; transform: translateY(-4px) scale(1.85); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .snake-avatar-motion img {
         animation: none;
+    }
+
+    .login-snake-transition {
+        display: none;
     }
 }
 
