@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\SendPasswordResetLink;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use App\Services\EmployeeCodeGenerator;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -32,32 +33,13 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        return view('admin.users.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request): RedirectResponse
-    {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $data['account_status'] = 'active';
-        User::create($data);
-
-        return redirect()->route('admin.users.index')->with('success', 'Đã tạo tài khoản thành công.');
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(User $user): View
     {
-        return view('admin.users.show', compact('user'));
+        $roleChanges = $user->roleChanges()->with('actor')->latest('id')->paginate(15);
+
+        return view('admin.users.show', compact('user', 'roleChanges'));
     }
 
     /**
@@ -65,13 +47,15 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        $departments = Department::orderBy('name')->get();
+
+        return view('admin.users.edit', compact('user', 'departments'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user, EmployeeCodeGenerator $codes): RedirectResponse
     {
         $data = $request->validated();
 
@@ -79,7 +63,13 @@ class UserController extends Controller
             return back()->withErrors(['role' => 'Không thể hạ quyền tài khoản Admin đang đăng nhập.'])->withInput();
         }
 
-        $user->update($data);
+        DB::transaction(function () use ($user, $data, $codes) {
+            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $user->update(collect($data)->only(['name', 'email', 'role', 'account_status'])->all());
+            if (isset($data['department_id']) && ! $user->employee()->exists()) {
+                $user->employee()->create(collect($data)->only(['department_id', 'hire_date'])->all() + ['employee_code' => $codes->next($user->role), 'employment_status' => 'active']);
+            }
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật tài khoản.');
     }

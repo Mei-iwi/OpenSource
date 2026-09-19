@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
+    use Concerns\EmployeeProfileRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,7 +28,12 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user');
         $isSelf = $user && $this->user()?->is($user);
 
-        return [
+        $profileRules = $user && ! $user->employee()->exists() && in_array($this->input('role'), ['hr', 'employee'], true)
+            ? $this->employeeProfileRules()
+            : [];
+
+        return $profileRules + [
+            'employee_code' => ['prohibited'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'role' => $isSelf ? ['required', 'in:admin,hr,employee'] : ['required', 'in:hr,employee'],

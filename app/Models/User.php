@@ -9,6 +9,28 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected static function booted(): void
+    {
+        static::updated(function (User $user) {
+            if ($user->wasChanged('role')) {
+                $from = $user->getRawOriginal('role');
+                $to = $user->role;
+                $label = fn ($role) => $role === 'employee' ? 'emp' : $role;
+                $user->roleChanges()->create([
+                    'changed_by' => auth()->id(),
+                    'from_role' => $from,
+                    'to_role' => $to,
+                    'note' => $label($from).' -> '.$label($to),
+                ]);
+            }
+        });
+    }
+
+    public function roleChanges()
+    {
+        return $this->hasMany(UserRoleChange::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

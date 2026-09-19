@@ -3,7 +3,18 @@
     <div><label for="name" class="text-sm font-medium">Họ và tên</label><input id="name" name="name" value="{{ old('name', $employee->user->name ?? '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('name')" class="mt-1" /></div>
     <div><label for="email" class="text-sm font-medium">Email</label><input id="email" name="email" type="email" value="{{ old('email', $employee->user->email ?? '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('email')" class="mt-1" /></div>
     @if (!isset($employee))<div><label for="password" class="text-sm font-medium">Mật khẩu ban đầu</label><input id="password" name="password" type="password" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('password')" class="mt-1" /></div><div><label for="password_confirmation" class="text-sm font-medium">Xác nhận mật khẩu</label><input id="password_confirmation" name="password_confirmation" type="password" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></div>@endif
-    <div><label for="employee_code" class="text-sm font-medium">Mã nhân viên</label><input id="employee_code" name="employee_code" value="{{ old('employee_code', $employee->employee_code ?? '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><p id="employee-code-feedback" class="mt-1 text-sm" aria-live="polite"></p><x-input-error :messages="$errors->get('employee_code')" class="mt-1" /></div>
+    @if (!isset($employee))
+        <div><label for="role" class="app-label">Vai trò tài khoản</label>
+            <select id="role" name="role" required class="app-input w-full">
+                <option value="">Chọn vai trò</option>
+                <option value="employee" @selected(old('role') === 'employee')>Nhân viên (EMP)</option>
+                @if(auth()->user()->isAdmin())<option value="hr" @selected(old('role') === 'hr')>Nhân sự (HR)</option>@endif
+            </select><x-input-error :messages="$errors->get('role')" />
+        </div>
+        <x-employee-code-preview />
+    @else
+        <div><span class="app-label">Mã nhân viên</span><p class="mt-1 font-semibold">{{ $employee->employee_code }}</p><p class="app-subtitle">Mã được giữ nguyên, kể cả khi đổi vai trò.</p><x-input-error :messages="$errors->get('employee_code')" /></div>
+    @endif
     <div><label for="department_id" class="text-sm font-medium">Phòng ban</label><select id="department_id" name="department_id" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><option value="">Chọn phòng ban</option>@foreach ($departments as $department)<option value="{{ $department->id }}" @selected((string) old('department_id', $employee->department_id ?? '') === (string) $department->id)>{{ $department->name }}</option>@endforeach</select><x-input-error :messages="$errors->get('department_id')" class="mt-1" /></div>
     <div><label for="phone" class="text-sm font-medium">Số điện thoại</label><input id="phone" name="phone" value="{{ old('phone', $employee->phone ?? '') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></div>
     <div><label for="position" class="text-sm font-medium">Chức vụ</label><input id="position" name="position" value="{{ old('position', $employee->position ?? '') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></div>
@@ -13,10 +24,4 @@
     <div class="sm:col-span-2"><label for="address" class="text-sm font-medium">Địa chỉ</label><textarea id="address" name="address" rows="3" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">{{ old('address', $employee->address ?? '') }}</textarea></div>
     <div class="sm:col-span-2"><label for="avatar" class="text-sm font-medium">Ảnh đại diện</label><input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="mt-1 block w-full text-sm"><p class="mt-1 text-xs text-slate-500">JPG, PNG hoặc WEBP; tối đa 2 MB.</p><x-input-error :messages="$errors->get('avatar')" class="mt-1" /></div>
 </div>
-<div class="mt-6 flex gap-3"><button class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white">{{ isset($employee) ? 'Lưu thay đổi' : 'Tạo nhân viên' }}</button><a href="{{ route('hr.employees.index') }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700">Hủy</a></div>
-@push('scripts')
-<script>
-(() => { const input = document.getElementById('employee_code'); const feedback = document.getElementById('employee-code-feedback'); if (!input) return; let timer;
-    input.addEventListener('input', () => { clearTimeout(timer); feedback.textContent = 'Đang kiểm tra...'; timer = setTimeout(async () => { const params = new URLSearchParams({ employee_code: input.value }); @if(isset($employee))params.set('employee_id', '{{ $employee->id }}');@endif if (!input.value.trim()) { feedback.textContent = ''; return; } try { const response = await fetch('{{ route('hr.employees.check-code') }}?' + params, { headers: { Accept: 'application/json' } }); const result = await response.json(); feedback.textContent = result.message; feedback.className = 'mt-1 text-sm ' + (result.available ? 'text-emerald-600' : 'text-rose-600'); } catch { feedback.textContent = 'Không thể kiểm tra lúc này.'; feedback.className = 'mt-1 text-sm text-rose-600'; } }, 300); }); })();
-</script>
-@endpush
+<div class="mt-6 flex gap-3"><button class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white">{{ isset($employee) ? 'Lưu thay đổi' : 'Tạo nhân viên và tài khoản' }}</button><a href="{{ route('hr.employees.index') }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700">Hủy</a></div>
