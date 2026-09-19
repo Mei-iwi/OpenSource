@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Middleware\AccountActiveMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\Middleware\AuthenticateSession;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,10 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->appendToGroup('web', AuthenticateSession::class);
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'account.active' => \App\Http\Middleware\AccountActiveMiddleware::class,
-            'registration.enabled' => \App\Http\Middleware\EnsurePublicRegistrationEnabled::class,
+            'role' => RoleMiddleware::class,
+            'account.active' => AccountActiveMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

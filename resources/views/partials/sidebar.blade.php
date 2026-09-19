@@ -21,12 +21,6 @@
                         <p class="text-xs font-medium text-[var(--app-muted)]">Enterprise Platform</p>
                     </div>
                 </a>
-
-                <button type="button" @click="toggleSidebar()" class="hidden rounded-lg p-1.5 text-[var(--app-muted)] transition hover:bg-slate-100 hover:text-[var(--app-text)] dark:hover:bg-slate-800 lg:block" :title="sidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'" aria-label="Thu gọn hoặc mở rộng menu">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 18l-6-6 6-6"/>
-                    </svg>
-                </button>
             </div>
         </div>
 
@@ -144,12 +138,6 @@
                 <div>
                     <p class="sidebar-label px-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--app-muted)]">Cá nhân</p>
                     <div class="mt-2 space-y-1">
-                        <a href="{{ route('employee.profile.show') }}" title="Hồ sơ của tôi" aria-label="Hồ sơ của tôi" class="{{ $link('employee.profile.*') }}">
-                            <span class="sidebar-icon">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-                            </span>
-                            <span class="sidebar-label">Hồ sơ cá nhân</span>
-                        </a>
 
                         <a href="{{ route('me.attendance.index') }}" title="Tự chấm công" aria-label="Tự chấm công" class="{{ $link('me.attendance.*') }}">
                             <span class="sidebar-icon">
@@ -175,19 +163,6 @@
                 </div>
             @endif
 
-            @if (in_array($role, ['admin', 'hr'], true))
-                <div>
-                    <p class="sidebar-label px-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--app-muted)]">Cài đặt</p>
-                    <div class="mt-2 space-y-1">
-                        <a href="{{ route('profile.edit') }}" title="Hồ sơ cá nhân" aria-label="Hồ sơ cá nhân" class="{{ $link('profile.edit') }}">
-                            <span class="sidebar-icon">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                            </span>
-                            <span class="sidebar-label">Thiết lập tài khoản</span>
-                        </a>
-                    </div>
-                </div>
-            @endif
         </nav>
     </div>
 

@@ -1,7 +1,7 @@
 @php
     $roleLabels = ['admin' => 'Quản trị viên', 'hr' => 'Nhân sự', 'employee' => 'Nhân viên'];
     $pageTitle = trim($__env->yieldContent('title')) ?: 'Tổng quan';
-    $profileRoute = auth()->user()->isEmployee() ? 'employee.profile.show' : 'profile.edit';
+    $profileRoute = 'profile.edit';
 @endphp
 
 <header class="sticky top-0 z-40 shrink-0 border-b border-[var(--app-border)] bg-[var(--app-surface)]/80 backdrop-blur-xl transition-colors">
@@ -67,7 +67,7 @@
             </button>
 
             <!-- Nav Collapser on Desktop -->
-            <button type="button" x-show="navState !== 'hidden'" @click="setNavState(navState === 'expanded' ? 'collapsed' : 'expanded')" class="hidden h-9 items-center gap-1.5 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:border-indigo-300 hover:text-indigo-600 lg:inline-flex" aria-label="Chuyển trạng thái menu">
+            <button type="button" @click="setNavState(navState === 'expanded' ? 'collapsed' : 'expanded')" class="hidden h-9 items-center gap-1.5 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:border-indigo-300 hover:text-indigo-600 lg:inline-flex" aria-label="Chuyển trạng thái menu">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h16"/></svg>
                 <span x-text="navState === 'expanded' ? 'Thu gọn' : 'Mở rộng'"></span>
             </button>
@@ -102,26 +102,12 @@
                             <svg class="h-4 w-4 text-[var(--app-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
                             Hồ sơ cá nhân
                         </a>
-
-                        @if(auth()->user()->isAdmin() || auth()->user()->isHr())
-                        <a href="{{ route('hr.reports.index') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-[var(--app-text)] transition hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-400" role="menuitem">
-                            <svg class="h-4 w-4 text-[var(--app-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
-                            Báo cáo & Phân tích
-                        </a>
-                        @endif
                     </div>
 
                     <!-- Interface Customizer Section -->
                     <div class="my-1 border-t border-[var(--app-border)] pt-2">
                         <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--app-muted)]">Tùy biến giao diện</p>
-                        <div class="grid grid-cols-2 gap-1.5 px-2 py-1.5">
-                            <button type="button" @click="toggleTheme()" class="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--app-border)] bg-[var(--app-surface)] px-2 py-1.5 text-xs font-medium text-[var(--app-text)] hover:border-indigo-300">
-                                <span x-text="dark ? '☀️ Sáng' : '🌙 Tối'"></span>
-                            </button>
-                            <button type="button" @click="setNavState(navState === 'expanded' ? 'collapsed' : 'expanded')" class="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--app-border)] bg-[var(--app-surface)] px-2 py-1.5 text-xs font-medium text-[var(--app-text)] hover:border-indigo-300">
-                                <span x-text="navState === 'collapsed' ? 'Mở rộng' : 'Thu gọn'"></span>
-                            </button>
-                        </div>
+
 
                         <div class="px-3 pb-2 pt-1">
                             <label class="block text-[10px] font-semibold text-[var(--app-muted)]" for="nav-position">Vị trí menu</label>

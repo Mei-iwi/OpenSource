@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CommunicationController;
-use App\Http\Controllers\EmployeeDashboardController;
-use App\Http\Controllers\HrDashboardController;
-use App\Http\Controllers\HR\DepartmentController;
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
-use App\Http\Controllers\HR\ReportController;
-use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
-use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
-use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
-use App\Http\Controllers\SelfAttendanceController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AttendanceProofController;
 use App\Http\Controllers\AvatarController;
-use App\Http\Controllers\InboxController;
+use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
+use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
+use App\Http\Controllers\EmployeeDashboardController;
+use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
+use App\Http\Controllers\HR\DepartmentController;
+use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
+use App\Http\Controllers\HR\ReportController;
+use App\Http\Controllers\HrDashboardController;
+use App\Http\Controllers\InboxController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SelfAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'));
@@ -53,6 +53,7 @@ Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->na
     Route::patch('/communications/advertisement/{advertisement}/toggle', [CommunicationController::class, 'toggleAdvertisement'])->name('communications.advertisement.toggle');
     Route::patch('/users/{user}/lock', [UserController::class, 'lock'])->name('users.lock');
     Route::patch('/users/{user}/unlock', [UserController::class, 'unlock'])->name('users.unlock');
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->middleware('throttle:3,1')->name('users.reset-password');
     Route::resource('users', UserController::class);
 });
 
@@ -76,19 +77,14 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
 
 Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', EmployeeDashboardController::class)->name('dashboard');
-    Route::get('/profile', [EmployeeProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [EmployeeProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [EmployeeProfileController::class, 'update'])->name('profile.update');
     Route::get('/attendances', [EmployeeAttendanceController::class, 'index'])->name('attendances.index');
     Route::resource('leave-requests', EmployeeLeaveRequestController::class)->only(['index', 'create', 'store', 'show']);
     Route::patch('/leave-requests/{leave_request}/cancel', [EmployeeLeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
 });
 
 Route::middleware(['auth', 'account.active'])->group(function () {
-    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
-
 
 require __DIR__.'/auth.php';

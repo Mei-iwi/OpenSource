@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -19,7 +19,7 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $request->user()->load('employee.department'),
         ]);
     }
 
@@ -29,21 +29,17 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $data = $request->safe()->except(['avatar']);
+        $data = $request->safe()->only(['phone', 'address']);
         $oldAvatar = $user->avatar_path;
         $newAvatar = $request->hasFile('avatar')
             ? $request->file('avatar')->store('avatars', config('filesystems.avatar_disk'))
             : $oldAvatar;
 
-        $data['avatar_path'] = $newAvatar;
         try {
-            $user->fill($data);
-
-            if ($user->isDirty('email')) {
-                $user->email_verified_at = null;
-            }
-
-            $user->save();
+            DB::transaction(function () use ($user, $data, $newAvatar) {
+                $user->update(['avatar_path' => $newAvatar]);
+                $user->employee?->update($data);
+            });
         } catch (Throwable $exception) {
             if ($newAvatar && $newAvatar !== $oldAvatar) {
                 Storage::disk(config('filesystems.avatar_disk'))->delete($newAvatar);
@@ -56,26 +52,5 @@ class ProfileController extends Controller
         }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
     }
 }
