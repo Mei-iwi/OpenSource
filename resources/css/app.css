@@ -218,6 +218,10 @@ html.dark .glass-panel {
     color: var(--app-primary);
 }
 
+.app-button-secondary:active {
+    transform: translateY(1px);
+}
+
 .app-badge {
     display: inline-flex;
     align-items: center;
@@ -329,11 +333,17 @@ html.dark .app-quick-link:hover {
 .app-main a.bg-indigo-600, .app-main button.bg-indigo-600 {
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.35);
+    transition: box-shadow 180ms ease, transform 180ms ease, background-color 180ms ease;
 }
 
 .app-main a.bg-indigo-600:hover, .app-main button.bg-indigo-600:hover {
     background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
     box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.45);
+    transform: translateY(-1px);
+}
+
+.app-main a.bg-indigo-600:active, .app-main button.bg-indigo-600:active {
+    transform: translateY(0);
 }
 
 /* KPI Card & Bento Hover Effects */

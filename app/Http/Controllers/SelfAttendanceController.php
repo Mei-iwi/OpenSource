@@ -8,7 +8,6 @@ use App\Models\Employee;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +19,7 @@ class SelfAttendanceController extends Controller
     public function index(Request $request): View
     {
         $employee = $this->employee($request)->load(['user', 'department']);
-        $todayAttendance = $employee?->attendances()->whereDate('work_date', today())->first();
+        $todayAttendance = $employee->attendances()->whereDate('work_date', today())->first();
 
         return view('attendance.self', compact('employee', 'todayAttendance'));
     }
@@ -34,14 +33,14 @@ class SelfAttendanceController extends Controller
 
         $path = $this->storeProof($request, $employee, 'check-in');
         try {
-            DB::transaction(fn () => Attendance::create([
+            Attendance::create([
                 'employee_id' => $employee->id,
                 'work_date' => today(),
                 'check_in' => now()->format('H:i:s'),
                 'status' => 'present',
                 'check_in_photo_path' => $path,
                 'check_in_method' => $request->validated('method'),
-            ]));
+            ]);
         } catch (Throwable $exception) {
             Storage::disk(config('filesystems.attendance_proof_disk'))->delete($path);
             if ($exception instanceof QueryException) {
@@ -66,11 +65,11 @@ class SelfAttendanceController extends Controller
 
         $path = $this->storeProof($request, $employee, 'check-out');
         try {
-            DB::transaction(fn () => $attendance->update([
+            $attendance->update([
                 'check_out' => now()->format('H:i:s'),
                 'check_out_photo_path' => $path,
                 'check_out_method' => $request->validated('method'),
-            ]));
+            ]);
         } catch (Throwable $exception) {
             Storage::disk(config('filesystems.attendance_proof_disk'))->delete($path);
             throw $exception;
@@ -81,9 +80,10 @@ class SelfAttendanceController extends Controller
 
     private function employee(Request $request): Employee
     {
-        abort_unless($request->user()->employee, 403, 'Tài khoản chưa có hồ sơ nhân viên.');
+        $employee = $request->user()->employee;
+        abort_unless($employee, 403, 'Tài khoản chưa có hồ sơ nhân viên.');
 
-        return $request->user()->employee;
+        return $employee;
     }
 
     private function storeProof(SelfAttendanceRequest $request, Employee $employee, string $label): string

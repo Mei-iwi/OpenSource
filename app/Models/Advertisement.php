@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Advertisement extends Model
 {
-    use HasFactory;
-
     protected $fillable = ['title', 'message', 'image_path', 'display_seconds', 'repeat_seconds', 'is_active'];
 
     protected function casts(): array

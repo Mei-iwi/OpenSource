@@ -1,5 +1,3 @@
-import './bootstrap';
-
 const savedTheme = localStorage.getItem('hr-theme');
 if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark');
@@ -238,4 +236,24 @@ window.renderDashboardCharts = ({ attendanceStatus, departments, trend }) => {
     }
 };
 
+const animatePageContent = () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || typeof Element.prototype.animate !== 'function') {
+        return;
+    }
+
+    document.querySelectorAll('.app-main > *').forEach((element, index) => {
+        element.animate([
+            { opacity: 0, transform: 'translateY(8px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+        ], {
+            duration: 360,
+            delay: Math.min(index, 4) * 45,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            fill: 'backwards',
+        });
+    });
+};
+
+animatePageContent();
 Alpine.start();
