@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
 
         $admin->employee()->updateOrCreate([], [
             'department_id' => $departments['PB-CNTT']->id,
-            'employee_code' => 'ADM-0001',
+            'employee_code' => $admin->employee?->employee_code ?? 'ADM-0001',
             'phone' => '0901000001',
             'address' => 'Quận 7, TP. Hồ Chí Minh',
             'date_of_birth' => '1990-05-18',
@@ -140,7 +140,7 @@ class DatabaseSeeder extends Seeder
 
             $user->employee()->updateOrCreate([], [
                 'department_id' => $departments['PB-HCNS']->id,
-                'employee_code' => $item['employee_code'],
+                'employee_code' => $user->employee?->employee_code ?? $item['employee_code'],
                 'phone' => $item['phone'],
                 'address' => $item['address'],
                 'date_of_birth' => $item['date_of_birth'],
@@ -384,7 +384,7 @@ class DatabaseSeeder extends Seeder
 
             $employee = $user->employee()->updateOrCreate([], [
                 'department_id' => $departments[$data['department']]->id,
-                'employee_code' => $data['code'],
+                'employee_code' => $user->employee?->employee_code ?? $data['code'],
                 'phone' => $data['phone'],
                 'address' => $data['address'],
                 'date_of_birth' => $data['dob'],

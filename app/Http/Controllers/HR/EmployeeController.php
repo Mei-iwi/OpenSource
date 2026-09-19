@@ -4,7 +4,9 @@ namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
-use App\Http\Requests\EmployeeCodeAvailabilityRequest;
+use App\Services\EmployeeCodeGenerator;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Department;
 use App\Models\Employee;
@@ -33,16 +35,11 @@ class EmployeeController extends Controller
         return view('hr.employees.index', compact('employees', 'departments'));
     }
 
-    public function checkCode(EmployeeCodeAvailabilityRequest $request): JsonResponse
+    public function codePreview(Request $request, EmployeeCodeGenerator $codes): JsonResponse
     {
-        $employee = Employee::where('employee_code', $request->validated('employee_code'))
-            ->when($request->validated('employee_id'), fn ($query, $id) => $query->where('id', '!=', $id))
-            ->first();
+        $data = $request->validate(['role' => ['required', Rule::in($request->user()->isAdmin() ? ['hr', 'employee'] : ['employee'])]]);
 
-        return response()->json([
-            'available' => $employee === null,
-            'message' => $employee ? 'Mã nhân viên đã tồn tại.' : 'Mã nhân viên có thể sử dụng.',
-        ]);
+        return response()->json(['code' => $codes->preview($data['role'])])->header('Cache-Control', 'no-store');
     }
 
     /**
@@ -57,23 +54,25 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeRequest $request): RedirectResponse
+    public function store(StoreEmployeeRequest $request, EmployeeCodeGenerator $codes): RedirectResponse
     {
         $data = $request->validated();
         $disk = config('filesystems.avatar_disk');
         $avatarPath = $request->hasFile('avatar') ? $request->file('avatar')->store('avatars', $disk) : null;
         try {
-            DB::transaction(function () use ($data, $avatarPath) {
-                $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password']), 'role' => 'employee', 'account_status' => 'active']);
-                $employeeData = collect($data)->except(['name', 'email', 'password', 'password_confirmation', 'avatar'])->all();
+            $employee = DB::transaction(function () use ($data, $avatarPath, $codes) {
+                $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password']), 'role' => $data['role'], 'account_status' => 'active']);
+                $employeeData = collect($data)->except(['name', 'email', 'password', 'password_confirmation', 'avatar', 'role', 'employee_code'])->all();
                 $employeeData['avatar_path'] = $avatarPath;
-                $user->employee()->create($employeeData);
+                $employeeData['employee_code'] = $codes->next($user->role);
+
+                return $user->employee()->create($employeeData);
             });
         } catch (Throwable $exception) {
             if ($avatarPath) Storage::disk($disk)->delete($avatarPath);
             throw $exception;
         }
-        return redirect()->route('hr.employees.index')->with('success', 'Đã tạo tài khoản và hồ sơ nhân viên.');
+        return redirect()->route('hr.employees.index')->with('success', 'Đã tạo nhân viên '.$employee->employee_code.' và tài khoản đăng nhập.');
     }
 
     /**

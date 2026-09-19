@@ -6,11 +6,7 @@
             <p class="text-sm text-amber-700 dark:text-amber-300">Cần <a class="underline" href="{{ route('hr.departments.create') }}">tạo phòng ban</a> trước khi lưu hồ sơ.</p>
         @endif
         <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-                <label for="employee_code" class="app-label">Mã nhân viên</label>
-                <input id="employee_code" name="employee_code" value="{{ old('employee_code') }}" maxlength="30" required class="app-input w-full">
-                <x-input-error :messages="$errors->get('employee_code')" class="mt-1" />
-            </div>
+            <x-employee-code-preview />
             <div>
                 <label for="department_id" class="app-label">Phòng ban</label>
                 <select id="department_id" name="department_id" required class="app-input w-full">

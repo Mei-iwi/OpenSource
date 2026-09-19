@@ -33,6 +33,7 @@ class UpdateUserRequest extends FormRequest
             : [];
 
         return $profileRules + [
+            'employee_code' => ['prohibited'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'role' => $isSelf ? ['required', 'in:admin,hr,employee'] : ['required', 'in:hr,employee'],
