@@ -319,7 +319,43 @@ Docker image chứa source và frontend tại thời điểm build. Tạo lại 
 docker compose up -d --build
 ```
 
-## 7. Cấu trúc chính
+## 7. Email xác thực và đặt lại mật khẩu
+
+Hệ thống không mở đăng ký công khai. Admin tạo tài khoản tại **Tài khoản**; nhân viên mở **Hồ sơ cá nhân** từ menu tài khoản để cập nhật ảnh, số điện thoại và địa chỉ. Họ tên, email, ngày sinh và thông tin công việc do người có quyền quản lý nhân sự cập nhật.
+
+- **Tự đổi mật khẩu:** Hồ sơ cá nhân → nhập mật khẩu hiện tại → Gửi liên kết xác thực → mở email → đặt mật khẩu mới.
+- **Quên mật khẩu:** chọn Quên mật khẩu tại trang đăng nhập.
+- **Admin hỗ trợ:** Tài khoản → Chi tiết → Gửi email đặt lại mật khẩu. Admin không nhận mật khẩu mới của người dùng.
+- Liên kết hết hạn sau 60 phút, chỉ dùng một lần. Gửi lại sau ít nhất 60 giây. Sau khi đổi mật khẩu, các phiên đăng nhập cũ bị vô hiệu hóa.
+
+Cấu hình Gmail trong `.env` ở thư mục gốc (cả local và Docker đọc các biến này):
+
+```dotenv
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-account@gmail.com
+MAIL_PASSWORD=your-google-app-password
+MAIL_FROM_ADDRESS=your-account@gmail.com
+MAIL_FROM_NAME="Snake Motion"
+```
+
+Dùng mật khẩu ứng dụng của Gmail gửi thư, không dùng mật khẩu đăng nhập Google. Xem [hướng dẫn mật khẩu ứng dụng của Google](https://support.google.com/accounts/answer/185833?hl=vi). Không đưa `.env` hoặc mật khẩu vào Git. Các email demo của seeder không phải hộp thư thật; muốn nhận thư, admin cần cập nhật email tài khoản thành địa chỉ có thể truy cập.
+
+Sau khi sửa cấu hình:
+
+```bash
+# Local: APP_URL trong .env phải trỏ tới URL local bạn đang dùng
+php artisan config:clear
+
+# Docker: tạo lại container để nhận MAIL_* mới; không xóa volume
+docker compose up -d --build --force-recreate app
+```
+
+Docker mặc định dùng `http://localhost:8080` cho liên kết. Nếu đổi cổng/host, cập nhật `APP_URL` của service app tương ứng. Khi chưa cần gửi thư thật, dùng `MAIL_MAILER=log`; thư và liên kết chỉ ghi vào `storage/logs/laravel.log`. Không cần chạy queue worker vì luồng gửi thư chạy đồng bộ.
+
+## 8. Cấu trúc chính
 
 - `app/Http/Controllers`: controller theo module Admin, HR và Employee.
 - `app/Http/Requests`: validation và authorization cho form phức tạp.

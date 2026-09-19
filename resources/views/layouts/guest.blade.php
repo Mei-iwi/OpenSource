@@ -14,19 +14,10 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
-    <script>
-        (() => {
-            const savedTheme = localStorage.getItem('hr-theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        })();
-    </script>
+    @include('partials.theme-init')
 </head>
 <body class="min-h-screen bg-slate-100 font-sans text-slate-900 antialiased selection:bg-indigo-200 selection:text-indigo-950 dark:bg-slate-950 dark:text-slate-100">
-    <div x-data="{ dark: document.documentElement.classList.contains('dark'), toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('hr-theme', this.dark ? 'dark' : 'light'); } }" class="relative flex h-screen min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-100 px-4 py-3 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 sm:py-6">
+    <div x-data="{ dark: document.documentElement.classList.contains('dark'), toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('hr-theme', this.dark ? 'dark' : 'light'); } }" class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-100 px-4 py-20 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 sm:py-24">
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.9),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.12),transparent_55%)]"></div>
 
         <!-- Theme Switcher Floating Top Right -->
@@ -43,6 +34,7 @@
             </svg>
         </a>
 
+        @if(request()->routeIs('login'))<div class="login-orbit" aria-hidden="true"></div>@endif
         <!-- Content Container -->
         <div class="relative z-10 my-auto w-full max-w-[560px]">
             {{ $slot }}

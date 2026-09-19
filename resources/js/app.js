@@ -11,6 +11,24 @@ import Chart from 'chart.js/auto';
 window.Alpine = Alpine;
 window.Chart = Chart;
 
+// Chart.js draws into canvas, so Tailwind's dark variants cannot recolor it.
+new MutationObserver(() => {
+    const dark = document.documentElement.classList.contains('dark');
+    const text = dark ? '#94a3b8' : '#64748b';
+    const grid = dark ? 'rgba(255,255,255,.06)' : 'rgba(226,232,240,.7)';
+    Object.values(Chart.instances).forEach((chart) => {
+        if (chart.options.plugins.legend?.labels) chart.options.plugins.legend.labels.color = text;
+        Object.values(chart.options.scales || {}).forEach((scale) => {
+            if (scale.ticks) scale.ticks.color = text;
+            if (scale.grid) scale.grid.color = grid;
+        });
+        chart.data.datasets.forEach((dataset) => {
+            if (dataset.pointBorderColor) dataset.pointBorderColor = dark ? '#111827' : '#ffffff';
+        });
+        chart.update('none');
+    });
+}).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
 window.renderDashboardCharts = ({ attendanceStatus, departments, trend }) => {
     const isDark = document.documentElement.classList.contains('dark');
     const textColor = isDark ? '#94a3b8' : '#64748b';

@@ -5,7 +5,7 @@
         <div class="login-card relative rounded-[1.65rem] border border-white/80 bg-white/95 p-8 text-slate-800 transition-all duration-300 dark:border-white/10 dark:bg-slate-900/95 dark:text-slate-100 sm:p-10"
              x-data="{
                 showPassword: false,
-                email: '{{ old('email', '') }}',
+                email: @js(old('email', '')),
                 password: '',
                 fillDemo(role) {
                     if (role === 'admin') {

@@ -11,7 +11,7 @@
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
             <span>Gửi đơn xin nghỉ</span>
         </a>
-        <a href="{{ route('employee.profile.edit') }}" class="app-button-secondary">
+        <a href="{{ route('profile.edit') }}" class="app-button-secondary">
             <span>Hồ sơ</span>
         </a>
     </div>

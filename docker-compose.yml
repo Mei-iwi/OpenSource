@@ -21,11 +21,17 @@ services:
       SESSION_DRIVER: database
       CACHE_STORE: database
       QUEUE_CONNECTION: sync
-      MAIL_MAILER: log
+      MAIL_MAILER: "${MAIL_MAILER:-log}"
+      MAIL_SCHEME: "${MAIL_SCHEME:-smtp}"
+      MAIL_HOST: "${MAIL_HOST:-smtp.gmail.com}"
+      MAIL_PORT: "${MAIL_PORT:-587}"
+      MAIL_USERNAME: "${MAIL_USERNAME:-}"
+      MAIL_PASSWORD: "${MAIL_PASSWORD:-}"
+      MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-hello@example.com}"
+      MAIL_FROM_NAME: "${MAIL_FROM_NAME:-Snake Motion}"
       FILESYSTEM_DISK: local
       MEDIA_DISK: persistent_uploads
       UPLOAD_STORAGE_PATH: /var/www/html/storage/app/private/uploads
-      PUBLIC_REGISTRATION_ENABLED: "true"
     volumes:
       - app_storage:/var/www/html/storage
     depends_on:
