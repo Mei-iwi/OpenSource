@@ -39,7 +39,7 @@ class LeaveRequestController extends Controller
     {
         abort_unless($leaveRequest->employee_id === $request->user()->employee?->id, 403);
 
-        return view('employee.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'reviewer'])]);
+        return view('employee.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee'])]);
     }
 
     public function cancel(Request $request, LeaveRequest $leaveRequest): RedirectResponse

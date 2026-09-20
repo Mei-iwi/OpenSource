@@ -26,7 +26,7 @@ class LeaveRequestController extends Controller
 
     public function show(LeaveRequest $leaveRequest): View
     {
-        return view('hr.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer'])]);
+        return view('hr.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee'])]);
     }
 
     public function review(Request $request, LeaveRequest $leaveRequest, LeaveAttendanceSyncService $syncService): RedirectResponse

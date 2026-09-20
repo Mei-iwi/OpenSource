@@ -22,4 +22,21 @@ class LeaveRequest extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
+
+    public function getReviewerDisplayAttribute(): ?string
+    {
+        if (! $this->reviewer) {
+            return null;
+        }
+
+        $roleLabel = match ($this->reviewer->role) {
+            'admin' => 'Quản trị viên',
+            'hr' => 'Nhân sự',
+            default => 'Nhân viên',
+        };
+
+        $code = $this->reviewer->employee?->employee_code;
+
+        return $code ? "{$this->reviewer->name} ({$roleLabel} · {$code})" : "{$this->reviewer->name} ({$roleLabel})";
+    }
 }
