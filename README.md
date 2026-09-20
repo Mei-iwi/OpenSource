@@ -237,6 +237,10 @@ docker compose down -v
 
 ## 4. Dữ liệu demo
 
+Sau khi cập nhật source có danh mục chức vụ, chạy `php artisan migrate` (Docker tự migrate khi khởi động). Migration tạo bảng `job_positions`, thêm các chức vụ mẫu và giữ các chức vụ đã có trong hồ sơ. Form tạo/sửa nhân viên yêu cầu chọn một chức vụ trong danh mục; chức vụ nghiệp vụ độc lập với vai trò phân quyền Admin/HR/Employee.
+
+Danh sách tài khoản/nhân viên dùng card và giữ bộ lọc, phân trang. Chọn ảnh tại biểu tượng camera để xem trước; ảnh chỉ được gửi khi bấm lưu. Tại **Thư và quảng cáo**, chọn **Thư nội bộ** hoặc **Quảng cáo** trước khi nhập nội dung.
+
 Seeder tạo 20 tài khoản gồm 1 Admin, 2 HR và 17 Employee. Mật khẩu chung:
 
 ```text

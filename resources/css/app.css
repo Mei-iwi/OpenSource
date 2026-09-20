@@ -115,6 +115,21 @@ html.dark .hover\:bg-slate-100:hover {
     box-shadow: var(--app-card-hover-shadow);
 }
 
+.directory-card {
+    border: 1.5px solid #60a5fa;
+    border-radius: 1.25rem;
+    background: var(--app-surface);
+    color: var(--app-text);
+    box-shadow: var(--app-card-shadow);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.directory-card:hover { border-color: #2563eb; box-shadow: var(--app-card-hover-shadow); transform: translateY(-2px); }
+.dark .directory-card { border-color: #3b82f6; }
+@media (prefers-reduced-motion: reduce) {
+    .directory-card { transition: none; }
+    .directory-card:hover { transform: none; }
+}
+
 .glass-panel {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);

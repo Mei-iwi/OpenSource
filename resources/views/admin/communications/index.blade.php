@@ -5,14 +5,25 @@
 @section('content')
 <x-page-header eyebrow="Admin / Truyền thông" title="Thư và quảng cáo" description="Gửi thông báo nội bộ và điều phối thông điệp quảng cáo đến các tài khoản nhân viên." />
 
-<div class="grid gap-6 xl:grid-cols-2">
+@php($section = old('_section', request('section')))
+<div class="mx-auto mb-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+    <a href="{{ route('admin.communications.index', ['section' => 'mail']) }}" class="directory-card p-6 {{ $section === 'mail' ? 'ring-2 ring-blue-500' : '' }}" @if($section === 'mail') aria-current="page" @endif>
+        <svg class="h-7 w-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg><h2 class="mt-2 text-lg font-bold">Thư nội bộ</h2><p class="app-subtitle">Soạn thư, chọn người nhận và xem lịch sử gửi.</p>
+    </a>
+    <a href="{{ route('admin.communications.index', ['section' => 'advertisement']) }}" class="directory-card p-6 {{ $section === 'advertisement' ? 'ring-2 ring-blue-500' : '' }}" @if($section === 'advertisement') aria-current="page" @endif>
+        <svg class="h-7 w-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 6-6 12 9"/><circle cx="16" cy="8" r="2"/></svg><h2 class="mt-2 text-lg font-bold">Quảng cáo</h2><p class="app-subtitle">Chọn hình ảnh, nội dung và lịch hiển thị.</p>
+    </a>
+</div>
+<div class="mx-auto max-w-3xl">
+    @if($section === 'mail')
     <section class="app-panel p-5 sm:p-6">
         <div class="mb-5">
             <h2 class="app-heading">Gửi thư nội bộ</h2>
             <p class="app-subtitle">Chỉ Admin có thể gửi thư đến HR và Employee.</p>
         </div>
-        <form method="POST" action="{{ route('admin.communications.messages.send') }}" class="space-y-4" x-data="{ audience: '{{ old('audience', 'all') }}' }">
+        <form method="POST" action="{{ route('admin.communications.messages.send') }}" class="space-y-4" x-data="{ audience: @js(old('audience', 'all')) }">
             @csrf
+            <input type="hidden" name="_section" value="{{ $section }}">
             <div>
                 <label for="subject" class="app-label">Tiêu đề</label>
                 <input id="subject" name="subject" value="{{ old('subject') }}" required maxlength="180" class="app-input mt-2 w-full" placeholder="Ví dụ: Lịch chấm công cuối tháng">
@@ -49,6 +60,7 @@
         </form>
     </section>
 
+    @elseif($section === 'advertisement')
     <section class="app-panel p-5 sm:p-6">
         <div class="mb-5 flex items-start justify-between gap-4">
             <div>
@@ -63,6 +75,7 @@
         </div>
         <form method="POST" action="{{ route('admin.communications.advertisement.save') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
+            <input type="hidden" name="_section" value="{{ $section }}">
             <div>
                 <label for="ad-title" class="app-label">Tiêu đề quảng cáo</label>
                 <input id="ad-title" name="title" value="{{ old('title', $advertisement?->title ?? 'Tin vui từ ban lãnh đạo') }}" required maxlength="160" class="app-input mt-2 w-full">
@@ -73,15 +86,7 @@
                 <textarea id="ad-message" name="message" rows="7" required maxlength="5000" class="app-input mt-2 w-full">{{ old('message', $advertisement?->message ?? 'Nhờ tinh thần cống hiến không ngừng của đội ngũ nhân viên, doanh thu công ty vẫn duy trì đà tăng trưởng ấn tượng theo hướng âm. Để cải thiện tình hình, công ty đã nhanh chóng triển khai chiến dịch quảng cáo sản phẩm đến chính nhân viên, biến người lao động từ lực lượng tạo ra doanh thu thành lực lượng trực tiếp đóng góp doanh thu bằng cách mua sản phẩm của công ty mình.') }}</textarea>
                 @error('message')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
             </div>
-            <div>
-                <label for="ad-image" class="app-label">Ảnh quảng cáo</label>
-                @if($advertisement?->image_path)
-                    <img src="{{ route('advertisement.image', $advertisement) }}" alt="Ảnh quảng cáo hiện tại" class="mt-2 h-32 w-full rounded-xl border border-[var(--app-border)] object-cover">
-                @endif
-                <input id="ad-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" class="app-input mt-2 w-full p-2">
-                <p class="mt-1 text-xs text-[var(--app-muted)]">JPG, PNG hoặc WEBP; tối đa 4 MB. Để trống nếu giữ ảnh hiện tại.</p>
-                @error('image')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
-            </div>
+            <x-image-picker name="image" id="ad-image" label="Ảnh quảng cáo" :max-mb="4" :src="$advertisement?->image_path ? route('advertisement.image', $advertisement) : null" />
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label for="display-seconds" class="app-label">Thời gian hiển thị (giây)</label>
@@ -95,6 +100,7 @@
             @error('display_seconds')<p class="text-sm text-rose-600">{{ $message }}</p>@enderror
             @error('repeat_seconds')<p class="text-sm text-rose-600">{{ $message }}</p>@enderror
             <label class="flex items-center gap-2 text-sm font-semibold text-[var(--app-text)]">
+                <input type="hidden" name="is_active" value="0">
                 <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $advertisement?->is_active ?? false)) class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                 Kích hoạt ngay sau khi lưu
             </label>
@@ -107,12 +113,15 @@
             </form>
         @endif
         <div class="mt-5 rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-700 dark:text-amber-300">
-            Gợi ý châm biếm: “Bạn cứ làm tốt phần mình, phần lợi nhuận để công ty lo.”
+            Gợi ý: Nội dung ngắn gọn, hình ảnh rõ nét và thời gian lặp phù hợp sẽ giúp thông báo dễ đọc hơn.
         </div>
     </section>
+    @else
+        <p class="py-8 text-center text-[var(--app-muted)]">Chọn Thư nội bộ hoặc Quảng cáo để bắt đầu.</p>
+    @endif
 </div>
 
-@if($messages->isNotEmpty())
+@if($section === 'mail' && $messages->isNotEmpty())
     <section class="app-panel mt-6 overflow-hidden">
         <div class="border-b border-[var(--app-border)] p-5"><h2 class="app-heading">Lịch sử gửi thư gần đây</h2></div>
         <div class="overflow-x-auto">

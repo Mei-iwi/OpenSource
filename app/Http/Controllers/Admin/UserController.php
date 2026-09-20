@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Department;
 use App\Models\User;
+use App\Services\EmployeeCodeGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
-use App\Services\EmployeeCodeGenerator;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -19,7 +19,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $users = User::query()
+        $users = User::with('employee')
             ->when(request('search'), fn ($query, $search) => $query->where(fn ($q) => $q
                 ->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")))
