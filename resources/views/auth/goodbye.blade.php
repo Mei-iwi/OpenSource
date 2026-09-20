@@ -8,9 +8,9 @@
         <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Bạn đã đăng xuất an toàn khỏi hệ thống.</p>
 
         <div class="mx-auto mt-7 flex h-20 w-20 items-center justify-center rounded-full border-4 border-indigo-100 bg-indigo-50 text-3xl font-extrabold tabular-nums text-indigo-600 shadow-inner dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-300" aria-live="polite">
-            <span data-goodbye-countdown>5</span>
+            <span data-goodbye-countdown>{{ (int) ceil($remainingMs / 1000) }}</span>
         </div>
-        <p class="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">Tự động trở về trang đăng nhập sau <span data-goodbye-countdown>5</span> giây</p>
+        <p class="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">Tự động trở về trang đăng nhập sau <span data-goodbye-countdown>{{ (int) ceil($remainingMs / 1000) }}</span> giây</p>
 
         <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110">
             Trở về trang đăng nhập ngay
@@ -19,21 +19,31 @@
 
     <script>
         (() => {
-            const loginUrl = @js(route('login'));
+            if (window.goodbyeCountdownStarted) return;
+            window.goodbyeCountdownStarted = true;
+
+            const loginUrl = @js(route('login', [], false));
             const countdownElements = document.querySelectorAll('[data-goodbye-countdown]');
-            let seconds = 5;
-
-            const countdownTimer = window.setInterval(() => {
-                seconds = Math.max(0, seconds - 1);
+            const deadline = Date.now() + @js($remainingMs);
+            let timer;
+            let redirected = false;
+            const update = () => {
+                window.clearTimeout(timer);
+                if (redirected) return;
+                const remaining = Math.max(0, deadline - Date.now());
                 countdownElements.forEach((element) => {
-                    element.textContent = seconds;
+                    element.textContent = Math.ceil(remaining / 1000);
                 });
-            }, 1000);
-
-            window.setTimeout(() => {
-                window.clearInterval(countdownTimer);
-                window.location.href = loginUrl;
-            }, 5000);
+                if (remaining === 0) {
+                    redirected = true;
+                    window.location.replace(loginUrl);
+                    return;
+                }
+                timer = window.setTimeout(update, Math.min(remaining, 250));
+            };
+            window.addEventListener('pageshow', update);
+            document.addEventListener('visibilitychange', update);
+            update();
         })();
     </script>
 </x-guest-layout>

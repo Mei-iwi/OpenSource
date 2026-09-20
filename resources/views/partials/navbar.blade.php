@@ -14,7 +14,8 @@
 
             <!-- Module Icon & Title -->
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/default-employee.png') }}" alt="Biểu tượng công ty" class="hidden h-10 w-10 rounded-xl border border-emerald-500/20 object-cover shadow-sm sm:block">
+                {{-- Fixed brand artwork; independent of editable user avatars. --}}
+                <img src="{{ asset('images/ctq-office-cat.png') }}" alt="Mèo công sở CTQ ngơ ngác ôm cà phê" width="40" height="40" draggable="false" class="hidden h-10 w-10 shrink-0 rounded-xl border border-[var(--app-border)] object-cover shadow-sm sm:block">
                 <h1 class="text-sm font-bold tracking-tight text-[var(--app-text)] sm:text-base">{{ $pageTitle }}</h1>
             </div>
         </div>
