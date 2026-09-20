@@ -8,6 +8,25 @@ if (savedTheme === 'dark') {
 import Alpine from 'alpinejs';
 import Chart from 'chart.js/auto';
 
+Alpine.data('imagePicker', () => ({
+    preview: '', filename: '', error: '', objectUrl: null,
+    init() { this.preview = this.$el.dataset.initialSrc; },
+    release() { if (this.objectUrl) URL.revokeObjectURL(this.objectUrl); this.objectUrl = null; },
+    reset() { this.release(); this.preview = this.$el.dataset.initialSrc; this.filename = ''; this.error = ''; this.$refs.input.value = ''; },
+    choose(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        this.release(); this.error = '';
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > Number(this.$el.dataset.maxBytes)) {
+            this.error = 'Chọn ảnh JPG, PNG hoặc WebP trong giới hạn dung lượng.';
+            this.$refs.input.value = ''; this.filename = ''; this.preview = this.$el.dataset.initialSrc;
+            return;
+        }
+        this.objectUrl = URL.createObjectURL(file); this.preview = this.objectUrl; this.filename = file.name;
+    },
+    destroy() { this.release(); },
+}));
+
 window.Alpine = Alpine;
 window.Chart = Chart;
 

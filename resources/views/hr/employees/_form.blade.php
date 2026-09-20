@@ -1,4 +1,7 @@
 @csrf
+<div class="mb-6 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-5">
+    <x-image-picker name="avatar" :src="isset($employee) ? $employee->user->avatar_url : null" />
+</div>
 <div class="grid gap-5 sm:grid-cols-2">
     <div><label for="name" class="text-sm font-medium">Họ và tên</label><input id="name" name="name" value="{{ old('name', $employee->user->name ?? '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('name')" class="mt-1" /></div>
     <div><label for="email" class="text-sm font-medium">Email</label><input id="email" name="email" type="email" value="{{ old('email', $employee->user->email ?? '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('email')" class="mt-1" /></div>
@@ -15,11 +18,15 @@
     @endif
     <div><label for="department_id" class="text-sm font-medium">Phòng ban</label><select id="department_id" name="department_id" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><option value="">Chọn phòng ban</option>@foreach ($departments as $department)<option value="{{ $department->id }}" @selected((string) old('department_id', $employee->department_id ?? '') === (string) $department->id)>{{ $department->name }}</option>@endforeach</select><x-input-error :messages="$errors->get('department_id')" class="mt-1" /></div>
     <div><label for="phone" class="text-sm font-medium">Số điện thoại</label><input id="phone" name="phone" value="{{ old('phone', $employee->phone ?? '') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></div>
-    <div><label for="position" class="text-sm font-medium">Chức vụ</label><input id="position" name="position" value="{{ old('position', $employee->position ?? '') }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></div>
+    <div><label for="position" class="app-label">Chức vụ</label>
+        <select id="position" name="position" required class="app-input mt-1 w-full">
+            <option value="">Chọn chức vụ</option>
+            @foreach($positions as $position)<option value="{{ $position }}" @selected(old('position', $employee->position ?? '') === $position)>{{ $position }}</option>@endforeach
+        </select><x-input-error :messages="$errors->get('position')" />
+    </div>
     <div><label for="date_of_birth" class="text-sm font-medium">Ngày sinh</label><input id="date_of_birth" name="date_of_birth" type="date" value="{{ old('date_of_birth', isset($employee) && $employee->date_of_birth ? $employee->date_of_birth->format('Y-m-d') : '') }}" @required(!isset($employee)) class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><p class="mt-1 text-xs text-slate-500">{{ isset($employee) ? '' : 'Mật khẩu ban đầu được tạo theo định dạng ngày tháng năm sinh: ddmmyyyy.' }}</p><x-input-error :messages="$errors->get('date_of_birth')" class="mt-1" /></div>
     <div><label for="hire_date" class="text-sm font-medium">Ngày vào làm</label><input id="hire_date" name="hire_date" type="date" value="{{ old('hire_date', isset($employee) && $employee->hire_date ? $employee->hire_date->format('Y-m-d') : '') }}" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><x-input-error :messages="$errors->get('hire_date')" class="mt-1" /></div>
     <div><label for="employment_status" class="text-sm font-medium">Trạng thái</label><select id="employment_status" name="employment_status" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><option value="active" @selected(old('employment_status', $employee->employment_status ?? 'active') === 'active')>Đang làm việc</option><option value="inactive" @selected(old('employment_status', $employee->employment_status ?? '') === 'inactive')>Đã nghỉ</option></select></div>
     <div class="sm:col-span-2"><label for="address" class="text-sm font-medium">Địa chỉ</label><textarea id="address" name="address" rows="3" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">{{ old('address', $employee->address ?? '') }}</textarea></div>
-    <div class="sm:col-span-2"><label for="avatar" class="text-sm font-medium">Ảnh đại diện</label><input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="mt-1 block w-full text-sm"><p class="mt-1 text-xs text-slate-500">JPG, PNG hoặc WEBP; tối đa 2 MB.</p><x-input-error :messages="$errors->get('avatar')" class="mt-1" /></div>
 </div>
 <div class="mt-6 flex gap-3"><button class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white">{{ isset($employee) ? 'Lưu thay đổi' : 'Tạo nhân viên và tài khoản' }}</button><a href="{{ route('hr.employees.index') }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700">Hủy</a></div>

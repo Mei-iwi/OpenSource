@@ -41,7 +41,9 @@ class EmployeeController extends Controller
     {
         $departments = Department::orderBy('name')->get();
 
-        return view('hr.employees.create', compact('departments'));
+        $positions = DB::table('job_positions')->orderBy('name')->pluck('name');
+
+        return view('hr.employees.create', compact('departments', 'positions'));
     }
 
     /**
@@ -98,7 +100,9 @@ class EmployeeController extends Controller
         abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
         $departments = Department::orderBy('name')->get();
 
-        return view('hr.employees.edit', compact('employee', 'departments'));
+        $positions = DB::table('job_positions')->orderBy('name')->pluck('name');
+
+        return view('hr.employees.edit', compact('employee', 'departments', 'positions'));
     }
 
     /**
