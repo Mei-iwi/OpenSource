@@ -10,7 +10,9 @@ class SelfAttendanceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->employee !== null;
+        $employee = $this->user()?->employee;
+
+        return $employee !== null && $employee->employment_status === 'active';
     }
 
     /** @return array<string, ValidationRule|array<mixed>|string> */
