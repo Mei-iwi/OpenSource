@@ -321,7 +321,9 @@ docker compose up -d --build
 
 ## 7. Email xác thực và đặt lại mật khẩu
 
-Hệ thống không mở đăng ký công khai. Admin tạo tài khoản tại **Tài khoản**; nhân viên mở **Hồ sơ cá nhân** từ menu tài khoản để cập nhật ảnh, số điện thoại và địa chỉ. Họ tên, email, ngày sinh và thông tin công việc do người có quyền quản lý nhân sự cập nhật.
+Hệ thống không mở đăng ký công khai. Admin hoặc HR tạo hồ sơ và tài khoản trong cùng một biểu mẫu tại **Nhân viên → Tạo nhân viên và tài khoản**. Admin có thể chọn vai trò HR hoặc Nhân viên; HR chỉ có thể tạo Nhân viên. Mã được cấp tự động theo vai trò lúc tạo (`HR-xxxx` hoặc `EMP-xxxx`) và giữ nguyên nếu vai trò thay đổi sau này. Mật khẩu ban đầu là ngày sinh theo định dạng `ddmmyyyy`, ví dụ `15/08/2000` thành `15082000`; thông tin đăng nhập được hiển thị tại trang chi tiết ngay sau khi tạo.
+
+Nhân viên mở **Hồ sơ cá nhân** từ menu tài khoản để cập nhật ảnh, số điện thoại và địa chỉ. Họ tên, email, ngày sinh và thông tin công việc do người có quyền quản lý nhân sự cập nhật. Khi Admin đổi vai trò, hệ thống lưu vai trò cũ, vai trò mới, người thực hiện, thời điểm và ghi chú như `emp -> hr` trong lịch sử tài khoản.
 
 - **Tự đổi mật khẩu:** Hồ sơ cá nhân → nhập mật khẩu hiện tại → Gửi liên kết xác thực → mở email → đặt mật khẩu mới.
 - **Quên mật khẩu:** chọn Quên mật khẩu tại trang đăng nhập.

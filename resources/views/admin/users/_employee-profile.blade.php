@@ -6,7 +6,6 @@
             <p class="text-sm text-amber-700 dark:text-amber-300">Cần <a class="underline" href="{{ route('hr.departments.create') }}">tạo phòng ban</a> trước khi lưu hồ sơ.</p>
         @endif
         <div class="grid gap-4 sm:grid-cols-2">
-            <x-employee-code-preview />
             <div>
                 <label for="department_id" class="app-label">Phòng ban</label>
                 <select id="department_id" name="department_id" required class="app-input w-full">
