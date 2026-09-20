@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Services\LeaveAttendanceSyncService;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 class LeaveRequestController extends Controller
 {
@@ -25,18 +29,45 @@ class LeaveRequestController extends Controller
         return view('hr.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer'])]);
     }
 
-    public function review(Request $request, LeaveRequest $leaveRequest): RedirectResponse
+    public function review(Request $request, LeaveRequest $leaveRequest, LeaveAttendanceSyncService $syncService): RedirectResponse
     {
         $validated = $request->validate([
             'status' => ['required', Rule::in(['approved', 'rejected'])],
             'review_note' => ['nullable', 'string', 'max:2000'],
         ]);
-        $updated = LeaveRequest::whereKey($leaveRequest->id)->where('status', 'pending')
-            ->update(['status' => $validated['status'], 'review_note' => $validated['review_note'] ?? null, 'reviewed_by' => $request->user()->id, 'reviewed_at' => now()]);
-        if (! $updated) {
-            return back()->with('error', 'Đơn đã được xử lý hoặc hủy. Vui lòng tải lại trang.');
+
+        try {
+            DB::transaction(function () use ($leaveRequest, $validated, $request, $syncService) {
+                $locked = LeaveRequest::whereKey($leaveRequest->id)->lockForUpdate()->firstOrFail();
+
+                if ($locked->status !== 'pending') {
+                    throw new DomainException('Đơn đã được xử lý hoặc hủy. Vui lòng tải lại trang.');
+                }
+
+                $locked->update([
+                    'status' => $validated['status'],
+                    'review_note' => $validated['review_note'] ?? null,
+                    'reviewed_by' => $request->user()->id,
+                    'reviewed_at' => now(),
+                ]);
+
+                if ($validated['status'] === 'approved') {
+                    $syncService->sync($locked);
+                }
+            });
+        } catch (DomainException $exception) {
+            return back()->with('error', $exception->getMessage());
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()->with('error', 'Có lỗi xảy ra khi xử lý đơn nghỉ và đồng bộ chấm công. Vui lòng thử lại.');
         }
 
-        return redirect()->route('hr.leave-requests.show', $leaveRequest)->with('success', 'Đã cập nhật trạng thái đơn nghỉ.');
+        $message = $validated['status'] === 'approved'
+            ? 'Đã duyệt đơn nghỉ và đồng bộ chấm công thành công.'
+            : 'Đã từ chối đơn nghỉ.';
+
+        return redirect()->route('hr.leave-requests.show', $leaveRequest)->with('success', $message);
     }
 }
+
