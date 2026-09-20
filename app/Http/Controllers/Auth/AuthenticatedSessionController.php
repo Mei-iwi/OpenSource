@@ -19,6 +19,23 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+    public function goodbye(Request $request): View|RedirectResponse
+    {
+        // Keep one deadline per logout, including refreshes of the goodbye page.
+        $deadline = $request->session()->get('goodbye_deadline');
+        if ($deadline === null) {
+            $deadline = now()->getTimestampMs() + 5000;
+            $request->session()->put('goodbye_deadline', $deadline);
+        }
+
+        $remainingMs = max(0, $deadline - now()->getTimestampMs());
+        if ($remainingMs === 0) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.goodbye', compact('remainingMs'));
+    }
+
     /**
      * Handle an incoming authentication request.
      */
