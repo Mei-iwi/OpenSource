@@ -99,7 +99,14 @@
                 </div>
             </div>
             <div class="mt-4">
-                <p class="text-3xl font-extrabold text-purple-600 dark:text-purple-400">{{ (int) ($summary?->leave_total ?? 0) }}</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-3xl font-extrabold text-purple-600 dark:text-purple-400">{{ (int) ($summary?->leave_total ?? 0) }}</p>
+                    @if(isset($pendingLeaveCount) && $pendingLeaveCount > 0)
+                        <span class="inline-flex items-center rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                            {{ $pendingLeaveCount }} chờ
+                        </span>
+                    @endif
+                </div>
                 <p class="mt-1 text-xs text-[var(--app-muted)]">Được duyệt</p>
             </div>
         </div>
@@ -205,6 +212,90 @@
                 <span class="text-xs text-[var(--app-muted)]">Cần nghỉ phép?</span>
                 <a href="{{ route('employee.leave-requests.create') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">Tạo đơn nghỉ phép ngay</a>
             </div>
+        </div>
+    </div>
+
+    <!-- Recent Leave Requests -->
+    <div class="app-panel mt-6 p-5 sm:p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--app-border)] pb-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="app-heading">Đơn xin nghỉ phép gần đây</h2>
+                    @if(isset($pendingLeaveCount) && $pendingLeaveCount > 0)
+                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            {{ $pendingLeaveCount }} đơn chờ duyệt
+                        </span>
+                    @endif
+                </div>
+                <p class="app-subtitle">Theo dõi trạng thái duyệt các yêu cầu nghỉ phép của bạn</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('employee.leave-requests.create') }}" class="app-button-primary text-xs py-1.5 px-3">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    <span>Gửi đơn mới</span>
+                </a>
+                <a href="{{ route('employee.leave-requests.index') }}" class="app-button-secondary text-xs py-1.5 px-3">Xem tất cả</a>
+            </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Loại nghỉ</th>
+                        <th>Khoảng thời gian</th>
+                        <th>Số ngày</th>
+                        <th>Lý do</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày gửi</th>
+                        <th class="text-right">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $leaveTypeLabels = [
+                            'annual' => 'Nghỉ phép năm',
+                            'sick' => 'Nghỉ ốm',
+                            'unpaid' => 'Nghỉ không lương',
+                            'other' => 'Khác',
+                        ];
+                    @endphp
+                    @forelse($recentLeaveRequests ?? [] as $leave)
+                        <tr>
+                            <td class="font-medium text-[var(--app-text)]">
+                                {{ $leaveTypeLabels[$leave->leave_type] ?? $leave->leave_type }}
+                            </td>
+                            <td class="font-mono text-xs">
+                                {{ $leave->start_date?->format('d/m/Y') }} — {{ $leave->end_date?->format('d/m/Y') }}
+                            </td>
+                            <td class="font-semibold text-xs">
+                                {{ $leave->start_date && $leave->end_date ? $leave->start_date->diffInDays($leave->end_date) + 1 : '—' }} ngày
+                            </td>
+                            <td class="max-w-xs truncate text-xs text-[var(--app-muted)]" title="{{ $leave->reason }}">
+                                {{ \Illuminate\Support\Str::limit($leave->reason, 40) ?: '—' }}
+                            </td>
+                            <td>
+                                <x-status-badge :status="$leave->status" />
+                            </td>
+                            <td class="font-mono text-xs text-[var(--app-muted)]">
+                                {{ $leave->created_at?->format('d/m/Y') }}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{ route('employee.leave-requests.show', $leave) }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 hover:underline">
+                                    Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-10 text-center text-[var(--app-muted)]">
+                                <x-empty-state title="Chưa có đơn xin nghỉ phép" description="Bạn chưa gửi yêu cầu nghỉ phép nào gần đây." />
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 @else

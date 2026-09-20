@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
@@ -28,12 +29,18 @@ class EmployeeDashboardController extends Controller
             }),
         ];
         $recentAttendance = $employee ? Attendance::where('employee_id', $employee->id)->latest('work_date')->latest('id')->limit(7)->get() : collect();
+        $recentLeaveRequests = $employee ? LeaveRequest::where('employee_id', $employee->id)->latest('id')->limit(5)->get() : collect();
+        $pendingLeaveCount = $employee ? LeaveRequest::where('employee_id', $employee->id)->where('status', 'pending')->count() : 0;
         $total = $summary->total;
         $present = $summary->present;
         $late = $summary->late;
 
         return view('dashboard.employee', [
-            'employee' => $employee, 'summary' => $summary, 'recentAttendance' => $recentAttendance,
+            'employee' => $employee,
+            'summary' => $summary,
+            'recentAttendance' => $recentAttendance,
+            'recentLeaveRequests' => $recentLeaveRequests,
+            'pendingLeaveCount' => $pendingLeaveCount,
             'attendanceRate' => $total ? round(($present + $late) / $total * 100, 1) : 0,
             'punctualityRate' => ($present + $late) ? round($present / ($present + $late) * 100, 1) : 0,
             'workedHours' => round($summary->worked_minutes / 60, 1),
