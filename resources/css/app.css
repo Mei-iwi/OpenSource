@@ -486,6 +486,7 @@ html.dark .app-quick-link:hover {
 
 .top-nav nav, .bottom-nav nav {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     overflow-x: auto;
     padding: 0.65rem 1rem;
@@ -497,7 +498,20 @@ html.dark .app-quick-link:hover {
 
 .top-nav nav > div > div, .bottom-nav nav > div > div {
     display: flex;
+    align-items: center;
     gap: 0.4rem;
+    margin: 0 !important;
+}
+
+.top-nav nav > *, .bottom-nav nav > *,
+.top-nav nav > div > div > *, .bottom-nav nav > div > div > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 1023px) {
+    .mobile-nav .sidebar-label { display: initial; }
+    .mobile-nav .nav-collapse-control { display: none; }
 }
 
 .top-nav nav > div > p, .bottom-nav nav > div > p {
@@ -509,13 +523,37 @@ html.dark .app-quick-link:hover {
     white-space: nowrap;
 }
 
-.bottom-nav nav {
+.top-nav .nav-collapse-control, .bottom-nav .nav-collapse-control {
+    flex: 0 0 auto;
     justify-content: center;
+    width: 2.75rem;
+}
+
+.nav-state-collapsed .desktop-nav .nav-collapse-control {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.bottom-nav nav {
+    justify-content: safe center;
 }
 
 .bottom-nav nav a {
     padding-top: 0.65rem;
     padding-bottom: 0.65rem;
+}
+
+.nav-state-collapsed .top-nav nav, .nav-state-collapsed .bottom-nav nav {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.nav-state-collapsed .top-nav nav a, .nav-state-collapsed .bottom-nav nav a {
+    justify-content: center;
+    min-height: 2.5rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
 }
 
 .user-profile-trigger {

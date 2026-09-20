@@ -25,13 +25,13 @@ class AppServiceProvider extends ServiceProvider
     {
         ResetPassword::toMailUsing(function ($user, string $token) {
             return (new MailMessage)
-                ->subject('Đặt lại mật khẩu — Snake Motion')
+                ->subject('Đặt lại mật khẩu — '.config('app.name'))
                 ->greeting('Xin chào '.$user->name.',')
                 ->line('Hệ thống nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.')
                 ->action('Xác thực và đặt mật khẩu mới', route('password.reset', ['token' => $token, 'email' => $user->email]))
                 ->line('Liên kết có hiệu lực trong '.config('auth.passwords.users.expire').' phút và chỉ dùng được một lần.')
                 ->line('Nếu bạn không yêu cầu thay đổi, hãy bỏ qua email này. Mật khẩu hiện tại vẫn giữ nguyên.')
-                ->salutation('Snake Motion');
+                ->salutation(config('app.name'));
         });
 
         View::composer('layouts.app', function ($view): void {

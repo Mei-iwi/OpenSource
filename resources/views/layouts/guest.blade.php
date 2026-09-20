@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Snake Motion') }} — Đăng nhập hệ thống</title>
+    <title>{{ config('app.name', 'Công ty TNHH 4 thành viên CTQ') }} — {{ request()->routeIs('goodbye') ? 'Hẹn gặp lại' : 'Đăng nhập hệ thống' }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

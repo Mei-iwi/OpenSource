@@ -27,3 +27,4 @@ storage/framework/sessions/*
 storage/framework/testing/*
 storage/framework/views/*
 /codex-prompts/
+/*-backup.sql

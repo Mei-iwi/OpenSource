@@ -14,21 +14,8 @@
 
             <!-- Module Icon & Title -->
             <div class="flex items-center gap-3">
-                <div class="hidden h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 sm:flex" aria-hidden="true">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-                        <line x1="3" x2="21" y1="9" y2="9"/>
-                        <line x1="9" x2="9" y1="21" y2="9"/>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold tracking-tight text-[var(--app-text)] sm:text-base">{{ $pageTitle }}</h1>
-                    <div class="hidden items-center gap-1.5 text-xs text-[var(--app-muted)] sm:flex">
-                        <span>Snake Motion</span>
-                        <span>/</span>
-                        <span class="text-indigo-600 dark:text-indigo-400 font-medium">Workspace</span>
-                    </div>
-                </div>
+                <img src="{{ asset('images/default-employee.png') }}" alt="Biểu tượng công ty" class="hidden h-10 w-10 rounded-xl border border-emerald-500/20 object-cover shadow-sm sm:block">
+                <h1 class="text-sm font-bold tracking-tight text-[var(--app-text)] sm:text-base">{{ $pageTitle }}</h1>
             </div>
         </div>
 
@@ -64,12 +51,6 @@
                 <svg x-show="dark" x-cloak class="h-4 w-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
                 </svg>
-            </button>
-
-            <!-- Nav Collapser on Desktop -->
-            <button type="button" @click="setNavState(navState === 'expanded' ? 'collapsed' : 'expanded')" class="hidden h-9 items-center gap-1.5 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:border-indigo-300 hover:text-indigo-600 lg:inline-flex" aria-label="Chuyển trạng thái menu">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h16"/></svg>
-                <span x-text="navState === 'expanded' ? 'Thu gọn' : 'Mở rộng'"></span>
             </button>
 
             <!-- User Profile Menu Wrapper -->

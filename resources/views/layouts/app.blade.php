@@ -20,7 +20,7 @@
             document.documentElement.classList.add(`nav-state-${document.documentElement.dataset.navState}`, `nav-position-${document.documentElement.dataset.navPosition}`);
         })();
     </script>
-    <title>@yield('title', config('app.name', 'Snake Motion'))</title>
+    <title>@hasSection('title')@yield('title') — @endif{{ config('app.name', 'Công ty TNHH 4 thành viên CTQ') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet">
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -34,7 +34,7 @@
         <div class="app-body">
         <aside class="desktop-nav hidden h-full w-72 shrink-0 overflow-y-auto border-r border-blue-200 bg-[var(--app-surface)] transition-[width] duration-300 ease-in-out dark:border-blue-900/60 lg:block">@include('partials.sidebar')</aside>
         <div class="app-workspace flex min-w-0 flex-1 flex-col h-full overflow-hidden">
-            <div x-show="mobileMenuOpen" x-cloak class="border-b border-[var(--app-border)] bg-[var(--app-surface)] lg:hidden">
+            <div x-show="mobileMenuOpen" x-cloak class="mobile-nav max-h-[70dvh] shrink-0 overflow-y-auto border-b border-[var(--app-border)] bg-[var(--app-surface)] lg:hidden">
                 @include('partials.sidebar')
             </div>
             <div class="top-nav border-b border-[var(--app-border)] bg-[var(--app-surface)]">@include('partials.sidebar')</div>

@@ -37,7 +37,7 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'role' => $isSelf ? ['required', 'in:admin,hr,employee'] : ['required', 'in:hr,employee'],
-            'account_status' => ['sometimes', 'in:active,locked'],
+            'account_status' => ['sometimes', $isSelf ? 'in:active' : 'in:active,locked'],
         ];
     }
 }

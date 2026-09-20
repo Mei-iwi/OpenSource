@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.theme-init')
-    <title>Snake Motion — Chấm công và quản trị nhân sự</title>
+    <title>{{ config('app.name') }} — Chấm công và quản trị nhân sự</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet">
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -18,7 +18,7 @@
                 <span class="snake-avatar-motion flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-emerald-700 to-lime-500 text-white shadow-lg shadow-emerald-900/30" aria-label="Ảnh rắn chuyển động">
                     <img src="{{ asset('images/default-employee.png') }}" alt="Ảnh rắn chuyển động" class="h-full w-full object-cover">
                 </span>
-                <span class="text-lg font-extrabold tracking-tight text-slate-900">Snake Motion</span>
+                <span class="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">{{ config('app.name') }}</span>
             </a>
             <div class="flex items-center gap-3">
                 <x-theme-toggle />
@@ -39,7 +39,7 @@
                 <span class="rainbow-text">Tôi tăng trưởng.</span>
             </h1>
             <p class="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                Sự nỗ lực của bạn là thu nhập của tôi. Snake Motion giúp mọi phút đi làm, giờ tăng ca và lá đơn nghỉ phép được ghi nhận thật gọn gàng.
+                Sự nỗ lực của bạn là thu nhập của tôi. {{ config('app.name') }} giúp mọi phút đi làm, giờ tăng ca và lá đơn nghỉ phép được ghi nhận thật gọn gàng.
             </p>
             <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
                 <a href="{{ route('login') }}" class="rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:bg-indigo-500">Bắt đầu một ngày mới</a>
@@ -73,7 +73,7 @@
     </main>
 
     <footer class="border-t border-slate-200 py-7 text-center text-xs text-slate-500">
-        &copy; {{ date('Y') }} Snake Motion System
+        &copy; {{ date('Y') }} {{ config('app.name') }}
     </footer>
 </body>
 </html>
