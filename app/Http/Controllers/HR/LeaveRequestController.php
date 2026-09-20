@@ -27,14 +27,15 @@ class LeaveRequestController extends Controller
 
     public function review(Request $request, LeaveRequest $leaveRequest): RedirectResponse
     {
-        if ($leaveRequest->status !== 'pending') {
-            return back()->with('error', 'Chỉ có thể xử lý đơn đang chờ duyệt.');
-        }
         $validated = $request->validate([
             'status' => ['required', Rule::in(['approved', 'rejected'])],
             'review_note' => ['nullable', 'string', 'max:2000'],
         ]);
-        $leaveRequest->update(['status' => $validated['status'], 'review_note' => $validated['review_note'] ?? null, 'reviewed_by' => $request->user()->id, 'reviewed_at' => now()]);
+        $updated = LeaveRequest::whereKey($leaveRequest->id)->where('status', 'pending')
+            ->update(['status' => $validated['status'], 'review_note' => $validated['review_note'] ?? null, 'reviewed_by' => $request->user()->id, 'reviewed_at' => now()]);
+        if (! $updated) {
+            return back()->with('error', 'Đơn đã được xử lý hoặc hủy. Vui lòng tải lại trang.');
+        }
 
         return redirect()->route('hr.leave-requests.show', $leaveRequest)->with('success', 'Đã cập nhật trạng thái đơn nghỉ.');
     }

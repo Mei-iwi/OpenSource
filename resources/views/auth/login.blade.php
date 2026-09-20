@@ -26,7 +26,6 @@
                     <img src="{{ asset('images/default-employee.png') }}" alt="Ảnh rắn chuyển động" class="h-full w-full object-cover">
                 </div>
                 <h1 class="mt-2 text-xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-2xl">Chào mừng bạn trở lại</h1>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Đăng nhập vào hệ thống quản lý nhân sự.</p>
             </div>
 
             <x-auth-session-status class="mb-3" :status="session('status')" />

@@ -95,6 +95,7 @@ class EmployeeController extends Controller
     public function edit(Employee $employee): View
     {
         $employee->load('user');
+        abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
         $departments = Department::orderBy('name')->get();
 
         return view('hr.employees.edit', compact('employee', 'departments'));
@@ -128,8 +129,4 @@ class EmployeeController extends Controller
 
         return redirect()->route('hr.employees.index')->with('success', 'Đã cập nhật nhân viên.');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
 }

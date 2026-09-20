@@ -13,7 +13,11 @@ class UpdateEmployeeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()?->hasRole(['admin', 'hr']) ?? false;
+        $actor = $this->user();
+        $target = $this->route('employee')?->user;
+
+        // HR cannot change an administrator's recovery email via the employee form.
+        return $actor?->isAdmin() || ($actor?->isHr() && ! $target?->isAdmin());
     }
 
     /**
@@ -24,6 +28,7 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules(): array
     {
         $employee = $this->route('employee');
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($employee?->user_id)],

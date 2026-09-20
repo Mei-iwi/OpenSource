@@ -7,7 +7,10 @@ use Illuminate\Validation\Rule;
 
 class StoreLeaveRequest extends FormRequest
 {
-    public function authorize(): bool { return $this->user()?->isEmployee() ?? false; }
+    public function authorize(): bool
+    {
+        return $this->user()?->isEmployee() ?? false;
+    }
 
     public function rules(): array
     {
@@ -18,9 +21,13 @@ class StoreLeaveRequest extends FormRequest
     {
         $validator->after(function ($validator): void {
             $employee = $this->user()?->employee;
-            if (! $employee || ! $this->start_date || ! $this->end_date) return;
+            if ($validator->errors()->isNotEmpty() || ! $employee) {
+                return;
+            }
             $overlap = $employee->leaveRequests()->whereIn('status', ['pending', 'approved'])->where('start_date', '<=', $this->end_date)->where('end_date', '>=', $this->start_date)->exists();
-            if ($overlap) $validator->errors()->add('start_date', 'Khoảng thời gian nghỉ bị trùng với đơn đang chờ hoặc đã duyệt.');
+            if ($overlap) {
+                $validator->errors()->add('start_date', 'Khoảng thời gian nghỉ bị trùng với đơn đang chờ hoặc đã duyệt.');
+            }
         });
     }
 }

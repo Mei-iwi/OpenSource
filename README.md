@@ -340,7 +340,7 @@ MAIL_PORT=587
 MAIL_USERNAME=your-account@gmail.com
 MAIL_PASSWORD=your-google-app-password
 MAIL_FROM_ADDRESS=your-account@gmail.com
-MAIL_FROM_NAME="Snake Motion"
+MAIL_FROM_NAME="Công ty TNHH 4 thành viên CTQ"
 ```
 
 Dùng mật khẩu ứng dụng của Gmail gửi thư, không dùng mật khẩu đăng nhập Google. Xem [hướng dẫn mật khẩu ứng dụng của Google](https://support.google.com/accounts/answer/185833?hl=vi). Không đưa `.env` hoặc mật khẩu vào Git. Các email demo của seeder không phải hộp thư thật; muốn nhận thư, admin cần cập nhật email tài khoản thành địa chỉ có thể truy cập.
@@ -368,3 +368,51 @@ Docker mặc định dùng `http://localhost:8080` cho liên kết. Nếu đổi
 - `resources/js`, `resources/css`: JavaScript và Tailwind CSS.
 - `routes/web.php`, `routes/auth.php`: route web và authentication.
 - `Dockerfile`, `docker-compose.yml`, `docker/start.sh`: môi trường Docker local.
+
+## 9. Đối chiếu đề cương và chuẩn đầu ra
+
+Căn cứ: **Lập trình mã nguồn mở, đề cương v1.2**, mục 5 (trang 4), mục 8 (trang 10), Rubric 2 (trang 13–14). Điểm môn gồm bài tập 10%, kiểm tra thực hành 40%, đồ án 50%. Trong điểm đồ án, chức năng chiếm 40%, giao diện 30%, hình thức báo cáo 10%, nội dung báo cáo 10%, tương tác nhóm 10%. Source hỗ trợ minh chứng sản phẩm, không thay thế báo cáo, phần vấn đáp hoặc đóng góp thực tế của từng thành viên.
+
+| Chuẩn đầu ra | Minh chứng trong dự án | Nội dung cần trình bày khi bảo vệ |
+|---|---|---|
+| CLO1: PHP, OOP, CSDL, Laravel | Controller theo module, FormRequest, Eloquent relationships, migration, seeder, middleware; `EmployeeCodeGenerator` được inject qua container | Luồng route → middleware → request → controller → model → Blade; prepared bindings của Eloquent/PDO; transaction khi tạo tài khoản và hồ sơ |
+| CLO2: đánh giá website | Sáng/tối, menu bốn vị trí, tìm kiếm/phân trang, trạng thái rỗng, thông báo lỗi form, báo cáo in/CSV | Đánh giá khả năng đọc, nhất quán, thao tác bàn phím, màn hình nhỏ; ghi nhận hạn chế bằng ảnh và kết quả thực tế |
+| CLO3: đánh giá công việc nhóm | Lịch sử commit và pull request để đối chiếu phần việc | Nhóm tự ghi người thực hiện, phần việc, kết quả, người review; không dùng tài khoản demo nhân sự làm minh chứng thành viên nhóm |
+| CLO4: triển khai website cho tổ chức | Quản lý nhân sự ba vai trò; MySQL, upload riêng tư, email reset; hướng dẫn local và Docker ở trên | Khởi động từ source mới, migrate/seed, demo quy trình nghiệp vụ; Docker hiện là môi trường local, chưa phải cấu hình production |
+| CLO5: tự học và trách nhiệm | Dependency có lockfile, cấu hình mẫu không chứa bí mật, hướng dẫn tái lập | Giải thích lựa chọn công nghệ, nguồn tham khảo, phần tự học và cải tiến thực tế của mỗi thành viên |
+
+Phạm vi nghiệp vụ: Admin quản lý tài khoản và vai trò; Admin/HR quản lý phòng ban, hồ sơ, chấm công, duyệt đơn và báo cáo; Employee dùng hồ sơ và dữ liệu cá nhân. Tạo tài khoản gắn hồ sơ trong một transaction; mã nhân viên được cấp theo vai trò ban đầu và không đổi khi chuyển vai trò. HR không được sửa hồ sơ Admin. Duyệt/hủy đơn chỉ thành công khi đơn vẫn đang chờ, tránh ghi đè thao tác của người khác.
+
+Bộ lọc chấm công và báo cáo dùng chung `AttendanceFilterRequest` và scope `Attendance::filtered()`. Danh sách phân trang; bản in lấy toàn bộ kết quả lọc; CSV đọc theo từng lô 500 bản ghi và vô hiệu hóa tiền tố công thức trong dữ liệu nhập bởi người dùng. Không thêm tầng repository hoặc thay Laravel bằng PHP thuần vì không cần thiết cho phạm vi đồ án.
+
+Các mục học tập như PDO thuần, abstract class/interface, Factory vẫn cần được hiểu và thực hành theo đề giảng viên; không khẳng định source này bao phủ toàn bộ bài tập của môn. Eloquent dùng PDO bên dưới, nhưng không thay thế phần giải thích prepared statements khi vấn đáp. Dự án hiện dùng seeder xác định để demo có thể lặp lại.
+
+### Trình tự trình diễn đề xuất
+
+1. Chạy ứng dụng từ môi trường sạch theo mục 2 hoặc 3; seed dữ liệu demo.
+2. Admin tạo phòng ban và nhân viên: không nhập mã/mật khẩu, nhận mã theo vai trò và mật khẩu ngày sinh; kiểm tra cả danh sách nhân viên lẫn tài khoản.
+3. Đổi vai trò rồi kiểm tra mã giữ nguyên và lịch sử thay đổi có người thực hiện.
+4. Đăng nhập Employee; xác nhận không truy cập được trang Admin/HR hoặc hồ sơ nghỉ phép của người khác; cập nhật thông tin cá nhân được phép.
+5. Chấm công có ảnh, gửi đơn nghỉ; HR duyệt; Employee không thể hủy đơn đã duyệt. Nếu demo camera, cấp quyền trình duyệt và dùng localhost hoặc HTTPS.
+6. Lọc báo cáo theo tháng/phòng ban; đối chiếu tổng số với CSV và bản in nhiều hơn 20 dòng. Thử dữ liệu không hợp lệ và bộ lọc không có kết quả.
+7. Đổi sáng/tối, thử menu và màn hình nhỏ; đăng xuất qua trang tạm biệt 5 giây; thử truy cập lại trang cần đăng nhập.
+8. Demo reset mật khẩu bằng hộp thư thật do nhóm kiểm soát, hoặc dùng `MAIL_MAILER=log` và nói rõ đây là chế độ mô phỏng gửi thư.
+
+Để đạt nhóm điểm cao nhất, nhóm cần nộp báo cáo theo mẫu giảng viên: yêu cầu, phân quyền, thiết kế CSDL, giải thích các luồng chính, ảnh kết quả, đánh giá ưu/nhược điểm, phân công thực tế và tài liệu tham khảo. Đề cương không kèm đặc tả riêng cho đề tài quản lý nhân sự, nên cần đối chiếu thêm yêu cầu đề tài đã được giảng viên duyệt.
+
+## 10. Sao lưu và phục hồi MySQL local
+
+Ví dụ dưới đây chạy trong terminal có `mysql` và `mysqldump` trên PATH. Dùng `--result-file` để tránh lỗi mã hóa khi redirect bằng PowerShell. Mật khẩu nhập tại lời nhắc, không đưa vào command hoặc commit.
+
+```bash
+mysqldump -h 127.0.0.1 -P 3306 -u root -p --single-transaction --no-tablespaces --result-file=hr-management-backup.sql hr_management
+```
+
+Phục hồi thử vào database **riêng**, không ghi đè dữ liệu đang dùng:
+
+```bash
+mysql -h 127.0.0.1 -P 3306 -u root -p -e "CREATE DATABASE hr_management_restore CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -h 127.0.0.1 -P 3306 -u root -p hr_management_restore -e "source hr-management-backup.sql"
+```
+
+Với MySQL Docker, dùng client trên máy host và đổi `-P 3306 -u root` thành `-P 3307 -u hr_user` khi sao lưu; việc tạo database phục hồi cần tài khoản root Docker. Sao lưu cả thư mục upload riêng tư (hoặc volume `app_storage` với Docker) và giữ APP_KEY an toàn nếu cần phục hồi toàn bộ ứng dụng. File SQL và upload có thể chứa dữ liệu cá nhân; lưu ngoài Git.

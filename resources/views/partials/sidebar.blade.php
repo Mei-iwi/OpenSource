@@ -9,16 +9,15 @@
 <div class="flex min-h-full flex-col justify-between">
     <div>
         <!-- Brand Header -->
-        <div class="relative overflow-hidden border-b border-blue-100 px-5 py-5 dark:border-blue-900/50">
-            <img src="{{ asset('images/sidebar-header.png') }}" alt="Không gian làm việc quản trị nhân sự" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_42%] opacity-40" loading="lazy">
-            <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--app-surface)]/75 via-[var(--app-surface)]/35 to-transparent"></div>
-            <div class="relative z-10 flex items-center justify-between">
+        <div class="relative min-h-36 overflow-hidden border-b border-blue-100 px-5 py-5 dark:border-blue-900/50">
+            <img src="{{ asset('images/sidebar-header.png') }}" alt="Không gian làm việc quản trị nhân sự" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-60" loading="lazy">
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--app-surface)]/95 via-[var(--app-surface)]/25 to-transparent"></div>
+            <div class="relative z-10 flex min-h-28 items-end justify-between">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
                     <div class="sidebar-label">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-base font-extrabold tracking-tight text-[var(--app-text)]">Snake Motion</span>
+                            <span class="text-sm font-extrabold leading-tight tracking-tight text-[var(--app-text)]">{{ config('app.name') }}</span>
                         </div>
-                        <p class="text-xs font-medium text-[var(--app-muted)]">Enterprise Platform</p>
                     </div>
                 </a>
             </div>
@@ -26,6 +25,15 @@
 
         <!-- Navigation Links -->
         <nav class="space-y-6 px-3.5 py-5" aria-label="Điều hướng chính">
+            <button type="button" @click="setNavState(navState === 'expanded' ? 'collapsed' : 'expanded')" class="nav-collapse-control group flex h-11 w-full shrink-0 items-center rounded-xl px-3.5 text-[var(--app-muted)] transition-all hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-800/60 dark:hover:text-indigo-400" :title="navState === 'expanded' ? 'Thu gọn menu' : 'Mở rộng menu'" :aria-label="navState === 'expanded' ? 'Thu gọn menu' : 'Mở rộng menu'">
+                <svg class="h-5 w-5 shrink-0 transition-transform duration-300 ease-out" :class="{
+                    'rotate-180': (navPosition === 'left' && navState === 'collapsed') || (navPosition === 'right' && navState === 'expanded'),
+                    'rotate-90': (navPosition === 'top' && navState === 'expanded') || (navPosition === 'bottom' && navState === 'collapsed'),
+                    '-rotate-90': (navPosition === 'top' && navState === 'collapsed') || (navPosition === 'bottom' && navState === 'expanded')
+                }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
             <!-- Tổng quan -->
             <div>
                 <p class="sidebar-label px-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--app-muted)]">Tổng quan</p>
