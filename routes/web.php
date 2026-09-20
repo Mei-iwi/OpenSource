@@ -79,6 +79,9 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
 Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', EmployeeDashboardController::class)->name('dashboard');
     Route::get('/attendances', [EmployeeAttendanceController::class, 'index'])->name('attendances.index');
+});
+
+Route::middleware(['auth', 'account.active', 'role:admin,hr,employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::resource('leave-requests', EmployeeLeaveRequestController::class)->only(['index', 'create', 'store', 'show']);
     Route::patch('/leave-requests/{leave_request}/cancel', [EmployeeLeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
 });

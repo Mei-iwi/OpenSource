@@ -142,10 +142,15 @@
             <p class="text-xs text-[var(--app-muted)]">{{ $pendingLeaveRequests->count() }} đơn gần nhất cần xem xét</p>
         </div>
     </div>
-    <a href="{{ route('hr.leave-requests.index', ['status' => 'pending']) }}" class="app-button-primary text-xs py-2 px-4">
-        <span>Mở danh sách đơn nghỉ</span>
-        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
+    <div class="flex flex-wrap items-center gap-2">
+        <a href="{{ route('employee.leave-requests.index') }}" class="app-button-secondary text-xs py-2 px-3.5">
+            <span>Đơn nghỉ của tôi</span>
+        </a>
+        <a href="{{ route('hr.leave-requests.index', ['status' => 'pending']) }}" class="app-button-primary text-xs py-2 px-4">
+            <span>Mở danh sách đơn nghỉ</span>
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </div>
 </div>
 
 <!-- Two Column Charts Section -->

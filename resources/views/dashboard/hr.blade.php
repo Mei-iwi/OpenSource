@@ -207,6 +207,12 @@
                         {{ $pendingLeaveCount }} đơn chờ duyệt
                     </span>
                 </a>
+                <a href="{{ route('employee.leave-requests.index') }}" class="app-quick-link">
+                    <span class="flex items-center gap-2.5">
+                        <svg class="h-4 w-4 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+                        Đơn xin nghỉ của tôi
+                    </span>
+                </a>
             </div>
         </div>
 
