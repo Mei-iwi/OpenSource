@@ -65,7 +65,6 @@ Route::middleware(['auth', 'account.active', 'role:hr,employee'])
 Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->name('hr.')->group(function () {
     Route::get('/dashboard', HrDashboardController::class)->name('dashboard');
     Route::resource('departments', DepartmentController::class);
-    Route::get('/employees/code-preview', [EmployeeController::class, 'codePreview'])->name('employees.code-preview');
     Route::resource('employees', EmployeeController::class)->except('destroy');
     Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

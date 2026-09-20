@@ -8,14 +8,6 @@ use InvalidArgumentException;
 
 class EmployeeCodeGenerator
 {
-    public function preview(string $role): string
-    {
-        $prefix = $this->prefix($role);
-        $last = DB::table('employee_code_sequences')->where('prefix', $prefix)->value('last_number');
-
-        return $this->availableCode($prefix, (int) $last + 1);
-    }
-
     public function next(string $role): string
     {
         return DB::transaction(function () use ($role) {

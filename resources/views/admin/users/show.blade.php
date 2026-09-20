@@ -6,4 +6,6 @@
 <form method="POST" action="{{ route('admin.users.reset-password', $user) }}" class="mt-4">@csrf
 <button class="app-button-primary" type="submit">Gửi email đặt lại mật khẩu</button>
 <x-input-error :messages="$errors->get('email')" class="mt-2" />
-</form></section>@endsection
+</form></section>
+@include('admin.users._role-history')
+@endsection
