@@ -1,25 +1,35 @@
 @extends('layouts.app')
 
-@section('title', 'Thư và quảng cáo')
+@php
+    $section = old('_section', request('section'));
+    $communicationTitle = match ($section) {
+        'mail' => 'Thư',
+        'advertisement' => 'Quảng cáo',
+        default => 'Thư và quảng cáo',
+    };
+@endphp
+@section('title', $communicationTitle)
 
 @section('content')
-<x-page-header eyebrow="Admin / Truyền thông" title="Thư và quảng cáo" description="Gửi thông báo nội bộ và điều phối thông điệp quảng cáo đến các tài khoản nhân viên." />
+<div @class(['min-h-full flex flex-col justify-center' => !in_array($section, ['mail', 'advertisement'], true)])>
+<x-page-header :title="$communicationTitle" />
 
-@php($section = old('_section', request('section')))
-<div class="mx-auto mb-6 grid max-w-3xl gap-4 sm:grid-cols-2">
-    <a href="{{ route('admin.communications.index', ['section' => 'mail']) }}" class="directory-card p-6 {{ $section === 'mail' ? 'ring-2 ring-blue-500' : '' }}" @if($section === 'mail') aria-current="page" @endif>
+@if(!in_array($section, ['mail', 'advertisement'], true))
+<div class="mx-auto mb-6 grid w-full max-w-3xl gap-4 sm:grid-cols-2">
+    <a href="{{ route('admin.communications.index', ['section' => 'mail']) }}" class="directory-card flex min-h-44 flex-col items-center justify-center p-6 text-center">
         <svg class="h-7 w-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg><h2 class="mt-2 text-lg font-bold">Thư nội bộ</h2><p class="app-subtitle">Soạn thư, chọn người nhận và xem lịch sử gửi.</p>
     </a>
-    <a href="{{ route('admin.communications.index', ['section' => 'advertisement']) }}" class="directory-card p-6 {{ $section === 'advertisement' ? 'ring-2 ring-blue-500' : '' }}" @if($section === 'advertisement') aria-current="page" @endif>
+    <a href="{{ route('admin.communications.index', ['section' => 'advertisement']) }}" class="directory-card flex min-h-44 flex-col items-center justify-center p-6 text-center">
         <svg class="h-7 w-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 6-6 12 9"/><circle cx="16" cy="8" r="2"/></svg><h2 class="mt-2 text-lg font-bold">Quảng cáo</h2><p class="app-subtitle">Chọn hình ảnh, nội dung và lịch hiển thị.</p>
     </a>
 </div>
+@endif
 <div class="mx-auto max-w-3xl">
     @if($section === 'mail')
     <section class="app-panel p-5 sm:p-6">
-        <div class="mb-5">
-            <h2 class="app-heading">Gửi thư nội bộ</h2>
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p class="app-subtitle">Chỉ Admin có thể gửi thư đến HR và Employee.</p>
+            <a href="{{ route('admin.communications.history') }}" class="app-button-secondary">Xem lịch sử thư</a>
         </div>
         <form method="POST" action="{{ route('admin.communications.messages.send') }}" class="space-y-4" x-data="{ audience: @js(old('audience', 'all')) }">
             @csrf
@@ -64,7 +74,6 @@
     <section class="app-panel p-5 sm:p-6">
         <div class="mb-5 flex items-start justify-between gap-4">
             <div>
-                <h2 class="app-heading">Quảng cáo công ty</h2>
                 <p class="app-subtitle">Hiển thị lặp lại trên tài khoản HR và Employee khi được bật.</p>
             </div>
             @if($advertisement?->is_active)
@@ -86,7 +95,7 @@
                 <textarea id="ad-message" name="message" rows="7" required maxlength="5000" class="app-input mt-2 w-full">{{ old('message', $advertisement?->message ?? 'Nhờ tinh thần cống hiến không ngừng của đội ngũ nhân viên, doanh thu công ty vẫn duy trì đà tăng trưởng ấn tượng theo hướng âm. Để cải thiện tình hình, công ty đã nhanh chóng triển khai chiến dịch quảng cáo sản phẩm đến chính nhân viên, biến người lao động từ lực lượng tạo ra doanh thu thành lực lượng trực tiếp đóng góp doanh thu bằng cách mua sản phẩm của công ty mình.') }}</textarea>
                 @error('message')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
             </div>
-            <x-image-picker name="image" id="ad-image" label="Ảnh quảng cáo" :max-mb="4" :src="$advertisement?->image_path ? route('advertisement.image', $advertisement) : null" />
+            <x-image-picker name="image" id="ad-image" label="Ảnh quảng cáo" shape="rectangle" :max-mb="4" :src="$advertisement?->image_path ? route('advertisement.image', $advertisement) : null" />
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label for="display-seconds" class="app-label">Thời gian hiển thị (giây)</label>
@@ -121,19 +130,5 @@
     @endif
 </div>
 
-@if($section === 'mail' && $messages->isNotEmpty())
-    <section class="app-panel mt-6 overflow-hidden">
-        <div class="border-b border-[var(--app-border)] p-5"><h2 class="app-heading">Lịch sử gửi thư gần đây</h2></div>
-        <div class="overflow-x-auto">
-            <table class="app-table">
-                <thead><tr><th>Tiêu đề</th><th>Đối tượng</th><th>Số người nhận</th><th>Thời gian</th></tr></thead>
-                <tbody>
-                    @foreach($messages as $message)
-                        <tr><td class="font-semibold">{{ $message->subject }}</td><td>{{ match($message->audience) { 'all' => 'HR và Employee', 'hr' => 'HR', 'employee' => 'Employee', default => 'Đã chọn' } }}</td><td>{{ $message->recipient_count }}</td><td>{{ $message->sent_at?->format('d/m/Y H:i') }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </section>
-@endif
+</div>
 @endsection

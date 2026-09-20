@@ -1,9 +1,9 @@
-@props(['name' => 'avatar', 'id' => null, 'src' => null, 'label' => 'Ảnh đại diện', 'maxMb' => 2])
+@props(['name' => 'avatar', 'id' => null, 'src' => null, 'label' => 'Ảnh đại diện', 'maxMb' => 2, 'shape' => 'circle'])
 @php($inputId = $id ?? $name)
 <div class="image-picker flex flex-col items-center gap-3" x-data="imagePicker" data-initial-src="{{ $src ?? '' }}" data-max-bytes="{{ $maxMb * 1024 * 1024 }}">
     <span class="app-label">{{ $label }}</span>
-    <label for="{{ $inputId }}" class="relative block h-28 w-28 cursor-pointer rounded-full border-2 border-dashed border-blue-400 bg-blue-50 shadow-sm transition hover:border-blue-600 focus-within:ring-4 focus-within:ring-blue-300 dark:bg-blue-950/40">
-        <img x-show="preview" :src="preview || null" alt="Ảnh xem trước" class="h-full w-full rounded-full object-cover" @if($src) src="{{ $src }}" @else x-cloak @endif>
+    <label for="{{ $inputId }}" class="relative block {{ $shape === 'rectangle' ? 'aspect-video w-[94%] rounded-2xl' : 'h-28 w-28 rounded-full' }} cursor-pointer border-2 border-dashed border-blue-400 bg-blue-50 shadow-sm transition hover:border-blue-600 focus-within:ring-4 focus-within:ring-blue-300 dark:bg-blue-950/40">
+        <img x-show="preview" :src="preview || null" alt="Ảnh xem trước" class="h-full w-full {{ $shape === 'rectangle' ? 'rounded-2xl object-contain' : 'rounded-full object-cover' }}" @if($src) src="{{ $src }}" @else x-cloak @endif>
         <span x-show="!preview" class="absolute inset-0 flex items-center justify-center text-blue-600 dark:text-blue-300" aria-hidden="true">
             <svg class="h-9 w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5 6 8H3v12h18V8h-3l-2-3Z"/><circle cx="12" cy="13" r="4"/></svg>
         </span>

@@ -48,6 +48,7 @@ Route::middleware(['auth', 'account.active', 'role:hr,employee'])
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
     Route::get('/communications', [CommunicationController::class, 'index'])->name('communications.index');
+    Route::get('/communications/history', [CommunicationController::class, 'history'])->name('communications.history');
     Route::post('/communications/messages', [CommunicationController::class, 'sendMessage'])->name('communications.messages.send');
     Route::post('/communications/advertisement', [CommunicationController::class, 'saveAdvertisement'])->name('communications.advertisement.save');
     Route::patch('/communications/advertisement/{advertisement}/toggle', [CommunicationController::class, 'toggleAdvertisement'])->name('communications.advertisement.toggle');

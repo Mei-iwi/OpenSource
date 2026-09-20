@@ -26,9 +26,15 @@ class CommunicationController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'role']);
         $advertisement = Advertisement::query()->latest('id')->first();
-        $messages = AdminMessage::query()->latest()->limit(10)->get();
 
-        return view('admin.communications.index', compact('recipients', 'advertisement', 'messages'));
+        return view('admin.communications.index', compact('recipients', 'advertisement'));
+    }
+
+    public function history(): View
+    {
+        $messages = AdminMessage::with('admin')->latest('id')->paginate(6);
+
+        return view('admin.communications.history', compact('messages'));
     }
 
     public function sendMessage(Request $request): RedirectResponse
