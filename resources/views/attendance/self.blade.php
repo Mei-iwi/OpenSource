@@ -43,10 +43,24 @@
                     <h2 class="app-heading">Trạng thái ca làm việc hôm nay</h2>
                     <p class="app-subtitle">Ảnh xác thực và tọa độ được lưu trữ an toàn, phục vụ đối soát minh bạch.</p>
                 </div>
-                <span class="app-badge app-badge-info text-xs font-bold">
-                    {{ $todayAttendance ? ($todayAttendance->check_out ? 'Ca làm đã kết thúc' : 'Đang trong ca làm việc') : 'Chưa điểm danh vào' }}
-                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                    @if($todayAttendance)
+                        <x-status-badge :status="$todayAttendance->status" :label="['present' => 'Có mặt đúng giờ', 'late' => 'Đi muộn', 'leave' => 'Nghỉ phép', 'absent' => 'Vắng mặt'][$todayAttendance->status] ?? $todayAttendance->status" />
+                    @endif
+                    <span class="app-badge app-badge-info text-xs font-bold">
+                        {{ $todayAttendance ? ($todayAttendance->check_out ? 'Ca làm đã kết thúc' : 'Đang trong ca làm việc') : 'Chưa điểm danh vào' }}
+                    </span>
+                </div>
             </div>
+
+            @if(isset($schedule))
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-2.5 text-xs text-indigo-950 dark:text-indigo-200">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span><strong>Quy định ca làm việc:</strong> Bắt đầu <strong>{{ $schedule['work_start_time'] }}</strong> (Thời gian ân hạn <strong>{{ $schedule['grace_period_minutes'] }} phút</strong>). Sau <strong>{{ $schedule['grace_boundary_time'] }}</strong> hệ thống tự động ghi nhận <strong>Đi muộn (late)</strong>.</span>
+                    </div>
+                </div>
+            @endif
 
             <div class="mt-6 grid gap-4 sm:grid-cols-3">
                 <!-- Check-in info -->
@@ -56,7 +70,12 @@
                         <span>Giờ điểm danh vào</span>
                     </div>
                     <p class="mt-2 font-mono text-2xl font-extrabold text-[var(--app-text)]">{{ $todayAttendance?->check_in ?: '—:—:—' }}</p>
-                    <p class="mt-1 text-xs text-[var(--app-muted)]">{{ $todayAttendance?->check_in ? 'Đã ghi nhận thành công' : 'Chưa thực hiện' }}</p>
+                    <div class="mt-1 flex items-center gap-2">
+                        <p class="text-xs text-[var(--app-muted)]">{{ $todayAttendance?->check_in ? 'Đã ghi nhận thành công' : 'Chưa thực hiện' }}</p>
+                        @if($todayAttendance?->check_in)
+                            <x-status-badge :status="$todayAttendance->status" :label="['present' => 'Đúng giờ', 'late' => 'Đi muộn'][$todayAttendance->status] ?? $todayAttendance->status" />
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Check-out info -->

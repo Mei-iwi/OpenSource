@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SelfAttendanceRequest;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Services\AttendanceScheduleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,28 +17,42 @@ use Throwable;
 
 class SelfAttendanceController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, AttendanceScheduleService $scheduleService): View
     {
         $employee = $this->employee($request)->load(['user', 'department']);
-        $todayAttendance = $employee->attendances()->whereDate('work_date', today())->first();
+        $timezone = $scheduleService->getTimezone();
+        $today = now($timezone)->toDateString();
+        $todayAttendance = $employee->attendances()->whereDate('work_date', $today)->first();
+        $schedule = $scheduleService->getScheduleSummary(now($timezone));
 
-        return view('attendance.self', compact('employee', 'todayAttendance'));
+        return view('attendance.self', compact('employee', 'todayAttendance', 'schedule'));
     }
 
-    public function checkIn(SelfAttendanceRequest $request): RedirectResponse
+    public function checkIn(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService): RedirectResponse
     {
         $employee = $this->employee($request);
-        if (Attendance::where('employee_id', $employee->id)->whereDate('work_date', today())->exists()) {
+        $timezone = $scheduleService->getTimezone();
+        $now = now($timezone);
+
+        if (! $scheduleService->isCheckinAllowed($now)) {
+            throw ValidationException::withMessages(['photo' => 'Hệ thống không cho phép chấm công vào ngày cuối tuần.']);
+        }
+
+        $workDate = $now->toDateString();
+        if (Attendance::where('employee_id', $employee->id)->whereDate('work_date', $workDate)->exists()) {
             throw ValidationException::withMessages(['photo' => 'Bạn đã chấm công vào hôm nay.']);
         }
+
+        $status = $scheduleService->determineStatus($now);
+        $checkInTime = $now->format('H:i:s');
 
         $path = $this->storeProof($request, $employee, 'check-in');
         try {
             Attendance::create([
                 'employee_id' => $employee->id,
-                'work_date' => today(),
-                'check_in' => now()->format('H:i:s'),
-                'status' => 'present',
+                'work_date' => $workDate,
+                'check_in' => $checkInTime,
+                'status' => $status,
                 'check_in_photo_path' => $path,
                 'check_in_method' => $request->validated('method'),
             ]);
@@ -49,13 +64,21 @@ class SelfAttendanceController extends Controller
             throw $exception;
         }
 
-        return redirect()->route('me.attendance.index')->with('success', 'Đã chấm công vào và lưu ảnh xác nhận.');
+        $message = $status === 'late'
+            ? 'Đã chấm công vào (Ghi nhận đi muộn) và lưu ảnh xác nhận.'
+            : 'Đã chấm công vào và lưu ảnh xác nhận.';
+
+        return redirect()->route('me.attendance.index')->with('success', $message);
     }
 
-    public function checkOut(SelfAttendanceRequest $request): RedirectResponse
+    public function checkOut(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService): RedirectResponse
     {
         $employee = $this->employee($request);
-        $attendance = Attendance::where('employee_id', $employee->id)->whereDate('work_date', today())->first();
+        $timezone = $scheduleService->getTimezone();
+        $now = now($timezone);
+        $workDate = $now->toDateString();
+
+        $attendance = Attendance::where('employee_id', $employee->id)->whereDate('work_date', $workDate)->first();
         if (! $attendance) {
             throw ValidationException::withMessages(['photo' => 'Bạn cần chấm công vào trước khi chấm công ra.']);
         }
@@ -66,7 +89,7 @@ class SelfAttendanceController extends Controller
         $path = $this->storeProof($request, $employee, 'check-out');
         try {
             $attendance->update([
-                'check_out' => now()->format('H:i:s'),
+                'check_out' => $now->format('H:i:s'),
                 'check_out_photo_path' => $path,
                 'check_out_method' => $request->validated('method'),
             ]);
@@ -82,6 +105,7 @@ class SelfAttendanceController extends Controller
     {
         $employee = $request->user()->employee;
         abort_unless($employee, 403, 'Tài khoản chưa có hồ sơ nhân viên.');
+        abort_if($employee->employment_status !== 'active', 403, 'Hồ sơ nhân viên không ở trạng thái hoạt động.');
 
         return $employee;
     }
