@@ -16,11 +16,19 @@ class LeaveRequestController extends Controller
         $employee = $request->user()->employee;
         $requests = $employee ? $employee->leaveRequests()->latest()->paginate(10)->withQueryString() : LeaveRequest::whereKey(0)->paginate(10);
 
-        return view('employee.leave_requests.index', compact('requests'));
+        return view('employee.leave_requests.index', [
+            'requests' => $requests,
+            'hasEmployeeProfile' => $employee !== null,
+        ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View|RedirectResponse
     {
+        if (! $request->user()->employee) {
+            return redirect()->route('employee.leave-requests.index')
+                ->with('error', 'Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên để tạo đơn nghỉ.');
+        }
+
         return view('employee.leave_requests.create');
     }
 

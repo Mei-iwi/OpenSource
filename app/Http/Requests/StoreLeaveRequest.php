@@ -9,7 +9,13 @@ class StoreLeaveRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isEmployee() ?? false;
+        $user = $this->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(['admin', 'hr', 'employee']) && $user->employee !== null;
     }
 
     public function rules(): array

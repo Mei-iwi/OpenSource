@@ -124,6 +124,13 @@
                             <span class="sidebar-label">Chấm công của tôi</span>
                         </a>
 
+                        <a href="{{ route('employee.leave-requests.index') }}" title="Đơn nghỉ của tôi" aria-label="Đơn nghỉ của tôi" class="{{ $link('employee.leave-requests.*') }}">
+                            <span class="sidebar-icon">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+                            </span>
+                            <span class="sidebar-label">Đơn nghỉ của tôi</span>
+                        </a>
+
                         <a href="{{ route('hr.reports.index') }}" title="Báo cáo phân tích" aria-label="Báo cáo phân tích" class="{{ $link('hr.reports.*') }}">
                             <span class="sidebar-icon">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
