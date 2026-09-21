@@ -28,3 +28,4 @@ storage/framework/testing/*
 storage/framework/views/*
 /codex-prompts/
 /*-backup.sql
+.phpunit.result.cache
