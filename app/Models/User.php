@@ -70,6 +70,18 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class);
     }
 
+    public function chatChannels()
+    {
+        return $this->belongsToMany(ChatChannel::class, 'chat_channel_members', 'user_id', 'channel_id')
+            ->withPivot('joined_at', 'last_read_at')
+            ->withTimestamps();
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+
     public function getAvatarUrlAttribute(): ?string
     {
         $path = $this->avatar_path ?: $this->employee?->avatar_path;

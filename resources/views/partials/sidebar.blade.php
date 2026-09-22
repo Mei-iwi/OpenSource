@@ -63,18 +63,33 @@
                 </div>
             </div>
 
-            @if (in_array($role, ['hr', 'employee'], true))
-                <div>
-                    <div class="mt-2 space-y-1">
+            <!-- Giao tiếp -->
+            <div>
+                <p class="sidebar-label px-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--app-muted)]">Giao tiếp</p>
+                <div class="mt-2 space-y-1">
+                    <a href="{{ route('chat.index') }}" title="Chat nội bộ" aria-label="Chat nội bộ" class="{{ $link('chat.*') }}" x-data="{ unreadCount: 0 }" x-init="fetch('{{ route('chat.unread-summary') }}').then(r => r.json()).then(d => unreadCount = d.total_unread).catch(() => {})">
+                        <span class="sidebar-icon relative">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                            </svg>
+                            <span x-show="unreadCount > 0" x-cloak class="absolute -top-1 -right-1 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-900"></span>
+                        </span>
+                        <span class="sidebar-label flex flex-1 items-center justify-between">
+                            <span>Chat nội bộ</span>
+                            <span x-show="unreadCount > 0" x-cloak x-text="unreadCount" class="ml-auto rounded-full bg-rose-500/15 px-2 py-0.5 text-xs font-bold text-rose-600 dark:bg-rose-500/20 dark:text-rose-400"></span>
+                        </span>
+                    </a>
+
+                    @if (in_array($role, ['hr', 'employee'], true))
                         <a href="{{ route('inbox.index') }}" title="Hộp thư" aria-label="Hộp thư" class="{{ $link('inbox.index') }}">
                             <span class="sidebar-icon">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H5.5L4 18.5V5Z"/><path d="M8 9h8M8 13h5"/></svg>
                             </span>
                             <span class="sidebar-label">Hộp thư</span>
                         </a>
-                    </div>
+                    @endif
                 </div>
-            @endif
+            </div>
 
             <!-- Khu vực Quản lý (Admin / HR) -->
             @if (in_array($role, ['admin', 'hr'], true))
