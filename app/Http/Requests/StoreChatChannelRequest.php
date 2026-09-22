@@ -59,4 +59,22 @@ class StoreChatChannelRequest extends FormRequest
             'members.*.exists' => 'Thành viên được chọn không tồn tại.',
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->type === 'department' && ! empty($this->department_id) && ! empty($this->members)) {
+                $memberIds = array_unique(array_filter((array) $this->members));
+                if (! empty($memberIds)) {
+                    $validCount = \App\Models\Employee::whereIn('user_id', $memberIds)
+                        ->where('department_id', $this->department_id)
+                        ->count();
+
+                    if ($validCount !== count($memberIds)) {
+                        $validator->errors()->add('members', 'Chỉ được thêm nhân viên thuộc phòng ban này vào kênh phòng ban.');
+                    }
+                }
+            }
+        });
+    }
 }

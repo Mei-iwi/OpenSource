@@ -52,8 +52,8 @@ class ChatChannelPolicy
             return false;
         }
 
-        // Kênh công ty mặc định không được sửa thông tin cấu hình cốt lõi
-        if ($channel->is_default || $channel->type === 'company') {
+        // Kênh công ty mặc định và tin nhắn riêng không được sửa thông tin cấu hình cốt lõi
+        if ($channel->is_default || $channel->type === 'company' || $channel->isDirect()) {
             return false;
         }
 
@@ -69,8 +69,8 @@ class ChatChannelPolicy
             return false;
         }
 
-        // Kênh công ty mặc định không được xóa
-        if ($channel->is_default || $channel->type === 'company') {
+        // Kênh công ty mặc định và tin nhắn riêng không được xóa bằng endpoint này
+        if ($channel->is_default || $channel->type === 'company' || $channel->isDirect()) {
             return false;
         }
 
@@ -86,8 +86,8 @@ class ChatChannelPolicy
             return false;
         }
 
-        // Kênh công ty mặc định không cho phép tùy tiện xóa/sửa danh sách thành viên
-        if ($channel->is_default || $channel->type === 'company') {
+        // Kênh công ty mặc định và kênh direct không cho phép tùy tiện thêm/xóa thành viên
+        if ($channel->is_default || $channel->type === 'company' || $channel->isDirect()) {
             return false;
         }
 

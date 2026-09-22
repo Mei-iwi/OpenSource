@@ -38,8 +38,17 @@ class ChatMessageController extends Controller
                 'sender_role' => $m->user?->role,
                 'sender_position' => $m->user?->employee?->position,
                 'sender_department' => $m->user?->employee?->department?->name,
-                'message' => e($m->message),
+                'message' => $m->formatted_html,
                 'raw_message' => $m->message,
+                'attachments' => $m->attachments->map(fn ($att) => [
+                    'id' => $att->id,
+                    'file_name' => $att->file_name,
+                    'file_size' => $att->formatted_size,
+                    'mime_type' => $att->mime_type,
+                    'is_image' => $att->is_image,
+                    'url' => $att->url,
+                ]),
+                'reactions' => $m->reactions_summary,
                 'is_me' => $m->user_id === $request->user()->id,
                 'can_edit' => $request->user()->can('update', $m),
                 'can_delete' => $request->user()->can('delete', $m),
@@ -56,12 +65,15 @@ class ChatMessageController extends Controller
      */
     public function store(StoreChatMessageRequest $request, ChatChannel $channel): JsonResponse|RedirectResponse
     {
-        $text = $request->validated()['message'];
+        $validated = $request->validated();
+        $text = $validated['message'] ?? '';
+        $files = $request->file('attachments', []);
 
         $message = $this->chatService->sendMessage(
             $channel,
             $request->user(),
-            $text
+            $text,
+            is_array($files) ? $files : [$files]
         );
 
         if ($request->wantsJson()) {
@@ -75,8 +87,17 @@ class ChatMessageController extends Controller
                     'sender_role' => $message->user?->role,
                     'sender_position' => $message->user?->employee?->position,
                     'sender_department' => $message->user?->employee?->department?->name,
-                    'message' => e($message->message),
+                    'message' => $message->formatted_html,
                     'raw_message' => $message->message,
+                    'attachments' => $message->attachments->map(fn ($att) => [
+                        'id' => $att->id,
+                        'file_name' => $att->file_name,
+                        'file_size' => $att->formatted_size,
+                        'mime_type' => $att->mime_type,
+                        'is_image' => $att->is_image,
+                        'url' => $att->url,
+                    ]),
+                    'reactions' => $message->reactions_summary,
                     'is_me' => true,
                     'can_edit' => true,
                     'can_delete' => true,
@@ -108,7 +129,7 @@ class ChatMessageController extends Controller
                 'success' => true,
                 'message' => [
                     'id' => $message->id,
-                    'message' => e($message->message),
+                    'message' => $message->formatted_html,
                     'raw_message' => $message->message,
                     'edited' => true,
                 ],

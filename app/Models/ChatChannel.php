@@ -59,6 +59,24 @@ class ChatChannel extends Model
         return $this->is_default || $this->type === 'company';
     }
 
+    public function isDirect(): bool
+    {
+        return $this->type === 'direct';
+    }
+
+    public function getDirectPartner(User $user): ?User
+    {
+        if (! $this->isDirect()) {
+            return null;
+        }
+
+        if ($this->relationLoaded('users')) {
+            return $this->users->firstWhere('id', '!=', $user->id);
+        }
+
+        return $this->users()->where('users.id', '!=', $user->id)->first();
+    }
+
     public function hasMember(int $userId): bool
     {
         if ($this->isCompany()) {

@@ -38,4 +38,23 @@ class ManageChatMemberRequest extends FormRequest
             'user_ids.*.exists' => 'Nhân sự được chọn không tồn tại trong hệ thống.',
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $channel = $this->route('channel');
+            if ($channel && $channel->type === 'department' && ! empty($channel->department_id) && ! empty($this->user_ids)) {
+                $userIds = array_unique(array_filter((array) $this->user_ids));
+                if (! empty($userIds)) {
+                    $validCount = \App\Models\Employee::whereIn('user_id', $userIds)
+                        ->where('department_id', $channel->department_id)
+                        ->count();
+
+                    if ($validCount !== count($userIds)) {
+                        $validator->errors()->add('user_ids', 'Chỉ được thêm nhân viên thuộc đúng phòng ban của kênh này.');
+                    }
+                }
+            }
+        });
+    }
 }

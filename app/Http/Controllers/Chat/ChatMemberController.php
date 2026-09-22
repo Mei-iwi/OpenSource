@@ -47,11 +47,16 @@ class ChatMemberController extends Controller
         }
 
         $departments = Department::orderBy('name')->get();
-        $availableUsers = User::where('account_status', 'active')
+        $query = User::where('account_status', 'active')
             ->whereNotIn('id', $channel->members->pluck('user_id'))
             ->with(['employee.department'])
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        if ($channel->type === 'department' && $channel->department_id) {
+            $query->whereHas('employee', fn ($q) => $q->where('department_id', $channel->department_id));
+        }
+
+        $availableUsers = $query->get();
 
         return view('chat.channels.members', [
             'channel' => $channel,

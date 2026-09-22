@@ -63,9 +63,11 @@ class ChatController extends Controller
             ? Department::orderBy('name')->get()
             : collect();
 
-        $allUsers = ($user->isAdmin() || $user->isHr())
-            ? User::where('account_status', 'active')->with(['employee.department'])->orderBy('name')->get()
-            : collect();
+        $allUsers = User::where('account_status', 'active')
+            ->where('id', '!=', $user->id)
+            ->with(['employee.department'])
+            ->orderBy('name')
+            ->get();
 
         return view('chat.index', [
             'channels' => $channels,
