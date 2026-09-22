@@ -6,13 +6,19 @@ use App\Events\ChatMessageSent;
 use App\Models\ChatChannel;
 use App\Models\ChatChannelMember;
 use App\Models\ChatMessage;
+use App\Models\ChatMessageAttachment;
+use App\Models\ChatMessageReaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class ChatService
 {
+    public const ALLOWED_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🎉'];
+
     /**
      * Lấy danh sách các kênh khả dụng cho người dùng cùng với số tin chưa đọc.
      *
@@ -21,7 +27,7 @@ class ChatService
     public function getUserChannels(User $user): Collection
     {
         $channels = ChatChannel::forUser($user)
-            ->with(['department'])
+            ->with(['department', 'users.employee.department'])
             ->orderBy('is_default', 'desc')
             ->orderBy('type')
             ->orderBy('name')
@@ -82,7 +88,7 @@ class ChatService
     public function getMessages(ChatChannel $channel, ?int $afterId = null, int $limit = 50)
     {
         $query = $channel->messages()
-            ->with(['user.employee.department'])
+            ->with(['user.employee.department', 'attachments', 'reactions.user'])
             ->orderBy('id', 'asc');
 
         if ($afterId) {
@@ -91,7 +97,7 @@ class ChatService
 
         // Lấy $limit tin nhắn gần nhất
         $latestMessages = $channel->messages()
-            ->with(['user.employee.department'])
+            ->with(['user.employee.department', 'attachments', 'reactions.user'])
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get()
@@ -102,16 +108,37 @@ class ChatService
     }
 
     /**
-     * Gửi tin nhắn mới vào kênh.
+     * Gửi tin nhắn mới vào kênh, hỗ trợ đính kèm tệp và ảnh.
+     *
+     * @param  array<UploadedFile>  $uploadedFiles
      */
-    public function sendMessage(ChatChannel $channel, User $sender, string $text): ChatMessage
+    public function sendMessage(ChatChannel $channel, User $sender, string $text = '', array $uploadedFiles = []): ChatMessage
     {
-        return DB::transaction(function () use ($channel, $sender, $text) {
+        return DB::transaction(function () use ($channel, $sender, $text, $uploadedFiles) {
             $message = ChatMessage::create([
                 'channel_id' => $channel->id,
                 'user_id' => $sender->id,
-                'message' => $text,
+                'message' => $text ?? '',
             ]);
+
+            // Lưu các file đính kèm an toàn vào disk private
+            foreach ($uploadedFiles as $file) {
+                if (! ($file instanceof UploadedFile) || ! $file->isValid()) {
+                    continue;
+                }
+
+                $mimeType = $file->getMimeType() ?? 'application/octet-stream';
+                $isImage = str_starts_with($mimeType, 'image/');
+                $storedPath = $file->store('chat_attachments/' . date('Y/m'), 'local');
+
+                $message->attachments()->create([
+                    'file_path' => $storedPath,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $mimeType,
+                    'is_image' => $isImage,
+                ]);
+            }
 
             // Cập nhật mốc đọc tin nhắn cho chính người gửi
             ChatChannelMember::updateOrCreate(
@@ -119,15 +146,86 @@ class ChatService
                 ['last_read_at' => now()]
             );
 
-            // Bắn event broadcast cho realtime
+            // Bắn event broadcast cho realtime nếu có cấu hình
             try {
                 event(new ChatMessageSent($message));
             } catch (\Throwable $e) {
                 // Tiếp tục bình thường nếu driver broadcast không bật
             }
 
-            return $message->load(['user.employee.department']);
+            return $message->load(['user.employee.department', 'attachments', 'reactions.user']);
         });
+    }
+
+    /**
+     * Tìm hoặc khởi tạo kênh tin nhắn riêng 1-1 giữa 2 người dùng (idempotent, không trùng lặp).
+     */
+    public function getOrCreateDirectChannel(User $userA, User $userB): ChatChannel
+    {
+        if ($userA->id === $userB->id) {
+            throw new InvalidArgumentException('Không thể tạo kênh nhắn tin với chính mình.');
+        }
+
+        $minId = min($userA->id, $userB->id);
+        $maxId = max($userA->id, $userB->id);
+        $slug = "dm-{$minId}-{$maxId}";
+
+        return DB::transaction(function () use ($userA, $userB, $slug) {
+            $channel = ChatChannel::where('slug', $slug)
+                ->where('type', 'direct')
+                ->first();
+
+            if (! $channel) {
+                $channel = ChatChannel::create([
+                    'name' => "{$userA->name} & {$userB->name}",
+                    'slug' => $slug,
+                    'type' => 'direct',
+                    'is_default' => false,
+                    'created_by' => $userA->id,
+                ]);
+
+                ChatChannelMember::firstOrCreate(
+                    ['channel_id' => $channel->id, 'user_id' => $userA->id],
+                    ['joined_at' => now(), 'last_read_at' => now()]
+                );
+
+                ChatChannelMember::firstOrCreate(
+                    ['channel_id' => $channel->id, 'user_id' => $userB->id],
+                    ['joined_at' => now()]
+                );
+            }
+
+            return $channel->load(['users.employee.department']);
+        });
+    }
+
+    /**
+     * Thả hoặc hủy thả cảm xúc trên tin nhắn.
+     */
+    public function toggleReaction(ChatMessage $message, User $user, string $reaction): array
+    {
+        if (! in_array($reaction, self::ALLOWED_REACTIONS, true)) {
+            throw new InvalidArgumentException('Biểu cảm không hợp lệ.');
+        }
+
+        $existing = ChatMessageReaction::where('message_id', $message->id)
+            ->where('user_id', $user->id)
+            ->where('reaction', $reaction)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+        } else {
+            ChatMessageReaction::firstOrCreate([
+                'message_id' => $message->id,
+                'user_id' => $user->id,
+                'reaction' => $reaction,
+            ]);
+        }
+
+        $message->load('reactions.user');
+
+        return $message->reactions_summary;
     }
 
     /**

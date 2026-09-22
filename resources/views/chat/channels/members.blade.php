@@ -77,7 +77,9 @@
                     <form action="{{ route('chat.channels.members.store', $channel->slug) }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
-                            <label class="block text-xs font-medium text-[var(--app-text)] mb-1">Chọn nhân sự</label>
+                            <label class="block text-xs font-medium text-[var(--app-text)] mb-1">
+                                Chọn nhân sự {{ $channel->type === 'department' && $channel->department ? '(Chỉ hiển thị phòng ' . $channel->department->name . ')' : '' }}
+                            </label>
                             <select name="user_ids[]" multiple class="w-full h-64 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] px-3 py-2 text-xs text-[var(--app-text)] focus:ring-2 focus:ring-indigo-500/40">
                                 @forelse($availableUsers as $user)
                                     <option value="{{ $user->id }}">

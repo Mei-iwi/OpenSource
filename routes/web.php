@@ -5,10 +5,14 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AttendanceProofController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\Chat\ChatAttachmentController;
 use App\Http\Controllers\Chat\ChatChannelController;
 use App\Http\Controllers\Chat\ChatController;
+use App\Http\Controllers\Chat\ChatDirectController;
 use App\Http\Controllers\Chat\ChatMemberController;
 use App\Http\Controllers\Chat\ChatMessageController;
+use App\Http\Controllers\Chat\ChatReactionController;
+use App\Http\Controllers\Chat\UserProfileCardController;
 use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
 use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
 use App\Http\Controllers\EmployeeDashboardController;
@@ -119,6 +123,18 @@ Route::middleware(['auth', 'account.active'])->prefix('chat')->name('chat.')->gr
     Route::post('/channels/{channel:slug}/messages', [ChatMessageController::class, 'store'])->name('channels.messages.store');
     Route::patch('/messages/{message}', [ChatMessageController::class, 'update'])->name('messages.update');
     Route::delete('/messages/{message}', [ChatMessageController::class, 'destroy'])->name('messages.destroy');
+
+    // Tin nhắn riêng 1-1
+    Route::post('/direct/{user}', [ChatDirectController::class, 'open'])->name('direct.open');
+
+    // Thẻ hồ sơ công khai an toàn
+    Route::get('/users/{user}/profile-card', [UserProfileCardController::class, 'show'])->name('users.profile-card');
+
+    // Tệp đính kèm nội bộ (bảo mật, chống IDOR)
+    Route::get('/attachments/{attachment}', [ChatAttachmentController::class, 'show'])->name('attachments.show');
+
+    // Biểu cảm tin nhắn (reactions)
+    Route::post('/messages/{message}/reactions', [ChatReactionController::class, 'toggle'])->name('messages.reactions.toggle');
 });
 
 require __DIR__.'/auth.php';

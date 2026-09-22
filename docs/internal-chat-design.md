@@ -1,253 +1,177 @@
-# Thiết Kế Chi Tiết Tính Năng Chat Nội Bộ (Internal Department Chat)
+# Thiết Kế Chi Tiết Tính Năng Chat Nội Bộ (Internal Department Chat) & Kế Hoạch Nâng Cấp Toàn Diện
 
-## 1. Tổng Quan & Kiến Trúc Hệ Thống (Architecture)
+## 1. Tổng Quan & Hiện Trạng Module Chat (Current Architecture Audit)
 
-Module **Chat Nội Bộ** cung cấp giải pháp trao đổi thông tin thời gian thực giữa các thành viên, phòng ban và toàn bộ công ty trong hệ sinh thái Laravel 12 Quản lý Nhân sự.
-
-### 1.1 Nguyên Tắc Thiết Kế
-- **Tương thích & Tái sử dụng**: Tận dụng triệt để kiến trúc hiện tại của project (Laravel 12, Blade, Tailwind CSS 3, Alpine.js, MySQL 8.4, Eloquent ORM).
-- **Phân quyền chặt chẽ (Zero-Trust Authorization)**: Server-side authorization qua Laravel Policy và Middleware; chống rò rỉ dữ liệu hoặc vượt quyền (IDOR).
-- **Trải nghiệm mượt mà**: UI 2 cột (Danh sách kênh & Vùng hội thoại) đồng bộ chuẩn giao diện Dark/Light mode và bảng màu hiện tại.
-- **Sẵn sàng Realtime**: Giai đoạn đầu sử dụng Polling/AJAX hiệu năng cao với JSON endpoints; kiến trúc sẵn sàng kết nối Laravel Reverb / Laravel Echo khi kích hoạt broadcasting.
-
----
-
-## 2. Thiết Kế Cơ Sở Dữ Liệu (Database Design)
-
-### 2.1 Bảng `chat_channels`
-Lưu trữ thông tin các kênh chat (Toàn công ty, theo Phòng ban, hoặc Nhóm dự án/riêng tư).
-
-| Cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
-|---|---|---|---|
-| `id` | `BIGINT UNSIGNED` | Primary Key, Auto Increment | ID định danh kênh |
-| `name` | `VARCHAR(100)` | NOT NULL | Tên hiển thị của kênh |
-| `slug` | `VARCHAR(120)` | NOT NULL, UNIQUE | Định danh URL / mã kênh (ví dụ: `cong-ty`, `ke-toan`) |
-| `description` | `VARCHAR(255)` | NULLABLE | Mô tả mục đích kênh |
-| `type` | `ENUM('company', 'department', 'group')` | NOT NULL, DEFAULT `'group'` | Phân loại kênh |
-| `department_id` | `BIGINT UNSIGNED` | NULLABLE, Foreign Key -> `departments(id)` ON DELETE SET NULL | Phòng ban liên kết (nếu có) |
-| `created_by` | `BIGINT UNSIGNED` | NULLABLE, Foreign Key -> `users(id)` ON DELETE SET NULL | Người tạo kênh |
-| `is_default` | `BOOLEAN` | NOT NULL, DEFAULT `FALSE` | Kênh mặc định toàn công ty (không thể xóa) |
-| `created_at` | `TIMESTAMP` | NULLABLE | Thời điểm tạo |
-| `updated_at` | `TIMESTAMP` | NULLABLE | Thời điểm cập nhật |
-
-**Indexes**:
-- `chat_channels_slug_unique` (`slug`)
-- `chat_channels_type_index` (`type`)
-- `chat_channels_department_id_index` (`department_id`)
-- `chat_channels_is_default_index` (`is_default`)
-
-### 2.2 Bảng `chat_channel_members`
-Lưu danh sách thành viên tham gia từng kênh và mốc thời gian đọc tin nhắn gần nhất.
-
-| Cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
-|---|---|---|---|
-| `id` | `BIGINT UNSIGNED` | Primary Key, Auto Increment | ID bản ghi thành viên |
-| `channel_id` | `BIGINT UNSIGNED` | NOT NULL, Foreign Key -> `chat_channels(id)` ON DELETE CASCADE | Kênh chat |
-| `user_id` | `BIGINT UNSIGNED` | NOT NULL, Foreign Key -> `users(id)` ON DELETE CASCADE | Người dùng |
-| `joined_at` | `TIMESTAMP` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Thời điểm tham gia kênh |
-| `last_read_at` | `TIMESTAMP` | NULLABLE | Thời điểm đọc tin nhắn gần nhất (tính unread) |
-| `created_at` | `TIMESTAMP` | NULLABLE | Thời điểm tạo |
-| `updated_at` | `TIMESTAMP` | NULLABLE | Thời điểm cập nhật |
-
-**Indexes & Constraints**:
-- `chat_channel_members_channel_user_unique` (`channel_id`, `user_id`)
-- `chat_channel_members_user_id_index` (`user_id`)
-
-### 2.3 Bảng `chat_messages`
-Lưu trữ nội dung tin nhắn trao đổi trong kênh.
-
-| Cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
-|---|---|---|---|
-| `id` | `BIGINT UNSIGNED` | Primary Key, Auto Increment | ID tin nhắn |
-| `channel_id` | `BIGINT UNSIGNED` | NOT NULL, Foreign Key -> `chat_channels(id)` ON DELETE CASCADE | Kênh chứa tin nhắn |
-| `user_id` | `BIGINT UNSIGNED` | NOT NULL, Foreign Key -> `users(id)` ON DELETE CASCADE | Người gửi |
-| `message` | `TEXT` | NOT NULL | Nội dung văn bản |
-| `edited_at` | `TIMESTAMP` | NULLABLE | Thời điểm chỉnh sửa gần nhất |
-| `deleted_at` | `TIMESTAMP` | NULLABLE | Thời điểm xóa mềm (Soft Deletes) |
-| `created_at` | `TIMESTAMP` | NULLABLE | Thời điểm gửi |
-| `updated_at` | `TIMESTAMP` | NULLABLE | Thời điểm cập nhật |
-
-**Indexes**:
-- `chat_messages_channel_created_index` (`channel_id`, `created_at`)
-- `chat_messages_user_id_index` (`user_id`)
+Module Chat nội bộ hiện tại đã thiết lập nền tảng cơ bản:
+- **Cơ sở dữ liệu**:
+  - `chat_channels`: Quản lý kênh chat, hỗ trợ loại kênh `company`, `department`, `group`, trường `is_default` cho kênh `#cong-ty`.
+  - `chat_channel_members`: Quản lý hội viên kênh, lưu `last_read_at` phục vụ tính toán tin chưa đọc (unread count), ràng buộc `UNIQUE(channel_id, user_id)`.
+  - `chat_messages`: Lưu tin nhắn văn bản, hỗ trợ `SoftDeletes` và mốc `edited_at`.
+- **Phân quyền & Chống IDOR**:
+  - `ChatChannelPolicy`: Kiểm soát chặt chẽ quyền `view`, `sendMessage`, `create`, `update`, `delete`, `manageMembers`.
+  - `ChatMessagePolicy`: Kiểm soát quyền `update` (chỉ tác giả) và `delete` (tác giả hoặc Admin/HR).
+- **Service Layer**:
+  - `ChatService`: Đóng gói logic truy vấn kênh kèm unread counts chống N+1, tạo kênh, gửi tin và cập nhật mốc đọc tin.
+- **Realtime / Polling**:
+  - Polling AJAX qua Alpine.js, đồng thời phát event `ChatMessageSent` (implements `ShouldBroadcast`).
+- **Kiểm thử**:
+  - 27 test features trên MySQL `hr_management_testing` bao phủ toàn bộ luồng kênh, thành viên, tin nhắn, IDOR và unread.
 
 ---
 
-## 3. Quan Hệ Mô Hình (Model Relationships)
+## 2. Kế Hoạch Nâng Cấp Toàn Diện (Comprehensive Upgrade Plan)
 
-### 3.1 Model `ChatChannel`
-- `department()`: `belongsTo(Department::class)`
-- `creator()`: `belongsTo(User::class, 'created_by')`
-- `members()`: `hasMany(ChatChannelMember::class, 'channel_id')`
-- `users()`: `belongsToMany(User::class, 'chat_channel_members', 'channel_id', 'user_id')->withPivot('joined_at', 'last_read_at')`
-- `messages()`: `hasMany(ChatMessage::class, 'channel_id')`
-- Scopes & Helpers:
-  - `isCompany()`: kiểm tra xem kênh có phải toàn công ty không (`type === 'company' || is_default`).
-  - `hasMember(int $userId)`: kiểm tra xem user có phải là thành viên kênh hay không.
-  - `unreadCountFor(int $userId)`: tính số tin nhắn chưa đọc đối với user cụ thể.
+### 2.1 Tinh Chỉnh Giao Diện — Loại Bỏ Lạm Dụng Icon & Sửa Hướng Nút Gửi
+- **Vấn đề hiện tại**:
+  - Sử dụng quá nhiều icon/emoji trang trí ở sidebar, tiêu đề và các nút chức năng gây rối mắt, mất tính chuyên nghiệp của hệ thống doanh nghiệp.
+  - Icon máy bay giấy (Send icon) trong ô soạn thảo tin nhắn bị xoay góc 90 độ (`transform rotate-90`), khiến mũi tên chỉ lệch xuống dưới hoặc sang bên thay vì hướng gửi đi.
+- **Giải pháp**:
+  - Thiết kế lại giao diện tối giản, thanh lịch, hiện đại theo phong cách Slack / Microsoft Teams.
+  - Ưu tiên nhãn chữ rõ nghĩa: "Gửi", "Tạo kênh", "Thành viên", "Đính kèm", "Thêm nhân sự".
+  - Sửa lại SVG và class của nút gửi: biểu tượng máy bay gửi tin hướng lên trên / sang phải trực quan, đồng thời hỗ trợ nút "Gửi" rõ ràng.
 
-### 3.2 Model `ChatChannelMember`
-- `channel()`: `belongsTo(ChatChannel::class, 'channel_id')`
-- `user()`: `belongsTo(User::class, 'user_id')`
+### 2.2 Rich Text Message & Formatting An Toàn
+- **Hỗ trợ định dạng văn bản**:
+  - Đậm (`**nội dung**`) -> `<strong>nội dung</strong>`
+  - Nghiêng (`*nội dung*`) -> `<em>nội dung</em>`
+  - Gạch ngang (`~~nội dung~~`) -> `<del>nội dung</del>`
+  - Danh sách không thứ tự (`- mục` hoặc `• mục`) -> `<ul><li>mục</li></ul>`
+  - Danh sách có thứ tự (`1. mục`) -> `<ol><li>mục</li></ol>`
+  - Trích dẫn (`> nội dung`) -> `<blockquote>nội dung</blockquote>`
+  - Tự động nhận diện liên kết an toàn: URL `http://` hoặc `https://` được chuyển thành thẻ `<a>` có thuộc tính `target="_blank" rel="noopener noreferrer"`.
+- **Cơ chế chống XSS tuyệt đối**:
+  - Toàn bộ nội dung người dùng nhập vào được chuyển qua hàm escape HTML (`e()` / `htmlspecialchars`) trước khi phân tích các ký tự định dạng.
+  - Chặn đứng mọi mã độc Javascript, thuộc tính sự kiện (`onload`, `onerror`), thẻ `<script>` hay giao thức nguy hiểm `javascript:`.
 
-### 3.3 Model `ChatMessage`
-- `use SoftDeletes;`
-- `channel()`: `belongsTo(ChatChannel::class, 'channel_id')`
-- `user()`: `belongsTo(User::class, 'user_id')`
-- `isEdited()`: kiểm tra `$message->edited_at !== null`
+### 2.3 Bộ Chọn Emoji Nhanh (Emoji Picker)
+- Tích hợp bảng chọn emoji gọn gàng, chia theo nhóm cảm xúc thông dụng: `😀 😃 😂 😊 😍 👍 ❤️ 🎉 🔥 👏 🚀 💯 🤝 😢 😮 💼 ✅ ❌`.
+- Chèn trực tiếp emoji vào vị trí con trỏ của ô soạn thảo tin nhắn.
+- Cơ sở dữ liệu và bảng `chat_messages` sử dụng `utf8mb4` đảm bảo lưu trữ và hiển thị emoji hoàn hảo.
 
-### 3.4 Bổ sung vào Model Hiện Tại
-- `User`:
-  - `chatChannels()`: `belongsToMany(ChatChannel::class, 'chat_channel_members')`
-  - `chatMessages()`: `hasMany(ChatMessage::class)`
-- `Department`:
-  - `chatChannels()`: `hasMany(ChatChannel::class)`
+### 2.4 Đính Kèm Tệp & Gửi Hình Ảnh An Toàn (File & Image Attachments)
+- **Bảng mới `chat_message_attachments`**:
+  - `id`, `message_id` (FK cascade), `file_path`, `file_name`, `file_size`, `mime_type`, `is_image` (boolean), timestamps.
+- **Xác thực định dạng & kích thước**:
+  - Tệp tài liệu: `pdf`, `doc`, `docx`, `xls`, `xlsx`, `csv`, `txt` (tối đa 20MB).
+  - Tệp hình ảnh: `jpg`, `jpeg`, `png`, `webp`, `gif` (tối đa 10MB).
+  - Chặn hoàn toàn các file thực thi nguy hại: `php`, `js`, `exe`, `sh`, `bat`, `html`.
+- **Bảo mật lưu trữ**:
+  - Lưu trữ trong thư mục riêng tư (`storage/app/private/chat_attachments` hoặc `storage/app/chat_attachments`). Tuyệt đối không public trực tiếp qua web root.
+  - Route tải/xem tệp `GET /chat/attachments/{attachment}`: Bắt buộc kiểm tra quyền qua Policy (người dùng phải là thành viên kênh hoặc cuộc trò chuyện 1-1). Chống IDOR khi tải file.
+- **Xem trước & Dọn dẹp**:
+  - Cho phép người dùng xem trước ảnh hoặc tên file đính kèm trước khi nhấn gửi, có nút "Xóa đính kèm" để hủy.
+
+### 2.5 Thả Cảm Xúc Tin Nhắn (Reactions)
+- **Bảng mới `chat_message_reactions`**:
+  - `id`, `message_id` (FK cascade), `user_id` (FK cascade), `reaction` (VARCHAR 32), timestamps.
+  - Ràng buộc duy nhất: `UNIQUE(message_id, user_id, reaction)` chống trùng lặp.
+- **Quy tắc nghiệp vụ**:
+  - Người dùng có thể click vào icon cảm xúc (`👍`, `❤️`, `😂`, `😮`, `😢`, `🎉`) để thả cảm xúc.
+  - Nếu click lại vào cùng emoji -> Bỏ reaction (Toggle off).
+  - Hiển thị danh sách badge reaction kèm số lượng và trạng thái đã thả của chính mình.
+  - API endpoint: `POST /chat/messages/{message}/reactions`.
+
+### 2.6 Thẻ Thông Tin Nhân Sự (Profile Card / User Popover)
+- Khi click vào avatar của người gửi trong tin nhắn:
+  - Hiển thị popover/modal hồ sơ công việc nội bộ thay vì chuyển hướng trang.
+  - Thông tin hiển thị: Ảnh đại diện, Họ tên, Vai trò (Admin/HR/Nhân viên), Phòng ban, Chức danh công việc, Email, Số điện thoại công việc.
+  - **Bảo mật thông tin HR nhạy cảm**: Tuyệt đối KHÔNG hiển thị CCCD/CMND, mã số thuế cá nhân, mức lương, phụ cấp, bảo hiểm xã hội, ngày sinh chi tiết hoặc tài liệu riêng tư.
+  - Có nút hành động nổi bật: **"Nhắn tin"**.
+
+### 2.7 Tin Nhắn Riêng 1-1 (Direct Messaging)
+- **Thiết kế định danh duy nhất (Deterministic DM Identification)**:
+  - Bổ sung loại kênh `direct` vào `chat_channels`.
+  - Mã slug quy ước: `dm-{minId}-{maxId}` (ví dụ: User 2 và User 5 chat riêng -> luôn có slug là `dm-2-5`).
+  - Đảm bảo tính duy nhất tuyệt đối: Khi A click nhắn tin với B hoặc B click nhắn tin với A, hệ thống đều trỏ về đúng một cuộc trò chuyện duy nhất, không bao giờ tạo duplicate conversation.
+  - Kênh `direct` luôn có đúng 2 thành viên trong `chat_channel_members`. Cấm thêm thành viên thứ 3.
+- **Phân quyền IDOR**:
+  - Chỉ duy nhất 2 người tham gia có quyền xem, gửi tin nhắn, tải đính kèm và nhận thông báo. Mọi người dùng thứ ba (kể cả đoán biết URL) đều nhận lỗi `403 Forbidden`.
+- **Giao diện Sidebar**:
+  - Nhóm 1: `Toàn Công Ty` (`#cong-ty`).
+  - Nhóm 2: `Phòng Ban` (`#ke-toan`, `#nhan-su`,...).
+  - Nhóm 3: `Tin Nhắn Riêng` (Danh sách các cuộc trò chuyện trực tiếp kèm avatar đối phương, tên, chức danh và badge số tin chưa đọc).
+
+### 2.8 Lọc Phòng Ban & Xác Thực Nghiệp Vụ Chặt Chẽ (Department Channel Filtering & Strict Server-side Validation)
+- **Khi tạo kênh phòng ban**:
+  - Chọn `Loại kênh = Phòng ban` và chọn `Phòng ban = Kế toán`:
+    - Danh sách nhân sự tự động lọc chỉ hiển thị nhân viên thuộc phòng ban Kế toán.
+    - Ô tìm kiếm nhân viên trong danh sách chỉ tìm kiếm trong phạm vi phòng ban đã chọn.
+    - Nút "Chọn tất cả" / "Bỏ chọn" chỉ áp dụng cho nhân sự thuộc phòng ban đó.
+- **Khi quản lý thành viên kênh phòng ban đã có**:
+  - Màn hình thêm thành viên của kênh `#ke-toan` chỉ liệt kê các nhân sự thuộc phòng Kế toán chưa tham gia kênh.
+- **Kiểm tra nghiêm ngặt phía Server (Server-side Enforcement)**:
+  - Trong `ChatMemberController@store` và `ChatChannelController@store`:
+    - Nếu kênh thuộc loại `department` có `department_id`, server kiểm tra mọi `user_id` được gửi lên.
+    - Nếu phát hiện bất kỳ nhân sự nào có `Employee.department_id !== Channel.department_id`, server lập tức từ chối với lỗi `422 Unprocessable Entity` hoặc `403 Forbidden`.
+    - Ngăn chặn hoàn toàn việc can thiệp payload từ client để thêm trái phép nhân sự phòng ban khác.
+- **Đồng bộ khi nhân sự đổi phòng ban (Requirement 25)**:
+  - *Chính sách áp dụng*: Khi nhân viên chuyển phòng ban, hệ thống tự động loại nhân viên khỏi các kênh thuộc phòng ban cũ và thêm vào kênh phòng ban mới, đảm bảo tính riêng tư của thông tin phòng ban.
 
 ---
 
-## 4. Phân Quyền & Bảo Mật (Authorization & Security)
+## 3. Thiết Kế Cơ Sở Dữ Liệu Bổ Sung (Database Schema Additions)
 
-### 4.1 Ma Trận Phân Quyền
-
-| Thao tác | Admin | HR | Employee |
-|---|---|---|---|
-| Xem danh sách kênh được cấp quyền | Có | Có | Chỉ kênh là thành viên + Toàn công ty |
-| Xem nội dung kênh Toàn công ty | Có | Có | Có |
-| Xem nội dung kênh Phòng ban / Nhóm | Khi là thành viên | Khi là thành viên | Khi là thành viên |
-| Gửi tin nhắn trong kênh được phép | Có | Có | Có |
-| Sửa tin nhắn của chính mình | Có | Có | Có |
-| Sửa tin nhắn của người khác | Không | Không | Không |
-| Xóa tin nhắn của chính mình | Có | Có | Có |
-| Xóa tin nhắn vi phạm của người khác | Có | Có | Không |
-| Tạo kênh mới | Có | Có | Không |
-| Quản lý kênh (Sửa tên, mô tả) | Có (Trừ Toàn công ty) | Có (Trừ Toàn công ty) | Không |
-| Xóa kênh | Có (Trừ Toàn công ty) | Có (Trừ Toàn công ty) | Không |
-| Thêm/Xóa thành viên kênh | Có (Trừ Toàn công ty) | Có (Trừ Toàn công ty) | Không |
-
-### 4.2 Triển khai Policy Chống IDOR
-- `ChatChannelPolicy`:
-  - `view(User $user, ChatChannel $channel)`: trả về `true` nếu `$channel->isCompany()`, hoặc nếu user có trong `chat_channel_members`. Nếu không, trả về `403 Forbidden`.
-  - `sendMessage(User $user, ChatChannel $channel)`: bắt buộc `$channel->isCompany() || $channel->hasMember($user->id)`.
-  - `manage(User $user, ChatChannel $channel)`: kiểm tra `$user->isAdmin() || $user->isHr()`, đồng thời ngăn chặn thao tác phá vỡ kênh `#cong-ty`.
-  - `manageMembers(User $user, ChatChannel $channel)`: kiểm tra `$user->isAdmin() || $user->isHr()` và `$channel->type !== 'company'`.
-- `ChatMessagePolicy`:
-  - `update(User $user, ChatMessage $message)`: `$user->id === $message->user_id`.
-  - `delete(User $user, ChatMessage $message)`: `$user->id === $message->user_id || $user->isAdmin() || $user->isHr()`.
-
-### 4.3 Phòng Chống Lỗ Hổng Web (OWASP Checklist)
-- **IDOR**: Mọi request đến `/chat/channels/{channel}/*` đều chạy qua middleware xác thực và `authorize()` tại controller/service.
-- **XSS**: Dữ liệu tin nhắn lưu nguyên văn bản thuần (trim whitespace) và render an toàn qua Blade `{{ $message->message }}` hoặc JSON encode an toàn với escaping. Tuyệt đối không dùng `{!! !!}` cho nội dung chat.
-- **CSRF**: Mọi request POST/PATCH/DELETE yêu cầu token CSRF.
-- **Mass Assignment**: Toàn bộ model khai báo `$fillable` chặt chẽ.
-
----
-
-## 5. Danh Sách Tuyến Đường (Routes)
-
-Nhóm route được bảo vệ bởi middleware `['auth', 'account.active']`:
-
-```php
-Route::middleware(['auth', 'account.active'])->prefix('chat')->name('chat.')->group(function () {
-    // Giao diện chính
-    Route::get('/', [ChatController::class, 'index'])->name('index');
-    Route::get('/channels/{channel:slug}', [ChatController::class, 'show'])->name('channels.show');
-
-    // Quản lý kênh (Admin & HR)
-    Route::middleware('role:admin,hr')->group(function () {
-        Route::get('/channels/create', [ChatChannelController::class, 'create'])->name('channels.create');
-        Route::post('/channels', [ChatChannelController::class, 'store'])->name('channels.store');
-        Route::get('/channels/{channel:slug}/edit', [ChatChannelController::class, 'edit'])->name('channels.edit');
-        Route::patch('/channels/{channel:slug}', [ChatChannelController::class, 'update'])->name('channels.update');
-        Route::delete('/channels/{channel:slug}', [ChatChannelController::class, 'destroy'])->name('channels.destroy');
-
-        // Quản lý thành viên
-        Route::get('/channels/{channel:slug}/members', [ChatMemberController::class, 'index'])->name('channels.members.index');
-        Route::post('/channels/{channel:slug}/members', [ChatMemberController::class, 'store'])->name('channels.members.store');
-        Route::delete('/channels/{channel:slug}/members/{user}', [ChatMemberController::class, 'destroy'])->name('channels.members.destroy');
-    });
-
-    // Tin nhắn & Trạng thái đọc (API & Web)
-    Route::get('/channels/{channel:slug}/messages', [ChatMessageController::class, 'index'])->name('channels.messages.index');
-    Route::post('/channels/{channel:slug}/messages', [ChatMessageController::class, 'store'])->name('channels.messages.store');
-    Route::patch('/messages/{message}', [ChatMessageController::class, 'update'])->name('messages.update');
-    Route::delete('/messages/{message}', [ChatMessageController::class, 'destroy'])->name('messages.destroy');
-    Route::post('/channels/{channel:slug}/read', [ChatController::class, 'markAsRead'])->name('channels.read');
-    Route::get('/unread-summary', [ChatController::class, 'unreadSummary'])->name('unread-summary');
-});
+### 3.1 Bảng `chat_message_reactions`
+```sql
+CREATE TABLE chat_message_reactions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    message_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    reaction VARCHAR(32) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY chat_message_reactions_unique (message_id, user_id, reaction),
+    INDEX chat_message_reactions_message_idx (message_id)
+);
 ```
 
----
+### 3.2 Bảng `chat_message_attachments`
+```sql
+CREATE TABLE chat_message_attachments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    message_id BIGINT UNSIGNED NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_size BIGINT UNSIGNED NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    is_image BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+    INDEX chat_message_attachments_message_idx (message_id)
+);
+```
 
-## 6. Thiết Kế Giao Diện Người Dùng (UI/UX)
-
-### 6.1 Layout Hai Cột Tương Thích Responsive
-1. **Cột Trái (Sidebar Kênh Chat)**:
-   - Thanh tìm kiếm kênh (lọc trực tiếp bằng Alpine.js).
-   - Nút `+ Tạo kênh` (chỉ hiển thị cho Admin và HR).
-   - Nhóm 1: `🌐 Kênh Công Ty` (`#cong-ty` gắn biểu tượng toàn cầu và nhãn mặc định).
-   - Nhóm 2: `🏢 Kênh Phòng Ban` (`#ke-toan`, `#nhan-su`, `#kinh-doanh`,...).
-   - Nhóm 3: `👥 Kênh Nhóm / Riêng Tư`.
-   - Huy hiệu (Badge) số tin nhắn chưa đọc nổi bật khi có tin nhắn mới.
-2. **Cột Phải (Vùng Chat)**:
-   - **Header**: Tên kênh `#slug`, mô tả, số thành viên, nút mở danh sách thành viên (cho Admin/HR quản lý hoặc xem danh sách), nút cài đặt kênh (cho Admin/HR).
-   - **Message Feed**: Phân trang / tải lịch sử tin nhắn; hiển thị avatar, tên người gửi, chức vụ / phòng ban, thời gian gửi (định dạng thân thiện `H:i` hoặc ngày tháng); phân biệt rõ bóng chat của bản thân và người khác. Nhãn "Đã chỉnh sửa" nếu `edited_at` có giá trị.
-   - **Thanh nhập tin nhắn (Composer)**: Ô nhập tin nhắn hỗ trợ phím Enter để gửi, Shift+Enter xuống dòng, nút Gửi với icon trực quan.
-
----
-
-## 7. Chiến Lược Realtime & Thông Báo (Realtime & Notification Strategy)
-
-- **Hiện tại**: Project chưa tích hợp Reverb/Pusher. Do đó, hệ thống sử dụng **Long-polling / High-frequency AJAX polling** kết hợp Alpine.js:
-  - Khi người dùng đang mở một kênh: Polling tin nhắn mới (`/chat/channels/{slug}/messages?after_id={lastId}`) mỗi 3-4 giây.
-  - Polling trạng thái chưa đọc tổng thể (`/chat/unread-summary`) mỗi 10-15 giây để cập nhật số lượng unread trên sidebar.
-- **Sẵn sàng nâng cấp**:
-  - Tạo event `App\Events\ChatMessageSent` triển khai `ShouldBroadcastNow` / `ShouldBroadcast`.
-  - Khi triển khai Laravel Reverb và Echo, chỉ cần bật broadcast driver mà không cần viết lại nghiệp vụ hay API.
+### 3.3 Cập Nhật Bảng `chat_channels`
+- Mở rộng cột `type` để hỗ trợ giá trị `'direct'` (thông qua migration sửa đổi enum hoặc varchar an toàn).
 
 ---
 
-## 8. Chiến Lược Seeder & Migration (Migration Strategy)
+## 4. Kế Hoạch Kiểm Thử Mới (Feature Tests Suite)
 
-### 8.1 Migration
-- Viết migration an toàn:
-  - Khóa ngoại với `onDelete('cascade')` cho thành viên và tin nhắn khi kênh bị xóa.
-  - Khóa ngoại `onDelete('set null')` cho `department_id` và `created_by`.
-  - Unique index `['channel_id', 'user_id']` để đảm bảo tính duy nhất.
-- Hỗ trợ đầy đủ phương thức `down()`.
-
-### 8.2 Seeder
-- Bổ sung `ChatChannelSeeder` hoặc tích hợp vào `DatabaseSeeder`:
-  - Tự động tạo kênh `#cong-ty` (type: `company`, `is_default: true`) bằng `firstOrCreate` để đảm bảo chạy lại nhiều lần không tạo trùng lặp.
-  - Tự động tạo các kênh theo phòng ban mẫu: `#hanh-chinh-nhan-su`, `#cong-nghe-thong-tin`, `#kinh-doanh`, `#tai-chinh-ke-toan`, `#cham-soc-khach-hang`.
-  - Tự động gán nhân sự các phòng ban tương ứng vào các kênh phòng ban.
-  - Tự động gán toàn bộ người dùng đang hoạt động vào kênh `#cong-ty`.
-
----
-
-## 9. Kế Hoạch Kiểm Thử (Test Strategy)
-
-Bộ test toàn diện sử dụng MySQL `hr_management_testing`:
-1. **InternalChatChannelTest**:
-   - Admin và HR có thể tạo kênh mới.
-   - Employee không có quyền tạo kênh (nhận 403).
-   - Kiểm tra ràng buộc duy nhất tên/slug kênh.
-   - Kênh `#cong-ty` mặc định không thể bị xóa hoặc sửa trái phép.
-2. **InternalChatMembershipTest**:
-   - Thêm thành viên vào kênh (ngăn chặn trùng lặp).
-   - Xóa thành viên khỏi kênh.
-   - Thành viên sau khi bị xóa lập tức bị chặn truy cập (403).
-3. **InternalChatMessageTest**:
-   - Thành viên gửi tin nhắn thành công.
-   - Tin nhắn rỗng hoặc chỉ có khoảng trắng bị từ chối validation.
-   - Xử lý độ dài tin nhắn tối đa.
-   - Kiểm tra XSS: script tag được mã hóa an toàn, không bị thực thi.
-   - Người gửi có thể chỉnh sửa tin nhắn của mình; không thể sửa tin nhắn của người khác.
-   - Người gửi có thể xóa tin nhắn của mình.
-4. **InternalChatAuthorizationIdorTest**:
-   - Người dùng ngoài kênh cố truy cập URL `/chat/channels/{slug}` nhận mã lỗi 403.
-   - Người dùng ngoài kênh cố gọi API gửi tin nhắn hoặc xem tin nhắn nhận mã lỗi 403.
-   - Chống tráo đổi ID kênh và tin nhắn.
-5. **InternalChatUnreadTest**:
-   - Tin nhắn mới từ người khác làm tăng số đếm unread.
-   - Tin nhắn của chính mình không làm tăng unread.
-   - Khi truy cập kênh, `last_read_at` được cập nhật và số đếm unread trở về 0.
+1. **`InternalChatRichMessageTest`**:
+   - Gửi tin nhắn có định dạng Bold, Italic, Strikethrough, List, Quote.
+   - Kiểm tra mã độc `<script>` và event handler bị escape an toàn, không sinh XSS.
+   - Nhận diện URL an toàn và render link đúng định dạng.
+   - Tải lên tệp đính kèm và hình ảnh hợp lệ.
+   - Từ chối tệp không đúng định dạng (ví dụ `.php`, `.exe`) hoặc vượt quá dung lượng.
+   - Kiểm tra phân quyền tải tệp đính kèm: Người ngoài kênh bị từ chối `403`.
+2. **`InternalChatMessageReactionTest`**:
+   - Thêm reaction vào tin nhắn.
+   - Toggle bỏ reaction khi click lại.
+   - Ngăn chặn duplicate reaction.
+   - Phân quyền: Người không thuộc kênh không thể thả reaction (403).
+3. **`InternalChatDirectMessageTest`**:
+   - User A nhắn tin cho User B tạo ra Direct Channel duy nhất (`dm-A-B`).
+   - User B nhắn tin cho User A tái sử dụng đúng Direct Channel đó, không tạo duplicate.
+   - User C cố tình truy cập vào cuộc trò chuyện giữa A và B nhận `403 Forbidden` (chống IDOR).
+   - Unread count hiển thị chính xác theo từng người nhắn.
+4. **`InternalChatDepartmentValidationTest`**:
+   - Thêm nhân sự đúng phòng ban vào kênh phòng ban: Thành công.
+   - Cố tình gửi payload thêm nhân sự phòng ban khác vào kênh phòng ban: Bị từ chối với lỗi 422.
+   - Tìm kiếm nhân sự chỉ giới hạn trong phòng ban đã chọn.
+5. **`InternalChatProfileCardTest`**:
+   - API / Endpoint trả về thông tin hồ sơ rút gọn nội bộ.
+   - Đảm bảo các thông tin nhạy cảm (CCCD, mã số thuế, lương) không bị rò rỉ.
