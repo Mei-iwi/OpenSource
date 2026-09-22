@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 abstract class Controller
 {
+    use AuthorizesRequests;
     protected function streamStoredFile(string $diskName, string $path, array $headers = []): StreamedResponse
     {
         $disk = Storage::disk($diskName);

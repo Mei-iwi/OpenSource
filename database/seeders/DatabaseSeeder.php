@@ -400,6 +400,13 @@ class DatabaseSeeder extends Seeder
                 $this->seedAttendances($employee, $index);
             }
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 6. Kênh Chat Nội Bộ
+        |--------------------------------------------------------------------------
+        */
+        $this->call(ChatSeeder::class);
     }
 
     /**

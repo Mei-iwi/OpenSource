@@ -12,4 +12,9 @@ class Department extends Model
     {
         return $this->hasMany(Employee::class);
     }
+
+    public function chatChannels()
+    {
+        return $this->hasMany(ChatChannel::class);
+    }
 }
