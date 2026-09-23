@@ -4,10 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Attendance extends Model
 {
     protected $fillable = ['employee_id', 'work_date', 'check_in', 'check_out', 'status', 'note', 'check_in_photo_path', 'check_out_photo_path', 'check_in_method', 'check_out_method'];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Attendance $attendance) {
+            $diskName = config('filesystems.attendance_proof_disk', 'persistent_uploads');
+            $storage = Storage::disk($diskName);
+
+            if ($attendance->check_in_photo_path && $storage->exists($attendance->check_in_photo_path)) {
+                $storage->delete($attendance->check_in_photo_path);
+            }
+
+            if ($attendance->check_out_photo_path && $storage->exists($attendance->check_out_photo_path)) {
+                $storage->delete($attendance->check_out_photo_path);
+            }
+        });
+    }
 
     public function scopeFiltered(Builder $query, array $filters): Builder
     {

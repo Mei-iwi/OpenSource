@@ -75,7 +75,7 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
     Route::get('/dashboard', HrDashboardController::class)->name('dashboard');
     Route::resource('departments', DepartmentController::class);
     Route::resource('employees', EmployeeController::class)->except('destroy');
-    Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export.csv', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
