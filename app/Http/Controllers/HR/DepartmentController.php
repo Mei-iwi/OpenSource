@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use App\Models\Department;
+use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,9 +17,13 @@ class DepartmentController extends Controller
      */
     public function index(): View
     {
-        $departments = Department::withCount('employees')
+        $departments = Department::with(['manager.user'])
+            ->withCount('employees')
             ->when(request('search'), fn ($query, $search) => $query->where(fn ($q) => $q->where('code', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%")))
-            ->orderBy('name')->paginate(10)->withQueryString();
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('hr.departments.index', compact('departments'));
     }
 
@@ -27,7 +32,12 @@ class DepartmentController extends Controller
      */
     public function create(): View
     {
-        return view('hr.departments.create');
+        $employees = Employee::with('user')
+            ->where('employment_status', 'active')
+            ->orderBy('employee_code')
+            ->get();
+
+        return view('hr.departments.create', compact('employees'));
     }
 
     /**
@@ -36,6 +46,7 @@ class DepartmentController extends Controller
     public function store(StoreDepartmentRequest $request): RedirectResponse
     {
         Department::create($request->validated());
+
         return redirect()->route('hr.departments.index')->with('success', 'Đã tạo phòng ban.');
     }
 
@@ -44,7 +55,8 @@ class DepartmentController extends Controller
      */
     public function show(Department $department): View
     {
-        $department->loadCount('employees');
+        $department->load(['manager.user'])->loadCount('employees');
+
         return view('hr.departments.show', compact('department'));
     }
 
@@ -53,7 +65,13 @@ class DepartmentController extends Controller
      */
     public function edit(Department $department): View
     {
-        return view('hr.departments.edit', compact('department'));
+        $department->load('manager.user');
+        $employees = Employee::with('user')
+            ->where('employment_status', 'active')
+            ->orderBy('employee_code')
+            ->get();
+
+        return view('hr.departments.edit', compact('department', 'employees'));
     }
 
     /**
@@ -62,6 +80,7 @@ class DepartmentController extends Controller
     public function update(UpdateDepartmentRequest $request, Department $department): RedirectResponse
     {
         $department->update($request->validated());
+
         return redirect()->route('hr.departments.index')->with('success', 'Đã cập nhật phòng ban.');
     }
 
@@ -73,7 +92,9 @@ class DepartmentController extends Controller
         if ($department->employees()->exists()) {
             return back()->with('error', 'Không thể xóa phòng ban đang có nhân viên.');
         }
+
         $department->delete();
+
         return redirect()->route('hr.departments.index')->with('success', 'Đã xóa phòng ban.');
     }
 }

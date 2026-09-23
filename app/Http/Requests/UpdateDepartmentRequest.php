@@ -24,6 +24,31 @@ class UpdateDepartmentRequest extends FormRequest
     public function rules(): array
     {
         $department = $this->route('department');
-        return ['code' => ['required', 'string', 'max:30', Rule::unique('departments', 'code')->ignore($department)], 'name' => ['required', 'string', 'max:255'], 'description' => ['nullable', 'string']];
+
+        return [
+            'code' => ['required', 'string', 'max:30', Rule::unique('departments', 'code')->ignore($department)],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'manager_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('employees', 'id')->where('employment_status', 'active'),
+            ],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'code' => 'mã phòng ban',
+            'name' => 'tên phòng ban',
+            'description' => 'mô tả',
+            'manager_id' => 'trưởng phòng',
+        ];
     }
 }
