@@ -10,6 +10,7 @@ use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AttendanceController extends Controller
@@ -52,5 +53,30 @@ class AttendanceController extends Controller
         $attendance->update($request->validated());
 
         return redirect()->route('hr.attendances.index')->with('success', 'Đã cập nhật chấm công.');
+    }
+
+    public function destroy(Attendance $attendance): RedirectResponse
+    {
+        $this->authorize('delete', $attendance);
+
+        $attendance->loadMissing('employee.user');
+        $workDate = $attendance->work_date ? $attendance->work_date->format('d/m/Y') : null;
+        $employeeName = $attendance->employee?->user?->name;
+
+        Log::info('Attendance record deleted', [
+            'attendance_id' => $attendance->id,
+            'employee_id' => $attendance->employee_id,
+            'work_date' => $attendance->work_date?->toDateString(),
+            'deleted_by' => auth()->id(),
+            'deleted_by_role' => auth()->user()?->role,
+        ]);
+
+        $attendance->delete();
+
+        $message = $workDate && $employeeName
+            ? "Đã xóa bản ghi chấm công ngày {$workDate} của {$employeeName}."
+            : 'Đã xóa bản ghi chấm công.';
+
+        return redirect()->route('hr.attendances.index')->with('success', $message);
     }
 }

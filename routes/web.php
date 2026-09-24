@@ -19,6 +19,7 @@ use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
 use App\Http\Controllers\HR\DepartmentController;
 use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\JobPositionController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\HrDashboardController;
@@ -74,8 +75,9 @@ Route::middleware(['auth', 'account.active', 'role:hr,employee'])
 Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->name('hr.')->group(function () {
     Route::get('/dashboard', HrDashboardController::class)->name('dashboard');
     Route::resource('departments', DepartmentController::class);
+    Route::resource('job-positions', JobPositionController::class);
     Route::resource('employees', EmployeeController::class)->except('destroy');
-    Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export.csv', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
