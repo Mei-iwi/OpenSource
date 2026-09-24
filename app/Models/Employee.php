@@ -15,6 +15,21 @@ class Employee extends Model
                 ]);
             }
         });
+
+        static::updated(function (Employee $employee) {
+            if ($employee->wasChanged('department_id')) {
+                $oldDepartmentId = $employee->getRawOriginal('department_id');
+                if ($oldDepartmentId) {
+                    Department::where('id', $oldDepartmentId)
+                        ->where('manager_id', $employee->id)
+                        ->update(['manager_id' => null]);
+                }
+            }
+        });
+
+        static::deleting(function (Employee $employee) {
+            Department::where('manager_id', $employee->id)->update(['manager_id' => null]);
+        });
     }
 
     protected $fillable = [
@@ -47,6 +62,9 @@ class Employee extends Model
         return $this->hasMany(LeaveRequest::class);
     }
 
+    public function managedDepartments()
+    {
+        return $this->hasMany(Department::class, 'manager_id');
     public function jobPosition()
     {
         return $this->belongsTo(JobPosition::class, 'position', 'name');
