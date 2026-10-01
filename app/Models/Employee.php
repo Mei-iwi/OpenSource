@@ -34,12 +34,16 @@ class Employee extends Model
 
     protected $fillable = [
         'user_id', 'department_id', 'employee_code', 'phone', 'address', 'date_of_birth',
-        'position', 'hire_date', 'employment_status', 'avatar_path',
+        'position', 'hire_date', 'contract_end_date', 'employment_status', 'avatar_path',
     ];
 
     protected function casts(): array
     {
-        return ['date_of_birth' => 'date', 'hire_date' => 'date'];
+        return [
+            'date_of_birth' => 'date',
+            'hire_date' => 'date',
+            'contract_end_date' => 'date',
+        ];
     }
 
     public function user()
@@ -65,6 +69,8 @@ class Employee extends Model
     public function managedDepartments()
     {
         return $this->hasMany(Department::class, 'manager_id');
+    }
+
     public function jobPosition()
     {
         return $this->belongsTo(JobPosition::class, 'position', 'name');

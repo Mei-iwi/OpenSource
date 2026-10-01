@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Models\LeaveRequest;
+use App\Models\User;
+use App\Notifications\LeaveRequestSubmittedNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class LeaveRequestController extends Controller
@@ -38,7 +41,16 @@ class LeaveRequestController extends Controller
         if (! $employee) {
             return redirect()->route('employee.leave-requests.index')->with('error', 'Tài khoản chưa có hồ sơ nhân viên.');
         }
-        $employee->leaveRequests()->create($request->validated());
+
+        $leaveRequest = $employee->leaveRequests()->create($request->validated());
+
+        $recipients = User::whereIn('role', ['admin', 'hr'])
+            ->where('account_status', 'active')
+            ->get();
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new LeaveRequestSubmittedNotification($leaveRequest));
+        }
 
         return redirect()->route('employee.leave-requests.index')->with('success', 'Đã gửi đơn xin nghỉ.');
     }

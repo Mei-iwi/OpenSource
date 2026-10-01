@@ -30,6 +30,7 @@
         <div><dt class="app-label">Phòng ban</dt><dd>{{ $employee->department->name }}</dd></div>
         <div><dt class="app-label">Chức vụ</dt><dd>{{ $employee->position ?: '—' }}</dd></div>
         <div><dt class="app-label">Ngày vào làm</dt><dd>{{ $employee->hire_date?->format('d/m/Y') }}</dd></div>
+        <div><dt class="app-label">Hạn hợp đồng</dt><dd>{{ $employee->contract_end_date?->format('d/m/Y') ?: '—' }}</dd></div>
         <div><dt class="app-label">Trạng thái</dt><dd>{{ $employee->employment_status }}</dd></div>
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
     </dl>
