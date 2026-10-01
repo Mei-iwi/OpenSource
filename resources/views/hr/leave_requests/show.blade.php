@@ -39,6 +39,44 @@
         </div>
     </dl>
 
+    @if($leaveBalance)
+        <div class="mt-6 rounded-2xl border border-[var(--app-border)] bg-slate-50/60 p-4 dark:bg-slate-900/40">
+            <div class="flex items-center justify-between border-b border-[var(--app-border)] pb-3">
+                <h4 class="text-sm font-bold text-[var(--app-text)]">Quỹ phép năm {{ $leaveBalance['year'] }} của nhân viên</h4>
+                @php
+                    $isOverLimit = $leaveRequest->days_count > ($leaveBalance['available_days'] + ($leaveRequest->status === 'pending' ? $leaveRequest->days_count : 0));
+                @endphp
+                @if($isOverLimit)
+                    <span class="rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">Vượt quota khả dụng</span>
+                @else
+                    <span class="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">Trong hạn mức</span>
+                @endif
+            </div>
+            <div class="mt-3 grid gap-3 sm:grid-cols-4 text-xs">
+                <div>
+                    <span class="text-[var(--app-muted)]">Tổng định mức:</span>
+                    <p class="mt-1 font-bold text-sm text-[var(--app-text)]">{{ $leaveBalance['entitlement'] }} ngày</p>
+                    <p class="text-[10px] text-[var(--app-muted)]">(Gốc: {{ $leaveBalance['total_days'] }} + Chuyển: {{ $leaveBalance['carried_over_days'] }})</p>
+                </div>
+                <div>
+                    <span class="text-[var(--app-muted)]">Đã sử dụng:</span>
+                    <p class="mt-1 font-bold text-sm text-[var(--app-text)]">{{ $leaveBalance['used_days'] }} ngày</p>
+                    <p class="text-[10px] text-[var(--app-muted)]">Đã duyệt</p>
+                </div>
+                <div>
+                    <span class="text-[var(--app-muted)]">Đang chờ duyệt:</span>
+                    <p class="mt-1 font-bold text-sm text-amber-600 dark:text-amber-400">{{ $leaveBalance['pending_days'] }} ngày</p>
+                    <p class="text-[10px] text-[var(--app-muted)]">(Bao gồm đơn này: {{ $leaveRequest->days_count }} ngày)</p>
+                </div>
+                <div>
+                    <span class="text-[var(--app-muted)]">Khả dụng còn lại:</span>
+                    <p class="mt-1 font-bold text-sm text-emerald-600 dark:text-emerald-400">{{ $leaveBalance['available_days'] }} ngày</p>
+                    <p class="text-[10px] text-[var(--app-muted)]">Sau khi trừ các đơn chờ</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Review details section: strictly differentiate status --}}
     @if($leaveRequest->status === 'approved' && $leaveRequest->reviewed_at)
         <div class="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 dark:bg-emerald-950/20">
