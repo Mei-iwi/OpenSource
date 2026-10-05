@@ -15,6 +15,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
 
+use App\Services\LeaveConflictService;
+
 class LeaveRequestController extends Controller
 {
     public function index(Request $request): View
@@ -24,9 +26,15 @@ class LeaveRequestController extends Controller
         return view('hr.leave_requests.index', ['requests' => $requests, 'departments' => Department::orderBy('name')->get(), 'employees' => Employee::with('user')->orderBy('employee_code')->get(), 'pendingCount' => LeaveRequest::where('status', 'pending')->count()]);
     }
 
-    public function show(LeaveRequest $leaveRequest): View
+    public function show(LeaveRequest $leaveRequest, LeaveConflictService $conflictService): View
     {
-        return view('hr.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee'])]);
+        $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee']);
+        $conflictAnalysis = $conflictService->analyze($leaveRequest);
+
+        return view('hr.leave_requests.show', [
+            'leaveRequest' => $leaveRequest,
+            'conflictAnalysis' => $conflictAnalysis,
+        ]);
     }
 
     public function review(Request $request, LeaveRequest $leaveRequest, LeaveAttendanceSyncService $syncService): RedirectResponse
