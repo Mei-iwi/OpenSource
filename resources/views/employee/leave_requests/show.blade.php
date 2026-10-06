@@ -31,6 +31,19 @@
         </div>
     </dl>
 
+    @if($leaveBalance)
+        <div class="mt-6 rounded-2xl border border-[var(--app-border)] bg-slate-50/50 p-4 text-xs dark:bg-slate-900/30">
+            <span class="font-bold text-[var(--app-text)]">Thông tin quỹ phép năm {{ $leaveBalance['year'] }}:</span>
+            <span class="ml-2 text-[var(--app-muted)]">Tổng định mức: <strong class="text-[var(--app-text)]">{{ $leaveBalance['entitlement'] }}</strong> ngày</span>
+            <span class="mx-1 text-[var(--app-muted)]">·</span>
+            <span class="text-[var(--app-muted)]">Đã sử dụng: <strong class="text-[var(--app-text)]">{{ $leaveBalance['used_days'] }}</strong> ngày</span>
+            <span class="mx-1 text-[var(--app-muted)]">·</span>
+            <span class="text-[var(--app-muted)]">Đang chờ: <strong class="text-amber-600 dark:text-amber-400">{{ $leaveBalance['pending_days'] }}</strong> ngày</span>
+            <span class="mx-1 text-[var(--app-muted)]">·</span>
+            <span class="text-[var(--app-muted)]">Khả dụng còn lại: <strong class="text-emerald-600 dark:text-emerald-400">{{ $leaveBalance['available_days'] }}</strong> ngày</span>
+        </div>
+    @endif
+
     {{-- Review details section: strictly differentiate status --}}
     @if($leaveRequest->status === 'approved' && $leaveRequest->reviewed_at)
         <div class="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 dark:bg-emerald-950/20">

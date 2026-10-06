@@ -8,7 +8,9 @@ use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Notifications\LeaveRequestApprovedNotification;
 use App\Notifications\LeaveRequestRejectedNotification;
+use App\Services\AnnualLeaveService;
 use App\Services\LeaveAttendanceSyncService;
+use App\Services\LeaveConflictService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,12 +28,26 @@ class LeaveRequestController extends Controller
         return view('hr.leave_requests.index', ['requests' => $requests, 'departments' => Department::orderBy('name')->get(), 'employees' => Employee::with('user')->orderBy('employee_code')->get(), 'pendingCount' => LeaveRequest::where('status', 'pending')->count()]);
     }
 
-    public function show(LeaveRequest $leaveRequest): View
+    public function show(LeaveRequest $leaveRequest, AnnualLeaveService $annualLeaveService, LeaveConflictService $conflictService): View
     {
-        return view('hr.leave_requests.show', ['leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee'])]);
+        $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee']);
+
+        $leaveBalance = null;
+        if ($leaveRequest->leave_type === 'annual') {
+            $year = (int) $leaveRequest->start_date->year;
+            $leaveBalance = $annualLeaveService->getBalanceSummary($leaveRequest->employee, $year);
+        }
+
+        $conflictAnalysis = $conflictService->analyze($leaveRequest);
+
+        return view('hr.leave_requests.show', [
+            'leaveRequest' => $leaveRequest,
+            'leaveBalance' => $leaveBalance,
+            'conflictAnalysis' => $conflictAnalysis,
+        ]);
     }
 
-    public function review(Request $request, LeaveRequest $leaveRequest, LeaveAttendanceSyncService $syncService): RedirectResponse
+    public function review(Request $request, LeaveRequest $leaveRequest, LeaveAttendanceSyncService $syncService, AnnualLeaveService $annualLeaveService): RedirectResponse
     {
         $validated = $request->validate([
             'status' => ['required', Rule::in(['approved', 'rejected'])],
@@ -39,11 +55,15 @@ class LeaveRequestController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($leaveRequest, $validated, $request, $syncService) {
+            DB::transaction(function () use ($leaveRequest, $validated, $request, $syncService, $annualLeaveService) {
                 $locked = LeaveRequest::whereKey($leaveRequest->id)->lockForUpdate()->firstOrFail();
 
                 if ($locked->status !== 'pending') {
                     throw new DomainException('Đơn đã được xử lý hoặc hủy. Vui lòng tải lại trang.');
+                }
+
+                if ($validated['status'] === 'approved' && $locked->leave_type === 'annual') {
+                    $annualLeaveService->validateAndApproveQuota($locked);
                 }
 
                 $locked->update([
