@@ -71,4 +71,9 @@ class Employee extends Model
     {
         return $this->belongsTo(JobPosition::class, 'position', 'name');
     }
+
+    public function annualLeaveBalances()
+    {
+        return $this->hasMany(AnnualLeaveBalance::class);
+    }
 }

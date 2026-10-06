@@ -39,4 +39,13 @@ class LeaveRequest extends Model
 
         return $code ? "{$this->reviewer->name} ({$roleLabel} · {$code})" : "{$this->reviewer->name} ({$roleLabel})";
     }
+
+    public function getDaysCountAttribute(): int
+    {
+        if (! $this->start_date || ! $this->end_date) {
+            return 0;
+        }
+
+        return (int) $this->start_date->diffInDays($this->end_date) + 1;
+    }
 }

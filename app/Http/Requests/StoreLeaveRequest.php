@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Services\AnnualLeaveService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreLeaveRequest extends FormRequest
 {
@@ -33,6 +35,23 @@ class StoreLeaveRequest extends FormRequest
             $overlap = $employee->leaveRequests()->whereIn('status', ['pending', 'approved'])->where('start_date', '<=', $this->end_date)->where('end_date', '>=', $this->start_date)->exists();
             if ($overlap) {
                 $validator->errors()->add('start_date', 'Khoảng thời gian nghỉ bị trùng với đơn đang chờ hoặc đã duyệt.');
+                return;
+            }
+
+            if ($this->leave_type === 'annual') {
+                try {
+                    app(AnnualLeaveService::class)->validateAndReserveQuota(
+                        $employee,
+                        $this->start_date,
+                        $this->end_date
+                    );
+                } catch (ValidationException $e) {
+                    foreach ($e->errors() as $key => $messages) {
+                        foreach ($messages as $msg) {
+                            $validator->errors()->add($key, $msg);
+                        }
+                    }
+                }
             }
         });
     }
