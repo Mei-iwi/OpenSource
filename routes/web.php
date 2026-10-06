@@ -24,6 +24,7 @@ use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
 use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\HrDashboardController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelfAttendanceController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,13 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr,employee'])
 Route::middleware(['auth', 'account.active', 'role:hr,employee'])
     ->get('/inbox', [InboxController::class, 'index'])
     ->name('inbox.index');
+
+Route::middleware(['auth', 'account.active'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+});
 
 Route::middleware(['auth', 'account.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');

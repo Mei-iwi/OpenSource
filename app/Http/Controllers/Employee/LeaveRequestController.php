@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Models\LeaveRequest;
+use App\Models\User;
+use App\Notifications\LeaveRequestSubmittedNotification;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use App\Services\AnnualLeaveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,6 +53,15 @@ class LeaveRequestController extends Controller
             return redirect()->route('employee.leave-requests.index')->with('error', 'Tài khoản chưa có hồ sơ nhân viên.');
         }
 
+        $leaveRequest = $employee->leaveRequests()->create($request->validated());
+
+        $recipients = User::whereIn('role', ['admin', 'hr'])
+            ->where('account_status', 'active')
+            ->get();
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new LeaveRequestSubmittedNotification($leaveRequest));
+        }
         DB::transaction(function () use ($employee, $request, $annualLeaveService) {
             if ($request->leave_type === 'annual') {
                 $annualLeaveService->validateAndReserveQuota($employee, $request->start_date, $request->end_date);

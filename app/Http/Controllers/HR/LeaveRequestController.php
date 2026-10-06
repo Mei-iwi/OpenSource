@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Notifications\LeaveRequestApprovedNotification;
+use App\Notifications\LeaveRequestRejectedNotification;
 use App\Services\AnnualLeaveService;
 use App\Services\LeaveAttendanceSyncService;
 use App\Services\LeaveConflictService;
@@ -73,6 +75,16 @@ class LeaveRequestController extends Controller
 
                 if ($validated['status'] === 'approved') {
                     $syncService->sync($locked);
+                }
+
+                $employeeUser = $locked->employee?->user;
+                if ($employeeUser) {
+                    $locked->setRelation('reviewer', $request->user());
+                    if ($validated['status'] === 'approved') {
+                        $employeeUser->notify(new LeaveRequestApprovedNotification($locked));
+                    } elseif ($validated['status'] === 'rejected') {
+                        $employeeUser->notify(new LeaveRequestRejectedNotification($locked));
+                    }
                 }
             });
         } catch (DomainException $exception) {
