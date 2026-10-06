@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Services\AnnualLeaveService;
 use App\Services\LeaveAttendanceSyncService;
+use App\Services\LeaveConflictService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,17 +26,22 @@ class LeaveRequestController extends Controller
         return view('hr.leave_requests.index', ['requests' => $requests, 'departments' => Department::orderBy('name')->get(), 'employees' => Employee::with('user')->orderBy('employee_code')->get(), 'pendingCount' => LeaveRequest::where('status', 'pending')->count()]);
     }
 
-    public function show(LeaveRequest $leaveRequest, AnnualLeaveService $annualLeaveService): View
+    public function show(LeaveRequest $leaveRequest, AnnualLeaveService $annualLeaveService, LeaveConflictService $conflictService): View
     {
+        $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee']);
+
         $leaveBalance = null;
         if ($leaveRequest->leave_type === 'annual') {
             $year = (int) $leaveRequest->start_date->year;
             $leaveBalance = $annualLeaveService->getBalanceSummary($leaveRequest->employee, $year);
         }
 
+        $conflictAnalysis = $conflictService->analyze($leaveRequest);
+
         return view('hr.leave_requests.show', [
-            'leaveRequest' => $leaveRequest->load(['employee.user', 'employee.department', 'reviewer.employee']),
+            'leaveRequest' => $leaveRequest,
             'leaveBalance' => $leaveBalance,
+            'conflictAnalysis' => $conflictAnalysis,
         ]);
     }
 
