@@ -120,6 +120,102 @@ class AnnualLeaveBalanceTest extends TestCase
 
         // 5 days inclusive (10, 11, 12, 13, 14)
         $this->assertEquals(5, $service->calculateDays('2026-05-10', '2026-05-14'));
+        $this->assertEquals(31, $service->calculateDays('2026-10-01', '2026-10-31'));
+        $this->assertEquals(29, $service->calculateDays('2028-02-01', '2028-02-29'));
+        $this->assertEquals(4, $service->calculateDays('2026-01-30', '2026-02-02'));
+    }
+
+    public function test_month_long_annual_leave_is_rejected_without_saving_or_notifying(): void
+    {
+        $employee = $this->createEmployee();
+        $this->createHrUser();
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $response = $this->actingAs($employee->user)->post(route('employee.leave-requests.store'), [
+            'leave_type' => 'annual',
+            'start_date' => '2026-10-01',
+            'end_date' => '2026-10-31',
+            'reason' => 'Month-long leave',
+        ]);
+
+        $response->assertSessionHasErrors('start_date');
+        $this->assertDatabaseCount('leave_requests', 0);
+        \Illuminate\Support\Facades\Notification::assertNothingSent();
+    }
+
+    public function test_twelve_day_request_is_saved_once_and_exhausts_annual_quota(): void
+    {
+        $employee = $this->createEmployee();
+        $hr = $this->createHrUser();
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $response = $this->actingAs($employee->user)->post(route('employee.leave-requests.store'), [
+            'leave_type' => 'annual',
+            'start_date' => '2026-10-01',
+            'end_date' => '2026-10-12',
+            'reason' => 'Annual leave',
+        ]);
+
+        $response->assertRedirect(route('employee.leave-requests.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseCount('leave_requests', 1);
+        $this->assertSame(12, $employee->leaveRequests()->sole()->days_count);
+        \Illuminate\Support\Facades\Notification::assertSentToTimes($hr, \App\Notifications\LeaveRequestSubmittedNotification::class, 1);
+
+        $summary = app(AnnualLeaveService::class)->getBalanceSummary($employee, 2026);
+        $this->assertEquals(12, $summary['pending_days']);
+        $this->assertEquals(0, $summary['available_days']);
+
+        $this->actingAs($employee->user)->post(route('employee.leave-requests.store'), [
+            'leave_type' => 'annual',
+            'start_date' => '2026-11-01',
+            'end_date' => '2026-11-01',
+            'reason' => 'Exceeds remaining quota',
+        ])->assertSessionHasErrors('start_date');
+
+        $this->assertDatabaseCount('leave_requests', 1);
+    }
+
+    public function test_repeated_non_annual_submission_does_not_create_duplicate(): void
+    {
+        $employee = $this->createEmployee();
+        $data = [
+            'leave_type' => 'sick',
+            'start_date' => '2026-10-01',
+            'end_date' => '2026-10-31',
+            'reason' => 'Medical leave',
+        ];
+
+        $this->actingAs($employee->user)->post(route('employee.leave-requests.store'), $data)
+            ->assertSessionHas('success');
+        $this->actingAs($employee->user)->post(route('employee.leave-requests.store'), $data)
+            ->assertSessionHasErrors('start_date');
+
+        $this->assertDatabaseCount('leave_requests', 1);
+        $this->assertSame(31, $employee->leaveRequests()->sole()->days_count);
+        $this->assertEquals(12, app(AnnualLeaveService::class)->getBalanceSummary($employee, 2026)['available_days']);
+    }
+
+    public function test_existing_month_long_request_counts_all_days_and_cannot_be_approved(): void
+    {
+        $employee = $this->createEmployee();
+        $hr = $this->createHrUser();
+        $leave = LeaveRequest::create([
+            'employee_id' => $employee->id,
+            'leave_type' => 'annual',
+            'start_date' => '2026-10-01',
+            'end_date' => '2026-10-31',
+            'reason' => 'Legacy request',
+            'status' => 'pending',
+        ]);
+
+        $summary = app(AnnualLeaveService::class)->getBalanceSummary($employee, 2026);
+        $this->assertEquals(31, $summary['pending_days']);
+        $this->assertEquals(0, $summary['available_days']);
+
+        $this->actingAs($hr)->patch(route('hr.leave-requests.review', $leave), ['status' => 'approved'])
+            ->assertSessionHas('error');
+        $this->assertSame('pending', $leave->fresh()->status);
     }
 
     public function test_carried_over_days_increase_entitlement(): void

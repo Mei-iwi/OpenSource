@@ -23,7 +23,7 @@
         </div>
         <div>
             <dt class="app-label">Thời gian nghỉ</dt>
-            <dd class="mt-1 font-medium text-[var(--app-text)]">{{ $leaveRequest->start_date->format('d/m/Y') }} - {{ $leaveRequest->end_date->format('d/m/Y') }} ({{ $leaveRequest->start_date->diffInDays($leaveRequest->end_date) + 1 }} ngày)</dd>
+            <dd class="mt-1 font-medium text-[var(--app-text)]">{{ $leaveRequest->start_date->format('d/m/Y') }} - {{ $leaveRequest->end_date->format('d/m/Y') }} ({{ $leaveRequest->days_count }} ngày)</dd>
         </div>
         <div>
             <dt class="app-label">Ngày gửi đơn</dt>

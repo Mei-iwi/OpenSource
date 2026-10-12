@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeaveRequest;
+use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\User;
 use App\Notifications\LeaveRequestSubmittedNotification;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 use App\Services\AnnualLeaveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class LeaveRequestController extends Controller
@@ -53,7 +53,29 @@ class LeaveRequestController extends Controller
             return redirect()->route('employee.leave-requests.index')->with('error', 'Tài khoản chưa có hồ sơ nhân viên.');
         }
 
-        $leaveRequest = $employee->leaveRequests()->create($request->validated());
+        $leaveRequest = DB::transaction(function () use ($employee, $request, $annualLeaveService) {
+            // Serialize submissions for this employee before checking overlap and quota.
+            $employee = Employee::whereKey($employee->id)->lockForUpdate()->firstOrFail();
+            $data = $request->validated();
+
+            $overlap = $employee->leaveRequests()
+                ->whereIn('status', ['pending', 'approved'])
+                ->where('start_date', '<=', $data['end_date'])
+                ->where('end_date', '>=', $data['start_date'])
+                ->exists();
+
+            if ($overlap) {
+                throw ValidationException::withMessages([
+                    'start_date' => 'Khoảng thời gian nghỉ bị trùng với đơn đang chờ hoặc đã duyệt.',
+                ]);
+            }
+
+            if ($data['leave_type'] === 'annual') {
+                $annualLeaveService->validateAndReserveQuota($employee, $data['start_date'], $data['end_date']);
+            }
+
+            return $employee->leaveRequests()->create($data);
+        });
 
         $recipients = User::whereIn('role', ['admin', 'hr'])
             ->where('account_status', 'active')
@@ -62,13 +84,6 @@ class LeaveRequestController extends Controller
         if ($recipients->isNotEmpty()) {
             Notification::send($recipients, new LeaveRequestSubmittedNotification($leaveRequest));
         }
-        DB::transaction(function () use ($employee, $request, $annualLeaveService) {
-            if ($request->leave_type === 'annual') {
-                $annualLeaveService->validateAndReserveQuota($employee, $request->start_date, $request->end_date);
-            }
-
-            $employee->leaveRequests()->create($request->validated());
-        });
 
         return redirect()->route('employee.leave-requests.index')->with('success', 'Đã gửi đơn xin nghỉ.');
     }
