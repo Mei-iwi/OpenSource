@@ -270,7 +270,7 @@
                                 {{ $leave->start_date?->format('d/m/Y') }} — {{ $leave->end_date?->format('d/m/Y') }}
                             </td>
                             <td class="font-semibold text-xs">
-                                {{ $leave->start_date && $leave->end_date ? $leave->start_date->diffInDays($leave->end_date) + 1 : '—' }} ngày
+                                {{ $leave->start_date && $leave->end_date ? $leave->days_count : '—' }} ngày
                             </td>
                             <td class="max-w-xs truncate text-xs text-[var(--app-muted)]" title="{{ $leave->reason }}">
                                 {{ \Illuminate\Support\Str::limit($leave->reason, 40) ?: '—' }}

@@ -6,6 +6,7 @@ use App\Models\AnnualLeaveBalance;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use Carbon\CarbonInterface;
+use Carbon\CarbonImmutable;
 use DomainException;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -17,10 +18,17 @@ class AnnualLeaveService
      */
     public function calculateDays(CarbonInterface|string $startDate, CarbonInterface|string $endDate): int
     {
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->startOfDay();
+        // Count calendar dates without mutating inputs or truncating a DST difference.
+        $start = CarbonImmutable::parse(CarbonImmutable::parse($startDate)->format('Y-m-d'), 'UTC');
+        $end = CarbonImmutable::parse(CarbonImmutable::parse($endDate)->format('Y-m-d'), 'UTC');
 
-        return (int) $start->diffInDays($end) + 1;
+        if ($end->lessThan($start)) {
+            throw ValidationException::withMessages([
+                'end_date' => 'Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.',
+            ]);
+        }
+
+        return (int) $start->diff($end)->days + 1;
     }
 
     /**

@@ -32,7 +32,7 @@ class LeaveRequestSubmittedNotification extends Notification
         };
         $startDate = $this->leaveRequest->start_date->format('d/m/Y');
         $endDate = $this->leaveRequest->end_date->format('d/m/Y');
-        $days = (int) $this->leaveRequest->start_date->diffInDays($this->leaveRequest->end_date) + 1;
+        $days = $this->leaveRequest->days_count;
 
         return [
             'type' => 'leave_submitted',
