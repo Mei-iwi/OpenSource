@@ -54,8 +54,11 @@ class LeaveRequestController extends Controller
             'review_note' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        $employeeUser = null;
+        $notification = null;
+
         try {
-            DB::transaction(function () use ($leaveRequest, $validated, $request, $syncService, $annualLeaveService) {
+            DB::transaction(function () use ($leaveRequest, $validated, $request, $syncService, $annualLeaveService, &$employeeUser, &$notification) {
                 $locked = LeaveRequest::whereKey($leaveRequest->id)->lockForUpdate()->firstOrFail();
 
                 if ($locked->status !== 'pending') {
@@ -81,9 +84,9 @@ class LeaveRequestController extends Controller
                 if ($employeeUser) {
                     $locked->setRelation('reviewer', $request->user());
                     if ($validated['status'] === 'approved') {
-                        $employeeUser->notify(new LeaveRequestApprovedNotification($locked));
+                        $notification = new LeaveRequestApprovedNotification($locked);
                     } elseif ($validated['status'] === 'rejected') {
-                        $employeeUser->notify(new LeaveRequestRejectedNotification($locked));
+                        $notification = new LeaveRequestRejectedNotification($locked);
                     }
                 }
             });
@@ -95,6 +98,10 @@ class LeaveRequestController extends Controller
             return back()->with('error', 'Có lỗi xảy ra khi xử lý đơn nghỉ và đồng bộ chấm công. Vui lòng thử lại.');
         }
 
+        if ($employeeUser && $notification) {
+            $employeeUser->notify($notification);
+        }
+
         $message = $validated['status'] === 'approved'
             ? 'Đã duyệt đơn nghỉ và đồng bộ chấm công thành công.'
             : 'Đã từ chối đơn nghỉ.';
@@ -102,4 +109,3 @@ class LeaveRequestController extends Controller
         return redirect()->route('hr.leave-requests.show', $leaveRequest)->with('success', $message);
     }
 }
-

@@ -4,19 +4,31 @@ namespace App\Notifications;
 
 use App\Models\LeaveRequest;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class LeaveRequestApprovedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public LeaveRequest $leaveRequest)
-    {
-    }
+    public function __construct(public LeaveRequest $leaveRequest) {}
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $startDate = $this->leaveRequest->start_date->format('d/m/Y');
+        $endDate = $this->leaveRequest->end_date->format('d/m/Y');
+
+        return (new MailMessage)
+            ->subject('Đơn xin nghỉ đã được duyệt')
+            ->greeting("Xin chào {$notifiable->name},")
+            ->line("Đơn xin nghỉ của bạn từ {$startDate} đến {$endDate} đã được duyệt.")
+            ->action('Xem đơn nghỉ', route('employee.leave-requests.show', $this->leaveRequest))
+            ->salutation('Trân trọng, '.config('app.name'));
     }
 
     public function toArray(object $notifiable): array
