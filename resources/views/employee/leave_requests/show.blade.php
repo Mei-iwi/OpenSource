@@ -19,7 +19,7 @@
     <dl class="grid gap-5 sm:grid-cols-2">
         <div>
             <dt class="app-label">Thời gian xin nghỉ</dt>
-            <dd class="mt-1 font-medium text-[var(--app-text)]">{{ $leaveRequest->start_date->format('d/m/Y') }} - {{ $leaveRequest->end_date->format('d/m/Y') }} ({{ $leaveRequest->start_date->diffInDays($leaveRequest->end_date) + 1 }} ngày)</dd>
+            <dd class="mt-1 font-medium text-[var(--app-text)]">{{ $leaveRequest->start_date->format('d/m/Y') }} - {{ $leaveRequest->end_date->format('d/m/Y') }} ({{ $leaveRequest->days_count }} ngày)</dd>
         </div>
         <div>
             <dt class="app-label">Trạng thái</dt>

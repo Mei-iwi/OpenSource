@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\AnnualLeaveService;
 use Illuminate\Database\Eloquent\Model;
 
 class LeaveRequest extends Model
@@ -46,6 +47,6 @@ class LeaveRequest extends Model
             return 0;
         }
 
-        return (int) $this->start_date->diffInDays($this->end_date) + 1;
+        return app(AnnualLeaveService::class)->calculateDays($this->start_date, $this->end_date);
     }
 }
