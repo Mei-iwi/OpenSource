@@ -96,4 +96,14 @@ class Employee extends Model
     {
         return $this->hasMany(AnnualLeaveBalance::class);
     }
+
+    public function salary()
+    {
+        return $this->hasOne(EmployeeSalary::class);
+    }
+
+    public function payslips()
+    {
+        return $this->hasMany(Payslip::class);
+    }
 }
