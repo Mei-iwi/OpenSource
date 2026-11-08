@@ -74,7 +74,7 @@
                     <tr>
                         <td>{{ ['annual'=>'Nghỉ phép năm','sick'=>'Nghỉ ốm','unpaid'=>'Nghỉ không lương','other'=>'Khác'][$request->leave_type] ?? $request->leave_type }}</td>
                         <td>{{ $request->start_date->format('d/m/Y') }} - {{ $request->end_date->format('d/m/Y') }}</td>
-                        <td>{{ $request->start_date->diffInDays($request->end_date) + 1 }}</td>
+                        <td>{{ $request->days_count }}</td>
                         <td><x-status-badge :status="$request->status" :label="['pending'=>'Đang chờ','approved'=>'Đã duyệt','rejected'=>'Từ chối','cancelled'=>'Đã hủy'][$request->status] ?? $request->status" /></td>
                         <td>{{ $request->created_at->format('d/m/Y') }}</td>
                         <td class="text-right">
