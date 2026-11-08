@@ -15,12 +15,15 @@ use App\Http\Controllers\Chat\ChatReactionController;
 use App\Http\Controllers\Chat\UserProfileCardController;
 use App\Http\Controllers\Employee\AttendanceController as EmployeeAttendanceController;
 use App\Http\Controllers\Employee\LeaveRequestController as EmployeeLeaveRequestController;
+use App\Http\Controllers\Employee\PayslipController;
 use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
 use App\Http\Controllers\HR\DepartmentController;
 use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\EmployeeSalaryController;
 use App\Http\Controllers\HR\JobPositionController;
 use App\Http\Controllers\HR\LeaveRequestController as HrLeaveRequestController;
+use App\Http\Controllers\HR\PayrollController;
 use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\HrDashboardController;
 use App\Http\Controllers\InboxController;
@@ -85,6 +88,14 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
     Route::resource('departments', DepartmentController::class);
     Route::resource('job-positions', JobPositionController::class);
     Route::resource('employees', EmployeeController::class)->except('destroy');
+    Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
+    Route::post('/payroll/generate', [PayrollController::class, 'generate'])->name('payroll.generate');
+    Route::get('/payroll/salaries', [EmployeeSalaryController::class, 'index'])->name('payroll.salaries.index');
+    Route::get('/payroll/salaries/{employee}/edit', [EmployeeSalaryController::class, 'edit'])->name('payroll.salaries.edit');
+    Route::put('/payroll/salaries/{employee}', [EmployeeSalaryController::class, 'update'])->name('payroll.salaries.update');
+    Route::get('/payroll/{period}', [PayrollController::class, 'show'])->name('payroll.show');
+    Route::post('/payroll/{period}/finalize', [PayrollController::class, 'finalize'])->name('payroll.finalize');
+    Route::get('/payroll/{period}/payslips/{payslip}', [PayrollController::class, 'payslip'])->name('payroll.payslip');
     Route::resource('attendances', HrAttendanceController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export.csv', [ReportController::class, 'export'])->name('reports.export');
@@ -102,6 +113,11 @@ Route::middleware(['auth', 'account.active', 'role:employee'])->prefix('employee
 Route::middleware(['auth', 'account.active', 'role:admin,hr,employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::resource('leave-requests', EmployeeLeaveRequestController::class)->only(['index', 'create', 'store', 'show']);
     Route::patch('/leave-requests/{leave_request}/cancel', [EmployeeLeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
+});
+
+Route::middleware(['auth', 'account.active'])->prefix('me')->name('me.')->group(function () {
+    Route::get('/payslips', [PayslipController::class, 'index'])->name('payslips.index');
+    Route::get('/payslips/{payslip}', [PayslipController::class, 'show'])->name('payslips.show');
 });
 
 Route::middleware(['auth', 'account.active'])->group(function () {

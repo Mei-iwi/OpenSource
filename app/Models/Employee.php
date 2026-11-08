@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 class Employee extends Model
 {
@@ -10,7 +11,7 @@ class Employee extends Model
     {
         static::updating(function (Employee $employee) {
             if ($employee->isDirty('employee_code')) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'employee_code' => 'Mã nhân viên được giữ nguyên từ khi tạo hồ sơ.',
                 ]);
             }
@@ -79,5 +80,15 @@ class Employee extends Model
     public function annualLeaveBalances()
     {
         return $this->hasMany(AnnualLeaveBalance::class);
+    }
+
+    public function salary()
+    {
+        return $this->hasOne(EmployeeSalary::class);
+    }
+
+    public function payslips()
+    {
+        return $this->hasMany(Payslip::class);
     }
 }

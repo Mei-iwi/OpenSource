@@ -132,6 +132,11 @@
                             <span class="sidebar-label">Nhân viên</span>
                         </a>
 
+                        <a href="{{ route('hr.payroll.index') }}" title="Bảng lương" aria-label="Bảng lương" class="{{ $link('hr.payroll.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h5"/></svg></span>
+                            <span class="sidebar-label">Bảng lương</span>
+                        </a>
+
                         <a href="{{ route('hr.attendances.index') }}" title="Chấm công toàn công ty" aria-label="Chấm công toàn công ty" class="{{ $link('hr.attendances.*') }}">
                             <span class="sidebar-icon">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -151,6 +156,11 @@
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
                             </span>
                             <span class="sidebar-label">Đơn nghỉ của tôi</span>
+                        </a>
+
+                        <a href="{{ route('me.payslips.index') }}" title="Phiếu lương của tôi" aria-label="Phiếu lương của tôi" class="{{ $link('me.payslips.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 8h8M8 13h8M8 18h5"/></svg></span>
+                            <span class="sidebar-label">Phiếu lương của tôi</span>
                         </a>
 
                         <a href="{{ route('hr.reports.index') }}" title="Báo cáo phân tích" aria-label="Báo cáo phân tích" class="{{ $link('hr.reports.*') }}">
@@ -195,6 +205,10 @@
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
                             </span>
                             <span class="sidebar-label">Đơn nghỉ của tôi</span>
+                        </a>
+                        <a href="{{ route('me.payslips.index') }}" title="Phiếu lương của tôi" aria-label="Phiếu lương của tôi" class="{{ $link('me.payslips.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 8h8M8 13h8M8 18h5"/></svg></span>
+                            <span class="sidebar-label">Phiếu lương của tôi</span>
                         </a>
                     </div>
                 </div>
