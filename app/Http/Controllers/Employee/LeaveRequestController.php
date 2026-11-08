@@ -54,6 +54,11 @@ class LeaveRequestController extends Controller
         }
 
         $leaveRequest = DB::transaction(function () use ($employee, $request, $annualLeaveService) {
+            if ($request->leave_type === 'annual') {
+                $annualLeaveService->validateAndReserveQuota($employee, $request->start_date, $request->end_date);
+            }
+
+            return $employee->leaveRequests()->create($request->validated());
             // Serialize submissions for this employee before checking overlap and quota.
             $employee = Employee::whereKey($employee->id)->lockForUpdate()->firstOrFail();
             $data = $request->validated();
