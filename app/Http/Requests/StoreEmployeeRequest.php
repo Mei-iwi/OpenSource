@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 class StoreEmployeeRequest extends FormRequest
 {
+    use Concerns\ContractLegalRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,7 +25,7 @@ class StoreEmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return $this->contractLegalRules() + [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['prohibited'],
@@ -33,7 +35,7 @@ class StoreEmployeeRequest extends FormRequest
             'employee_code' => ['prohibited'],
             'phone' => ['nullable', 'string', 'max:50'], 'address' => ['nullable', 'string'],
             'date_of_birth' => ['required', 'date', 'before_or_equal:today'], 'position' => ['required', 'string', 'max:255', 'exists:job_positions,name'],
-            'hire_date' => ['required', 'date'], 'contract_end_date' => ['nullable', 'date'], 'employment_status' => ['required', 'in:active,inactive'],
+            'hire_date' => ['required', 'date'], 'employment_status' => ['required', 'in:active,inactive'],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }

@@ -61,6 +61,9 @@ class EmployeeController extends Controller
                 $employeeData = collect($data)->except(['name', 'email', 'password', 'password_confirmation', 'avatar', 'role', 'employee_code'])->all();
                 $employeeData['avatar_path'] = $avatarPath;
                 $employeeData['employee_code'] = $codes->next($user->role);
+                if (($employeeData['contract_type'] ?? null) === 'indefinite') {
+                    $employeeData['contract_end_date'] = null;
+                }
 
                 return $user->employee()->create($employeeData);
             });
@@ -86,7 +89,9 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee): View
     {
-        $employee->load(['user', 'department'])->loadCount('attendances');
+        $employee->load('user');
+        abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
+        $employee->load('department')->loadCount('attendances');
 
         return view('hr.employees.show', compact('employee'));
     }
@@ -118,6 +123,9 @@ class EmployeeController extends Controller
             DB::transaction(function () use ($data, $employee, $newAvatar) {
                 $employee->user->update(['name' => $data['name'], 'email' => $data['email']]);
                 $employeeData = collect($data)->except(['name', 'email', 'avatar'])->all();
+                if (($employeeData['contract_type'] ?? null) === 'indefinite') {
+                    $employeeData['contract_end_date'] = null;
+                }
                 $employeeData['avatar_path'] = $newAvatar;
                 $employee->update($employeeData);
             });
