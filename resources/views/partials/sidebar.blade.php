@@ -170,6 +170,11 @@
                             <span class="sidebar-label">Báo cáo phân tích</span>
                         </a>
 
+                        <a href="{{ route('hr.reports.movement') }}" title="Báo cáo nhân sự" aria-label="Báo cáo nhân sự" class="{{ $link('hr.reports.movement') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-8M22 19V3"/></svg></span>
+                            <span class="sidebar-label">Báo cáo nhân sự</span>
+                        </a>
+
                         <a href="{{ route('hr.leave-requests.index') }}" title="Đơn nghỉ phép" aria-label="Đơn nghỉ phép" class="{{ $link('hr.leave-requests.*') }}">
                             <span class="sidebar-icon">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>

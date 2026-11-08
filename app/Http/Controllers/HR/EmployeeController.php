@@ -64,6 +64,9 @@ class EmployeeController extends Controller
                 if (($employeeData['contract_type'] ?? null) === 'indefinite') {
                     $employeeData['contract_end_date'] = null;
                 }
+                if ($employeeData['employment_status'] === 'inactive' && empty($employeeData['employment_end_date'])) {
+                    $employeeData['employment_end_date'] = Carbon::today(config('attendance.timezone'))->toDateString();
+                }
 
                 return $user->employee()->create($employeeData);
             });
@@ -125,6 +128,11 @@ class EmployeeController extends Controller
                 $employeeData = collect($data)->except(['name', 'email', 'avatar'])->all();
                 if (($employeeData['contract_type'] ?? null) === 'indefinite') {
                     $employeeData['contract_end_date'] = null;
+                }
+                if ($employeeData['employment_status'] === 'active') {
+                    $employeeData['employment_end_date'] = null;
+                } elseif ($employee->employment_status !== 'inactive' && empty($employeeData['employment_end_date'])) {
+                    $employeeData['employment_end_date'] = Carbon::today(config('attendance.timezone'))->toDateString();
                 }
                 $employeeData['avatar_path'] = $newAvatar;
                 $employee->update($employeeData);

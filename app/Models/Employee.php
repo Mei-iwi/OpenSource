@@ -35,7 +35,7 @@ class Employee extends Model
 
     protected $fillable = [
         'user_id', 'department_id', 'employee_code', 'phone', 'address', 'date_of_birth',
-        'position', 'hire_date', 'contract_type', 'contract_start_date', 'contract_end_date',
+        'position', 'hire_date', 'employment_end_date', 'contract_type', 'contract_start_date', 'contract_end_date',
         'identity_number', 'tax_code', 'social_insurance_number',
         'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship',
         'employment_status', 'avatar_path',
@@ -51,6 +51,7 @@ class Employee extends Model
         return [
             'date_of_birth' => 'date',
             'hire_date' => 'date',
+            'employment_end_date' => 'date',
             'contract_start_date' => 'date',
             'contract_end_date' => 'date',
             'identity_number' => 'encrypted',
