@@ -29,7 +29,10 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $data = $request->safe()->only(['phone', 'address']);
+        $data = $request->safe()->only([
+            'phone', 'address', 'emergency_contact_name',
+            'emergency_contact_phone', 'emergency_contact_relationship',
+        ]);
         $oldAvatar = $user->avatar_path;
         $newAvatar = $request->hasFile('avatar')
             ? $request->file('avatar')->store('avatars', config('filesystems.avatar_disk'))

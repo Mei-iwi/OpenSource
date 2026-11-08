@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 class Employee extends Model
 {
@@ -10,7 +11,7 @@ class Employee extends Model
     {
         static::updating(function (Employee $employee) {
             if ($employee->isDirty('employee_code')) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'employee_code' => 'Mã nhân viên được giữ nguyên từ khi tạo hồ sơ.',
                 ]);
             }
@@ -34,7 +35,15 @@ class Employee extends Model
 
     protected $fillable = [
         'user_id', 'department_id', 'employee_code', 'phone', 'address', 'date_of_birth',
-        'position', 'hire_date', 'contract_end_date', 'employment_status', 'avatar_path',
+        'position', 'hire_date', 'contract_type', 'contract_start_date', 'contract_end_date',
+        'identity_number', 'tax_code', 'social_insurance_number',
+        'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship',
+        'employment_status', 'avatar_path',
+    ];
+
+    protected $hidden = [
+        'identity_number', 'tax_code', 'social_insurance_number',
+        'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship',
     ];
 
     protected function casts(): array
@@ -42,7 +51,14 @@ class Employee extends Model
         return [
             'date_of_birth' => 'date',
             'hire_date' => 'date',
+            'contract_start_date' => 'date',
             'contract_end_date' => 'date',
+            'identity_number' => 'encrypted',
+            'tax_code' => 'encrypted',
+            'social_insurance_number' => 'encrypted',
+            'emergency_contact_name' => 'encrypted',
+            'emergency_contact_phone' => 'encrypted',
+            'emergency_contact_relationship' => 'encrypted',
         ];
     }
 

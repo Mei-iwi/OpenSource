@@ -27,6 +27,7 @@
                 <div><dt class="text-xs text-[var(--app-muted)]">{{ $label }}</dt><dd class="mt-1 break-words text-sm font-medium">{{ $value ?: 'Chưa cập nhật' }}</dd></div>
             @endforeach
         </dl>
+        @include('profile._contract_legal_details')
         <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-8 space-y-5 border-t border-[var(--app-border)] pt-6">
             @csrf @method('PATCH')
             <h3 class="font-semibold">Ảnh và thông tin liên hệ</h3>
@@ -34,6 +35,7 @@
             @if($employee)
                 <div><label for="phone" class="app-label">Số điện thoại</label><input id="phone" name="phone" type="tel" maxlength="30" autocomplete="tel" class="app-input w-full" value="{{ old('phone', $employee->phone) }}"><x-input-error :messages="$errors->get('phone')" /></div>
                 <div><label for="address" class="app-label">Địa chỉ liên hệ</label><textarea id="address" name="address" maxlength="500" autocomplete="street-address" class="app-input w-full" rows="3">{{ old('address', $employee->address) }}</textarea><x-input-error :messages="$errors->get('address')" /></div>
+                @include('profile._emergency_contact_fields')
             @endif
             <button type="submit" class="app-button-primary">Lưu thông tin</button>
             @if(session('status') === 'profile-updated')<p class="text-sm text-emerald-600 dark:text-emerald-400" role="status">Đã cập nhật hồ sơ.</p>@endif

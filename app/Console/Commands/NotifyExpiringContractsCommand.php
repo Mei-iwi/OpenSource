@@ -35,6 +35,9 @@ class NotifyExpiringContractsCommand extends Command
 
         $expiringEmployees = Employee::with('user')
             ->where('employment_status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('contract_type')->orWhere('contract_type', '!=', 'indefinite');
+            })
             ->whereNotNull('contract_end_date')
             ->whereBetween('contract_end_date', [$today->toDateString(), $targetDate->toDateString()])
             ->get();

@@ -35,4 +35,5 @@
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
     </dl>
 </div>
+@include('hr.employees._contract_legal_details')
 @endsection
