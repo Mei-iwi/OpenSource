@@ -88,6 +88,20 @@ class AttendanceSecurityTest extends TestCase
         $this->assertDatabaseCount('attendances', 0);
     }
 
+    public function test_checkin_accepts_a_location_within_100_meters_and_rejects_one_beyond_it(): void
+    {
+        $this->assertSame(100, config('attendance.site_radius_meters'));
+
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload(['latitude' => 10.80828]))
+            ->assertSessionHasErrors('location');
+        $this->assertDatabaseCount('attendances', 0);
+
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload(['latitude' => 10.80808]))
+            ->assertRedirect(route('me.attendance.index'));
+        $this->assertDatabaseCount('attendances', 1);
+        $this->assertLessThanOrEqual(100, Attendance::firstOrFail()->check_in_distance_m);
+    }
+
     public function test_upload_method_and_missing_enrollment_are_rejected(): void
     {
         $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload(['method' => 'upload']))
