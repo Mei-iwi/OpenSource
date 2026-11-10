@@ -20,7 +20,10 @@ class SelfAttendanceRequest extends FormRequest
     {
         return [
             'photo' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
-            'method' => ['required', Rule::in(['camera', 'upload'])],
+            'method' => ['required', Rule::in(['camera'])],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'accuracy' => ['required', 'numeric', 'min:0', 'max:10000'],
         ];
     }
 }

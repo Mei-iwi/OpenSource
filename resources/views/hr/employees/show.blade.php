@@ -35,5 +35,18 @@
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
     </dl>
 </div>
+<section class="app-panel mt-6 p-6">
+    <h2 class="app-heading">Khuôn mặt mẫu để chấm công</h2>
+    <p class="app-subtitle">{{ $employee->face_reference_path ? 'Đã đăng ký. Tải ảnh mới để thay thế.' : 'Chưa đăng ký. Nhân viên sẽ chưa thể tự chấm công.' }}</p>
+    <form method="POST" action="{{ route('hr.employees.face-reference.store', $employee) }}" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-end gap-3">
+        @csrf
+        <label class="app-label">Ảnh một khuôn mặt rõ ràng
+            <input type="file" name="face_reference" accept="image/jpeg,image/png,image/webp" required class="mt-2 block">
+        </label>
+        <button class="app-button-primary">Đăng ký khuôn mặt</button>
+    </form>
+    @error('face_reference')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
+    @error('photo')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
+</section>
 @include('hr.employees._contract_legal_details')
 @endsection

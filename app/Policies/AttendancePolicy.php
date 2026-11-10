@@ -48,11 +48,7 @@ class AttendancePolicy
      */
     public function update(User $user, Attendance $attendance): bool
     {
-        if ($user->account_status !== 'active') {
-            return false;
-        }
-
-        return $user->hasRole(['admin', 'hr']);
+        return false;
     }
 
     /**
@@ -60,10 +56,6 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance): bool
     {
-        if ($user->account_status !== 'active') {
-            return false;
-        }
-
-        return $user->hasRole(['admin', 'hr']);
+        return false;
     }
 }

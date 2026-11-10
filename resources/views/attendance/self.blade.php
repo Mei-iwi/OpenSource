@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Chấm công của tôi')
 @section('content')
-<x-page-header eyebrow="Khu vực Cá nhân" title="Tự Chấm công Thông minh" description="Xác nhận giờ vào và giờ ra ca làm việc bằng ảnh chụp từ camera hoặc tải ảnh từ thiết bị.">
+<x-page-header eyebrow="Khu vực Cá nhân" title="Tự Chấm công Thông minh" description="Chấm công tại cơ sở bằng vị trí hiện tại và khuôn mặt chụp trực tiếp từ camera.">
     <a href="{{ route('dashboard') }}" class="app-button-secondary">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         <span>Về tổng quan</span>
@@ -13,6 +13,9 @@
         <x-empty-state title="Chưa có hồ sơ nhân viên" description="Tài khoản chưa được gắn với hồ sơ nhân viên nên chưa thể chấm công." />
     </div>
 @else
+    @if($errors->any())
+        <div class="app-panel border border-rose-300 p-4 text-rose-700" role="alert">{{ $errors->first() }}</div>
+    @endif
     <div x-data="selfAttendance()" class="space-y-6">
         <!-- Identity & Live Clock Banner -->
         <div class="app-panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6 bg-gradient-to-r from-slate-50 via-[var(--app-surface)] to-indigo-50/25 dark:from-slate-800/40 dark:via-[var(--app-surface)] dark:to-indigo-950/25">
@@ -29,7 +32,7 @@
             <div class="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-3 px-5 text-left sm:text-right shadow-xs">
                 <div class="flex items-center gap-2 justify-start sm:justify-end">
                     <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    <p class="text-xs font-bold uppercase tracking-wider text-[var(--app-muted)]">Thời gian thực</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-[var(--app-muted)]">Giờ thiết bị (tham khảo)</p>
                 </div>
                 <p class="mt-1 font-mono text-2xl font-black tracking-tight text-[var(--app-text)]" x-text="clock">--:--:--</p>
                 <p class="text-xs font-medium text-[var(--app-muted)]">{{ now()->translatedFormat('l, d/m/Y') }}</p>
@@ -41,7 +44,7 @@
             <div class="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--app-border)] pb-4">
                 <div>
                     <h2 class="app-heading">Trạng thái ca làm việc hôm nay</h2>
-                    <p class="app-subtitle">Ảnh xác thực và tọa độ được lưu trữ an toàn, phục vụ đối soát minh bạch.</p>
+                    <p class="app-subtitle">Giờ chấm công được ghi nhận từ máy chủ; vị trí chỉ dùng để xác minh khoảng cách.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     @if($todayAttendance)
@@ -59,6 +62,7 @@
                         <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <span><strong>Quy định ca làm việc:</strong> Bắt đầu <strong>{{ $schedule['work_start_time'] }}</strong> (Thời gian ân hạn <strong>{{ $schedule['grace_period_minutes'] }} phút</strong>). Sau <strong>{{ $schedule['grace_boundary_time'] }}</strong> hệ thống tự động ghi nhận <strong>Đi muộn (late)</strong>.</span>
                     </div>
+                    <p>Địa điểm chấm công: 140 Lê Trọng Tấn, Tây Thạnh (HUIT), trong bán kính {{ config('attendance.site_radius_meters') }} m. Vui lòng bật định vị và camera.</p>
                 </div>
             @endif
 
@@ -90,7 +94,9 @@
 
                 <!-- Action Button -->
                 <div class="flex flex-col justify-center rounded-2xl border border-[var(--app-border)] bg-slate-50/40 dark:bg-slate-800/20 p-4 sm:items-end">
-                    @if (! $todayAttendance)
+                    @if ($openAttendance && $openAttendance->work_date->toDateString() !== now($schedule['timezone'])->toDateString())
+                        <button type="button" @click="open('check-out')" class="app-button-primary w-full py-3 sm:w-auto">Chấm công ra ca {{ $openAttendance->work_date->format('d/m/Y') }} trước</button>
+                    @elseif (! $todayAttendance)
                         <button type="button" @click="open('check-in')" class="app-button-primary w-full py-3 sm:w-auto">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             <span>Chấm công vào ca</span>
@@ -121,16 +127,11 @@
                     <button type="button" @click="close()" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-[var(--app-text)] dark:hover:bg-slate-800" aria-label="Đóng">&times;</button>
                 </div>
 
-                <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                    <button type="button" @click="startCamera()" class="app-button-secondary py-3">
+                <div class="mt-5">
+                    <button type="button" @click="startCamera()" class="app-button-secondary w-full py-3">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                         <span>Mở Camera</span>
                     </button>
-                    <label class="relative mx-auto flex h-28 w-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-full border-2 border-dashed border-blue-400 bg-blue-50 text-blue-700 focus-within:ring-4 focus-within:ring-blue-300 dark:bg-blue-950/40 dark:text-blue-300">
-                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5 6 8H3v12h18V8h-3l-2-3Z"/><circle cx="12" cy="13" r="4"/></svg>
-                        <span class="text-xs font-semibold">Chọn ảnh</span>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" @change="chooseUpload($event)" class="sr-only" aria-label="Chọn ảnh xác nhận chấm công">
-                    </label>
                 </div>
 
                 <p x-show="cameraError" x-text="cameraError" class="mt-3 text-xs font-semibold text-amber-600 dark:text-amber-400" role="alert"></p>
@@ -149,7 +150,7 @@
                     </button>
                 </div>
 
-                <!-- Preview Captured / Uploaded Photo -->
+                <!-- Preview captured camera photo -->
                 <div x-show="previewUrl" class="mt-4 space-y-4">
                     <div class="overflow-hidden rounded-2xl border border-[var(--app-border)] bg-slate-950">
                         <img :src="previewUrl" alt="Ảnh xem trước" class="max-h-72 w-full object-contain">
@@ -182,7 +183,7 @@ function selfAttendance() {
             this.resetPhoto();
             this.cameraError = '';
             if (!navigator.mediaDevices?.getUserMedia) {
-                this.cameraError = 'Không thể truy cập camera. Bạn có thể tải ảnh từ thiết bị.';
+                this.cameraError = 'Không thể truy cập camera. Vui lòng dùng thiết bị có camera và kết nối HTTPS.';
                 return;
             }
             try {
@@ -190,7 +191,7 @@ function selfAttendance() {
                 this.$refs.video.srcObject = this.stream;
                 this.cameraActive = true;
             } catch (error) {
-                this.cameraError = 'Không thể truy cập camera. Vui lòng cấp quyền truy cập hoặc tải ảnh từ thiết bị.';
+                this.cameraError = 'Không thể truy cập camera. Vui lòng cấp quyền và thử lại.';
                 this.stopCamera();
             }
         },
@@ -206,11 +207,6 @@ function selfAttendance() {
                 this.stopCamera();
             }, 'image/jpeg', .9);
         },
-        chooseUpload(event) {
-            this.resetPhoto();
-            this.photo = event.target.files[0] || null;
-            if (this.photo) this.previewUrl = URL.createObjectURL(this.photo);
-        },
         resetPhoto() {
             this.stopCamera();
             if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
@@ -225,22 +221,34 @@ function selfAttendance() {
         async submit() {
             if (!this.photo || this.submitting) return;
             this.submitting = true;
-            const form = new FormData();
-            form.append('photo', this.photo);
-            form.append('method', this.cameraActive ? 'camera' : (this.photo.name === 'camera-capture.jpg' ? 'camera' : 'upload'));
-            const response = await fetch(this.action === 'check-in' ? '{{ route('me.attendance.check-in') }}' : '{{ route('me.attendance.check-out') }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'text/html'
-                },
-                body: form
-            });
-            this.stopCamera();
-            if (response.redirected) window.location.href = response.url;
-            else {
+            this.cameraError = '';
+            try {
+                if (!navigator.geolocation) throw new Error('Thiết bị không hỗ trợ định vị.');
+                const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true, timeout: 15000, maximumAge: 0
+                }));
+                const form = new FormData();
+                form.append('photo', this.photo);
+                form.append('method', 'camera');
+                form.append('latitude', position.coords.latitude);
+                form.append('longitude', position.coords.longitude);
+                form.append('accuracy', position.coords.accuracy);
+                const response = await fetch(this.action === 'check-in' ? '{{ route('me.attendance.check-in') }}' : '{{ route('me.attendance.check-out') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'text/html'
+                    },
+                    body: form
+                });
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                throw new Error('Không thể lưu chấm công. Vui lòng thử lại.');
+            } catch (error) {
                 this.submitting = false;
-                this.cameraError = 'Không thể lưu chấm công. Vui lòng thử lại.';
+                this.cameraError = error?.message || 'Không thể lấy vị trí hiện tại. Vui lòng cấp quyền định vị và thử lại.';
             }
         }
     };

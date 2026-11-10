@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 
 class ChatMessage extends Model
 {
@@ -27,6 +29,16 @@ class ChatMessage extends Model
         return [
             'edited_at' => 'datetime',
         ];
+    }
+
+    protected function message(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): string => str_starts_with($value ?? '', 'enc:v1:')
+                ? Crypt::decryptString(substr($value, 7))
+                : ($value ?? ''),
+            set: fn (?string $value): string => 'enc:v1:'.Crypt::encryptString($value ?? ''),
+        );
     }
 
     public function channel(): BelongsTo
@@ -110,7 +122,8 @@ class ChatMessage extends Model
             '/(https?:\/\/[^\s<]+)/i',
             function ($matches) {
                 $url = $matches[1];
-                return '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80 break-all text-indigo-600 dark:text-indigo-400">' . $url . '</a>';
+
+                return '<a href="'.$url.'" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80 break-all text-indigo-600 dark:text-indigo-400">'.$url.'</a>';
             },
             $text
         );

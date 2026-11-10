@@ -42,6 +42,7 @@ class Employee extends Model
     ];
 
     protected $hidden = [
+        'face_reference_path',
         'identity_number', 'tax_code', 'social_insurance_number',
         'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship',
     ];

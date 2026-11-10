@@ -7,6 +7,7 @@ use App\Models\ChatChannelMember;
 use App\Models\ChatMessage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -56,11 +57,31 @@ class InternalChatMessageTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('chat_messages', [
+        $message = ChatMessage::where('channel_id', $channel->id)->where('user_id', $user->id)->firstOrFail();
+        $this->assertSame('Xin chào mọi người trong phòng ban!', $message->message);
+        $stored = DB::table('chat_messages')->where('id', $message->id)->value('message');
+        $this->assertStringStartsWith('enc:v1:', $stored);
+        $this->assertStringNotContainsString('Xin chào', $stored);
+    }
+
+    public function test_existing_plaintext_messages_are_encrypted_without_losing_readability(): void
+    {
+        $user = $this->createUser();
+        $channel = $this->createChannelWithMember($user);
+        $id = DB::table('chat_messages')->insertGetId([
             'channel_id' => $channel->id,
             'user_id' => $user->id,
-            'message' => 'Xin chào mọi người trong phòng ban!',
+            'message' => 'Legacy private message',
         ]);
+
+        $migration = require database_path('migrations/2026_11_10_000000_encrypt_existing_chat_messages.php');
+        $migration->up();
+        $encrypted = DB::table('chat_messages')->where('id', $id)->value('message');
+        $this->assertStringStartsWith('enc:v1:', $encrypted);
+        $this->assertSame('Legacy private message', ChatMessage::findOrFail($id)->message);
+
+        $migration->up();
+        $this->assertSame($encrypted, DB::table('chat_messages')->where('id', $id)->value('message'));
     }
 
     public function test_non_member_cannot_send_message_to_channel(): void
