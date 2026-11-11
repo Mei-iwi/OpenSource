@@ -16,6 +16,7 @@
 @endpush
 @section('content')
 <div class="print-report rounded-2xl border border-slate-200 bg-white p-6">
+    @if($printTruncated)<p class="mb-4 text-sm font-semibold text-amber-700">Bản in chỉ hiển thị 1.000 dòng đầu tiên. Dùng CSV để lấy toàn bộ kết quả đã lọc.</p>@endif
     <div class="mb-6 grid items-center gap-3 sm:grid-cols-3">
         <p class="text-sm text-slate-500">Ngày in: {{ now()->format('d/m/Y H:i') }}</p>
         <h1 class="text-center text-2xl font-bold">Báo cáo chấm công</h1>
