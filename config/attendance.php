@@ -27,4 +27,12 @@ return [
 
     'work_days' => [1, 2, 3, 4, 5], // 1 = Monday ... 5 = Friday
 
+    'site_latitude' => (float) env('ATTENDANCE_SITE_LATITUDE', 10.80728),
+    'site_longitude' => (float) env('ATTENDANCE_SITE_LONGITUDE', 106.62863),
+    'site_radius_meters' => (int) env('ATTENDANCE_SITE_RADIUS_METERS', 100),
+    'max_location_accuracy_meters' => (int) env('ATTENDANCE_MAX_LOCATION_ACCURACY_METERS', 100),
+    'face_api_url' => env('ATTENDANCE_FACE_API_URL'),
+    'face_api_key' => env('ATTENDANCE_FACE_API_KEY'),
+    'face_min_similarity' => (float) env('ATTENDANCE_FACE_MIN_SIMILARITY', 0.80),
+
 ];

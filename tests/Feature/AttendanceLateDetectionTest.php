@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
+use App\Services\FaceVerificationService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -23,6 +24,7 @@ class AttendanceLateDetectionTest extends TestCase
     {
         parent::setUp();
         Storage::fake(config('filesystems.attendance_proof_disk'));
+        $this->mock(FaceVerificationService::class)->shouldReceive('assertSameFace')->andReturnNull();
         // Standard test configuration: 08:00 start, 15m grace, Asia/Ho_Chi_Minh
         config([
             'attendance.work_start_time' => '08:00',
@@ -70,6 +72,9 @@ class AttendanceLateDetectionTest extends TestCase
             'employment_status' => 'active',
         ], $empAttrs));
 
+        $employee->forceFill(['face_reference_path' => 'face-references/test.jpg'])->save();
+        Storage::disk(config('filesystems.attendance_proof_disk'))->put('face-references/test.jpg', 'registered-face');
+
         return [$user, $employee];
     }
 
@@ -84,6 +89,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -108,6 +116,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -131,6 +142,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -154,6 +168,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -177,6 +194,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -200,7 +220,10 @@ class AttendanceLateDetectionTest extends TestCase
 
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
-            'method' => 'upload',
+            'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertRedirect('/me/attendance');
@@ -225,6 +248,9 @@ class AttendanceLateDetectionTest extends TestCase
         $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $this->assertDatabaseHas('attendances', [
@@ -245,12 +271,18 @@ class AttendanceLateDetectionTest extends TestCase
         $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof1.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ])->assertRedirect('/me/attendance');
 
         // Second check-in on the same day
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof2.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertSessionHasErrors(['photo']);
@@ -267,6 +299,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertForbidden();
@@ -289,6 +324,9 @@ class AttendanceLateDetectionTest extends TestCase
         $response = $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ]);
 
         $response->assertSessionHasErrors(['photo']);
@@ -304,6 +342,9 @@ class AttendanceLateDetectionTest extends TestCase
         $this->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('proof.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ])->assertRedirect('/login');
 
         // User without employee profile
@@ -319,6 +360,9 @@ class AttendanceLateDetectionTest extends TestCase
             ->post('/me/attendance/check-in', [
                 'photo' => UploadedFile::fake()->image('proof.jpg'),
                 'method' => 'camera',
+                'latitude' => 10.80728,
+                'longitude' => 106.62863,
+                'accuracy' => 10,
             ])
             ->assertForbidden();
     }
@@ -333,6 +377,9 @@ class AttendanceLateDetectionTest extends TestCase
         $this->actingAs($user)->post('/me/attendance/check-in', [
             'photo' => UploadedFile::fake()->image('checkin.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ])->assertRedirect('/me/attendance');
 
         $attendance = Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-10-15')->first();
@@ -345,6 +392,9 @@ class AttendanceLateDetectionTest extends TestCase
         $this->actingAs($user)->post('/me/attendance/check-out', [
             'photo' => UploadedFile::fake()->image('checkout.jpg'),
             'method' => 'camera',
+            'latitude' => 10.80728,
+            'longitude' => 106.62863,
+            'accuracy' => 10,
         ])->assertRedirect('/me/attendance');
 
         $attendance->refresh();

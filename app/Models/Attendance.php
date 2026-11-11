@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Attendance extends Model
 {
-    protected $fillable = ['employee_id', 'work_date', 'check_in', 'check_out', 'status', 'note', 'check_in_photo_path', 'check_out_photo_path', 'check_in_method', 'check_out_method'];
+    protected $fillable = ['employee_id', 'work_date', 'check_in', 'check_out', 'checked_in_at', 'checked_out_at', 'check_in_distance_m', 'check_out_distance_m', 'status', 'note', 'check_in_photo_path', 'check_out_photo_path', 'check_in_method', 'check_out_method'];
 
     protected static function booted(): void
     {
@@ -42,7 +42,7 @@ class Attendance extends Model
 
     protected function casts(): array
     {
-        return ['work_date' => 'date'];
+        return ['work_date' => 'date', 'checked_in_at' => 'datetime', 'checked_out_at' => 'datetime'];
     }
 
     public function employee()
