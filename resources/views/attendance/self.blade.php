@@ -1,12 +1,14 @@
 @extends('layouts.app')
 @section('title', 'Chấm công của tôi')
 @section('content')
-<x-page-header eyebrow="Cá nhân" title="Chấm công" description="Xác nhận vị trí và khuôn mặt để vào hoặc ra ca.">
-    <a href="{{ route('dashboard') }}" class="app-button-secondary">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Về tổng quan</span>
-    </a>
-</x-page-header>
+<div class="mx-auto max-w-5xl">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-400">Cá nhân</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-[var(--app-text)]">Chấm công</h1>
+        </div>
+        <p class="text-sm text-[var(--app-muted)]">{{ now($schedule['timezone'])->translatedFormat('d/m/Y') }}</p>
+    </div>
 
 @if (! $employee)
     <div class="app-panel p-8 text-center">
@@ -17,112 +19,15 @@
         <div class="app-panel border border-rose-300 p-4 text-rose-700" role="alert">{{ $errors->first() }}</div>
     @endif
     <div x-data="selfAttendance()" class="space-y-6">
-        <!-- Identity & Live Clock Banner -->
-        <div class="app-panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6">
-            <div class="flex items-center gap-4">
-                <x-user-avatar :user="$employee->user" class="h-16 w-16 rounded-2xl shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15" />
-                <div>
-                    <h2 class="text-lg font-extrabold text-[var(--app-text)] sm:text-xl">{{ $employee->user->name }}</h2>
-                    <p class="text-xs font-semibold text-[var(--app-muted)] mt-0.5">
-                        <span class="font-mono text-indigo-600 dark:text-indigo-400">{{ $employee->employee_code }}</span> · {{ $employee->department?->name ?? 'Chưa phân phòng ban' }}
-                    </p>
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-3 px-5 text-left sm:text-right shadow-xs">
-                <div class="flex items-center gap-2 justify-start sm:justify-end">
-                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    <p class="text-xs font-bold uppercase tracking-wider text-[var(--app-muted)]">Giờ thiết bị (tham khảo)</p>
-                </div>
-                <p class="mt-1 font-mono text-2xl font-black tracking-tight text-[var(--app-text)]" x-text="clock">--:--:--</p>
-                <p class="text-xs font-medium text-[var(--app-muted)]">{{ now()->translatedFormat('l, d/m/Y') }}</p>
-            </div>
-        </div>
-
-        <!-- Today Shift Status Card -->
-        <div class="app-panel p-5 sm:p-6">
-            <div class="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--app-border)] pb-4">
-                <div>
-                    <h2 class="app-heading">Trạng thái ca làm việc hôm nay</h2>
-                    <p class="app-subtitle">Giờ chấm công được ghi nhận từ máy chủ; vị trí chỉ dùng để xác minh khoảng cách.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    @if($todayAttendance)
-                        <x-status-badge :status="$todayAttendance->status" :label="['present' => 'Có mặt đúng giờ', 'late' => 'Đi muộn', 'leave' => 'Nghỉ phép', 'absent' => 'Vắng mặt'][$todayAttendance->status] ?? $todayAttendance->status" />
-                    @endif
-                    <span class="app-badge app-badge-info text-xs font-bold">
-                        {{ $todayAttendance ? ($todayAttendance->check_out ? 'Ca làm đã kết thúc' : 'Đang trong ca làm việc') : 'Chưa điểm danh vào' }}
-                    </span>
-                </div>
-            </div>
-
-            @if(isset($schedule))
-                <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-2.5 text-xs text-indigo-950 dark:text-indigo-200">
-                    <div class="flex items-center gap-2">
-                        <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span><strong>Quy định ca làm việc:</strong> Bắt đầu <strong>{{ $schedule['work_start_time'] }}</strong> (Thời gian ân hạn <strong>{{ $schedule['grace_period_minutes'] }} phút</strong>). Sau <strong>{{ $schedule['grace_boundary_time'] }}</strong> hệ thống tự động ghi nhận <strong>Đi muộn (late)</strong>.</span>
-                    </div>
-                    <p>Địa điểm chấm công: 140 Lê Trọng Tấn, Tây Thạnh (HUIT), trong bán kính {{ config('attendance.site_radius_meters') }} m. Vui lòng bật định vị và camera.</p>
-                </div>
-            @endif
-
-            <div class="mt-6 grid gap-4 sm:grid-cols-3">
-                <!-- Check-in info -->
-                <div class="rounded-2xl border border-[var(--app-border)] bg-slate-50/70 dark:bg-slate-800/40 p-4">
-                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--app-muted)]">
-                        <svg class="h-4 w-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                        <span>Giờ điểm danh vào</span>
-                    </div>
-                    <p class="mt-2 font-mono text-2xl font-extrabold text-[var(--app-text)]">{{ $todayAttendance?->check_in ?: '—:—:—' }}</p>
-                    <div class="mt-1 flex items-center gap-2">
-                        <p class="text-xs text-[var(--app-muted)]">{{ $todayAttendance?->check_in ? 'Đã ghi nhận thành công' : 'Chưa thực hiện' }}</p>
-                        @if($todayAttendance?->check_in)
-                            <x-status-badge :status="$todayAttendance->status" :label="['present' => 'Đúng giờ', 'late' => 'Đi muộn'][$todayAttendance->status] ?? $todayAttendance->status" />
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Check-out info -->
-                <div class="rounded-2xl border border-[var(--app-border)] bg-slate-50/70 dark:bg-slate-800/40 p-4">
-                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--app-muted)]">
-                        <svg class="h-4 w-4 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                        <span>Giờ điểm danh ra</span>
-                    </div>
-                    <p class="mt-2 font-mono text-2xl font-extrabold text-[var(--app-text)]">{{ $todayAttendance?->check_out ?: '—:—:—' }}</p>
-                    <p class="mt-1 text-xs text-[var(--app-muted)]">{{ $todayAttendance?->check_out ? 'Đã ghi nhận kết thúc ca' : 'Chưa thực hiện' }}</p>
-                </div>
-
-                <!-- Action Button -->
-                <div class="flex flex-col justify-center rounded-2xl border border-[var(--app-border)] bg-slate-50/40 dark:bg-slate-800/20 p-4 sm:items-end">
-                    @if ($openAttendance && $openAttendance->work_date->toDateString() !== now($schedule['timezone'])->toDateString())
-                        <button type="button" @click="open('check-out')" class="app-button-primary w-full py-3 sm:w-auto">Chấm công ra ca {{ $openAttendance->work_date->format('d/m/Y') }} trước</button>
-                    @elseif (! $todayAttendance)
-                        <button type="button" @click="open('check-in')" class="app-button-primary w-full py-3 sm:w-auto">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                            <span>Chấm công vào ca</span>
-                        </button>
-                    @elseif (! $todayAttendance->check_out)
-                        <button type="button" @click="open('check-out')" class="app-button-primary w-full py-3 sm:w-auto">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                            <span>Chấm công ra ca</span>
-                        </button>
-                    @else
-                        <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>Ca làm việc đã hoàn tất</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
+        @include('attendance._summary')
 
         <!-- Camera / Photo Modal Dialog -->
         <div x-show="openModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="attendance-modal-title">
             <div @click.outside="close()" class="w-full max-w-lg rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-2xl">
                 <div class="flex items-start justify-between gap-4 border-b border-[var(--app-border)] pb-4">
                     <div>
-                        <h2 id="attendance-modal-title" class="text-lg font-bold text-[var(--app-text)]" x-text="action === 'check-in' ? 'Chấm công Vào Ca' : 'Chấm công Ra Ca'"></h2>
-                        <p class="mt-1 text-xs text-[var(--app-muted)]">Chụp rõ khuôn mặt trước khi gửi.</p>
+                        <h2 id="attendance-modal-title" class="text-lg font-bold text-[var(--app-text)]" x-text="action === 'check-in' ? 'Chấm công vào' : 'Chấm công ra'"></h2>
+                        <p class="mt-1 text-xs text-[var(--app-muted)]">Chụp rõ khuôn mặt.</p>
                     </div>
                     <button type="button" @click="close()" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-[var(--app-text)] dark:hover:bg-slate-800" aria-label="Đóng">&times;</button>
                 </div>
@@ -168,15 +73,14 @@
         </div>
     </div>
 @endif
+</div>
 @endsection
 
 @push('scripts')
 <script>
 function selfAttendance() {
     return {
-        openModal: false, action: '', previewUrl: '', photo: null, stream: null, cameraActive: false, cameraError: '', submitting: false, clock: '--:--:--',
-        init() { this.tick(); setInterval(() => this.tick(), 1000); },
-        tick() { this.clock = new Date().toLocaleTimeString('vi-VN'); },
+        openModal: false, action: '', previewUrl: '', photo: null, stream: null, cameraActive: false, cameraError: '', submitting: false,
         open(action) { this.action = action; this.openModal = true; this.resetPhoto(); },
         close() { this.stopCamera(); this.openModal = false; this.resetPhoto(); },
         async startCamera() {

@@ -20,6 +20,7 @@
             </div>
         </div>
 
+        @unless (request()->routeIs('me.attendance.*'))
         <!-- Center: Live Clock & System Status Widget (Hidden on mobile) -->
         <div x-data="{
             time: '',
@@ -41,6 +42,8 @@
             <span class="text-xs font-semibold text-[var(--app-text)] font-mono" x-text="time">--:--:--</span>
             <span class="text-xs text-[var(--app-muted)] font-medium" x-text="date">--/--</span>
         </div>
+
+        @endunless
 
         <!-- Right Side: Controls & User Profile -->
         <div class="relative flex items-center gap-2 sm:gap-3" x-data="{ userMenuOpen: false, logoutConfirm: false }">
