@@ -3,6 +3,7 @@
 @section('content')
 <x-page-header eyebrow="HR / Nhân sự" title="{{ $employee->user->name }}" description="Hồ sơ nhân viên và thông tin tài khoản.">
     <a href="{{ route('hr.employees.edit', $employee) }}" class="app-button-primary">Chỉnh sửa</a>
+    <a href="{{ route('hr.contracts.show', $employee) }}" class="app-button-secondary">Xem hợp đồng</a>
 </x-page-header>
 
 @if(session('created_credentials'))
@@ -30,7 +31,6 @@
         <div><dt class="app-label">Phòng ban</dt><dd>{{ $employee->department->name }}</dd></div>
         <div><dt class="app-label">Chức vụ</dt><dd>{{ $employee->position ?: '—' }}</dd></div>
         <div><dt class="app-label">Ngày vào làm</dt><dd>{{ $employee->hire_date?->format('d/m/Y') }}</dd></div>
-        <div><dt class="app-label">Hạn hợp đồng</dt><dd>{{ $employee->contract_end_date?->format('d/m/Y') ?: '—' }}</dd></div>
         <div><dt class="app-label">Trạng thái</dt><dd>{{ $employee->employment_status }}</dd></div>
         <div><dt class="app-label">Ngày ngừng làm việc</dt><dd>{{ $employee->employment_end_date?->format('d/m/Y') ?: '—' }}</dd></div>
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
@@ -49,5 +49,4 @@
     @error('face_reference')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
     @error('photo')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
 </section>
-@include('hr.employees._contract_legal_details')
 @endsection

@@ -406,6 +406,7 @@ class DatabaseSeeder extends Seeder
         | 6. Kênh Chat Nội Bộ
         |--------------------------------------------------------------------------
         */
+        $this->call(DemoContractSeeder::class);
         $this->call(ChatSeeder::class);
     }
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HR\AttendanceController as HrAttendanceController;
 use App\Http\Controllers\HR\DepartmentController;
 use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\EmployeeContractController;
 use App\Http\Controllers\HR\EmployeeFaceController;
 use App\Http\Controllers\HR\EmployeeSalaryController;
 use App\Http\Controllers\HR\HrReportsController;
@@ -90,6 +91,10 @@ Route::middleware(['auth', 'account.active', 'role:admin,hr'])->prefix('hr')->na
     Route::resource('departments', DepartmentController::class);
     Route::resource('job-positions', JobPositionController::class);
     Route::resource('employees', EmployeeController::class)->except('destroy');
+    Route::get('/contracts', [EmployeeContractController::class, 'index'])->name('contracts.index');
+    Route::get('/contracts/{employee}', [EmployeeContractController::class, 'show'])->name('contracts.show');
+    Route::get('/contracts/{employee}/edit', [EmployeeContractController::class, 'edit'])->name('contracts.edit');
+    Route::put('/contracts/{employee}', [EmployeeContractController::class, 'update'])->name('contracts.update');
     Route::post('/employees/{employee}/face-reference', [EmployeeFaceController::class, 'store'])->name('employees.face-reference.store');
     Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
     Route::post('/payroll/generate', [PayrollController::class, 'generate'])->name('payroll.generate');

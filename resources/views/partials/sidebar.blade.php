@@ -132,6 +132,11 @@
                             <span class="sidebar-label">Nhân viên</span>
                         </a>
 
+                        <a href="{{ route('hr.contracts.index') }}" title="Hợp đồng" aria-label="Hợp đồng" class="{{ $link('hr.contracts.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8l-5-5H8Z"/><path d="M16 3v5h5M7 13h10M7 17h7"/></svg></span>
+                            <span class="sidebar-label">Hợp đồng</span>
+                        </a>
+
                         <a href="{{ route('hr.attendances.index') }}" title="Quản lý chấm công" aria-label="Quản lý chấm công" class="{{ $link('hr.attendances.*') }}">
                             <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
                             <span class="sidebar-label">Quản lý chấm công</span>
