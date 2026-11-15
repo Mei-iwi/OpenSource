@@ -2,22 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Shared neutral palette for the HR workspace. */
+/* Workspace palette. Public pages use their own stylesheet. */
 
 :root {
-    --app-bg: #f7f7f5;
+    --app-bg: #f6f7fc;
     --app-surface: #ffffff;
     --app-surface-elevated: #ffffff;
-    --app-surface-hover: #f0f2ef;
-    --app-text: #202a27;
-    --app-muted: #64716b;
-    --app-border: #dfe4df;
-    --app-border-subtle: #eef0ed;
-    --app-primary: #356b61;
-    --app-primary-hover: #28564e;
-    --app-primary-light: #e1ede9;
-    --app-accent: #538a7e;
-    --app-success: #356b61;
+    --app-surface-hover: #f0f1fb;
+    --app-text: #22243c;
+    --app-muted: #696e86;
+    --app-border: #e0e3f0;
+    --app-border-subtle: #eef0f8;
+    --app-primary: #5b55cc;
+    --app-primary-hover: #4944ae;
+    --app-primary-light: #e9e9ff;
+    --app-accent: #4268c1;
+    --app-success: #4268c1;
     --app-warning: #626d64;
     --app-danger: #79574f;
     --app-card-shadow: 0 4px 6px -1px rgb(15 23 42 / 0.05), 0 2px 4px -2px rgb(15 23 42 / 0.05);
@@ -26,19 +26,19 @@
 
 html.dark {
     color-scheme: dark;
-    --app-bg: #151b19;
-    --app-surface: #1e2723;
-    --app-surface-elevated: #29342f;
-    --app-surface-hover: #303d36;
-    --app-text: #f1f4ef;
-    --app-muted: #adb8ae;
+    --app-bg: #111424;
+    --app-surface: #1b2035;
+    --app-surface-elevated: #242a43;
+    --app-surface-hover: #2b3150;
+    --app-text: #f2f3ff;
+    --app-muted: #aeb4d1;
     --app-border: rgba(255, 255, 255, 0.08);
     --app-border-subtle: rgba(255, 255, 255, 0.04);
-    --app-primary: #80aea2;
-    --app-primary-hover: #a6c8bd;
-    --app-primary-light: rgba(128, 174, 162, 0.16);
-    --app-accent: #a6c8bd;
-    --app-success: #80aea2;
+    --app-primary: #a6a1ff;
+    --app-primary-hover: #c2bfff;
+    --app-primary-light: rgba(166, 161, 255, 0.16);
+    --app-accent: #91b0ff;
+    --app-success: #91b0ff;
     --app-warning: #a6aea5;
     --app-danger: #c5a9a0;
     --app-card-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.45);
@@ -110,8 +110,8 @@ html.dark .hover\:bg-slate-100:hover {
     box-shadow: var(--app-card-shadow);
     transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
-.directory-card:hover { border-color: #356b61; box-shadow: var(--app-card-hover-shadow); transform: translateY(-2px); }
-.dark .directory-card { border-color: #538a7e; }
+.directory-card:hover { border-color: #5b55cc; box-shadow: var(--app-card-hover-shadow); transform: translateY(-2px); }
+.dark .directory-card { border-color: #7772df; }
 @media (prefers-reduced-motion: reduce) {
     .directory-card { transition: none; }
     .directory-card:hover { transform: none; }
@@ -171,7 +171,7 @@ html.dark .glass-panel {
 .app-input:focus {
     border-color: var(--app-primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(83, 138, 126, 0.2);
+    box-shadow: 0 0 0 3px rgba(119, 114, 223, 0.2);
 }
 
 .app-button-primary {
@@ -180,7 +180,7 @@ html.dark .glass-panel {
     justify-content: center;
     gap: 0.5rem;
     border-radius: 0.75rem;
-    background: #356b61;
+    background: #5b55cc;
     color: #ffffff;
     font-size: 0.875rem;
     font-weight: 600;
@@ -190,7 +190,7 @@ html.dark .glass-panel {
 }
 
 .app-button-primary:hover {
-    background: #28564e;
+    background: #4944ae;
     box-shadow: none;
     transform: translateY(-1px);
 }
@@ -216,7 +216,7 @@ html.dark .glass-panel {
 
 .app-button-secondary:hover {
     background: var(--app-surface-hover);
-    border-color: rgba(83, 138, 126, 0.3);
+    border-color: rgba(119, 114, 223, 0.3);
     color: var(--app-primary);
 }
 
@@ -235,15 +235,15 @@ html.dark .glass-panel {
 }
 
 .app-badge-info {
-    background: rgba(83, 138, 126, 0.1);
-    color: #356b61;
-    border: 1px solid rgba(83, 138, 126, 0.2);
+    background: rgba(119, 114, 223, 0.1);
+    color: #5b55cc;
+    border: 1px solid rgba(119, 114, 223, 0.2);
 }
 
 html.dark .app-badge-info {
-    background: rgba(83, 138, 126, 0.2);
-    color: #a6c8bd;
-    border-color: rgba(83, 138, 126, 0.3);
+    background: rgba(119, 114, 223, 0.2);
+    color: #b5b4fb;
+    border-color: rgba(119, 114, 223, 0.3);
 }
 
 /* Modern Tables */
@@ -279,11 +279,11 @@ html.dark .app-table th {
 }
 
 .app-table tbody tr:hover td {
-    background: rgba(83, 138, 126, 0.03);
+    background: rgba(119, 114, 223, 0.03);
 }
 
 html.dark .app-table tbody tr:hover td {
-    background: rgba(83, 138, 126, 0.08);
+    background: rgba(119, 114, 223, 0.08);
 }
 
 .app-quick-link {
@@ -301,16 +301,16 @@ html.dark .app-table tbody tr:hover td {
 }
 
 .app-quick-link:hover {
-    border-color: rgba(83, 138, 126, 0.4);
-    background: rgba(83, 138, 126, 0.04);
+    border-color: rgba(119, 114, 223, 0.4);
+    background: rgba(119, 114, 223, 0.04);
     color: var(--app-primary);
     transform: translateX(3px);
 }
 
 html.dark .app-quick-link:hover {
-    border-color: rgba(83, 138, 126, 0.5);
-    background: rgba(83, 138, 126, 0.12);
-    color: #a6c8bd;
+    border-color: rgba(119, 114, 223, 0.5);
+    background: rgba(119, 114, 223, 0.12);
+    color: #b5b4fb;
 }
 
 /* Global Form Polish */
@@ -329,17 +329,17 @@ html.dark .app-quick-link:hover {
 .app-main form textarea:focus {
     border-color: var(--app-primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(83, 138, 126, 0.2);
+    box-shadow: 0 0 0 3px rgba(119, 114, 223, 0.2);
 }
 
 .app-main a.bg-indigo-600, .app-main button.bg-indigo-600 {
-    background: #356b61;
+    background: #5b55cc;
     box-shadow: none;
     transition: box-shadow 180ms ease, transform 180ms ease, background-color 180ms ease;
 }
 
 .app-main a.bg-indigo-600:hover, .app-main button.bg-indigo-600:hover {
-    background: #28564e;
+    background: #4944ae;
     box-shadow: none;
     transform: translateY(-1px);
 }
@@ -374,7 +374,7 @@ html.dark .app-quick-link:hover {
 .kpi-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--app-card-hover-shadow);
-    border-color: rgba(83, 138, 126, 0.3);
+    border-color: rgba(119, 114, 223, 0.3);
 }
 
 .kpi-card:hover::before {
@@ -626,3 +626,70 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 .welcome-page header, .welcome-page #notes { background: var(--app-surface); border-color: var(--app-border); }
 .welcome-title { display: flex; flex-direction: column; gap: .3em; font-size: clamp(2.7rem, 7vw, 6rem); line-height: 1.18; }
 .welcome-accent { color: var(--app-primary); }
+
+/* The workspace sidebar stays compact until hovered or keyboard focused. */
+@media (min-width: 1024px) {
+    .nav-position-left .desktop-nav,
+    .nav-position-right .desktop-nav {
+        width: 5.5rem !important;
+        background: rgba(229, 232, 252, 0.88);
+        backdrop-filter: blur(22px) saturate(145%);
+        border-color: rgba(102, 96, 193, 0.22);
+        box-shadow: 6px 0 24px rgba(41, 42, 103, 0.08);
+    }
+
+    html.dark .nav-position-left .desktop-nav,
+    html.dark .nav-position-right .desktop-nav {
+        background: rgba(35, 39, 73, 0.88);
+        border-color: rgba(178, 174, 255, 0.2);
+        box-shadow: 6px 0 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-position-left .desktop-nav:hover,
+    .nav-position-left .desktop-nav:focus-within,
+    .nav-position-left .desktop-nav:has(.has-open-menu),
+    .nav-position-right .desktop-nav:hover,
+    .nav-position-right .desktop-nav:focus-within,
+    .nav-position-right .desktop-nav:has(.has-open-menu) {
+        width: 18rem !important;
+    }
+
+    .desktop-nav .nav-collapse-control { display: none; }
+    .desktop-nav .sidebar-label { display: none; }
+    .desktop-nav:hover .sidebar-label,
+    .desktop-nav:focus-within .sidebar-label,
+    .desktop-nav:has(.has-open-menu) .sidebar-label { display: initial; }
+    .desktop-nav:hover .sidebar-label.flex,
+    .desktop-nav:focus-within .sidebar-label.flex,
+    .desktop-nav:has(.has-open-menu) .sidebar-label.flex { display: flex; }
+
+    .desktop-nav nav { padding-inline: 0.6rem; }
+    .desktop-nav nav a,
+    .desktop-nav nav button { justify-content: center; padding-inline: 0.5rem; }
+    .desktop-nav .sidebar-icon { margin-inline: auto; }
+    .desktop-nav:hover nav,
+    .desktop-nav:focus-within nav,
+    .desktop-nav:has(.has-open-menu) nav { padding-inline: 0.875rem; }
+    .desktop-nav:hover nav a,
+    .desktop-nav:hover nav button,
+    .desktop-nav:focus-within nav a,
+    .desktop-nav:focus-within nav button,
+    .desktop-nav:has(.has-open-menu) nav a,
+    .desktop-nav:has(.has-open-menu) nav button { justify-content: flex-start; padding-inline: 0.875rem; }
+    .desktop-nav:hover .sidebar-icon,
+    .desktop-nav:focus-within .sidebar-icon,
+    .desktop-nav:has(.has-open-menu) .sidebar-icon { margin-inline: 0; }
+}
+
+.glass-island-panel {
+    background: rgba(250, 250, 255, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(22px) saturate(150%);
+    box-shadow: 0 16px 48px rgba(39, 40, 105, 0.18);
+}
+
+html.dark .glass-island-panel {
+    background: rgba(33, 38, 68, 0.88);
+    border-color: rgba(177, 181, 255, 0.18);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}

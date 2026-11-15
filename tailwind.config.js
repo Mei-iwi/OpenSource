@@ -2,9 +2,14 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 const accent = {
-    50: '#f0f6f4', 100: '#e1ede9', 200: '#c5dcd5', 300: '#a6c8bd',
-    400: '#80aea2', 500: '#538a7e', 600: '#356b61', 700: '#28564e',
-    800: '#24463f', 900: '#213a35', 950: '#152723',
+    50: '#f3f3ff', 100: '#e9e9ff', 200: '#d3d3ff', 300: '#b5b4fb',
+    400: '#9693ef', 500: '#7772df', 600: '#5b55cc', 700: '#4944ae',
+    800: '#3c398a', 900: '#302f68', 950: '#202044',
+};
+const blueAccent = {
+    50: '#f1f5ff', 100: '#e5edff', 200: '#cbdcff', 300: '#a5c3fb',
+    400: '#79a3ed', 500: '#5c84dc', 600: '#4268c1', 700: '#36539c',
+    800: '#30477d', 900: '#293b62', 950: '#1b2943',
 };
 const neutral = {
     50: '#f7f7f5', 100: '#efefec', 200: '#dfe2dd', 300: '#c7ccc5',
@@ -34,9 +39,10 @@ export default {
             colors: {
                 brand: accent,
                 slate: neutral, gray: neutral,
-                indigo: accent, blue: accent, sky: accent, cyan: accent,
-                violet: accent, purple: accent, teal: accent,
-                emerald: accent, green: accent, lime: accent,
+                indigo: accent, violet: accent, purple: accent,
+                blue: blueAccent, sky: blueAccent, cyan: blueAccent,
+                teal: blueAccent,
+                emerald: blueAccent, green: blueAccent, lime: blueAccent,
                 amber: neutral, yellow: neutral, orange: neutral,
                 rose: danger, red: danger, pink: danger,
             },

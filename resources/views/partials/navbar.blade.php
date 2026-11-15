@@ -72,7 +72,7 @@
                 </button>
 
                 <!-- Notifications Dropdown -->
-                <div x-show="notificationsOpen" x-cloak @click.outside="notificationsOpen = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 top-full mt-2.5 z-50 w-80 sm:w-96 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] shadow-2xl overflow-hidden" role="menu">
+                <div x-show="notificationsOpen" x-cloak @click.outside="notificationsOpen = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="glass-island-panel absolute right-0 top-full z-50 mt-2.5 w-80 overflow-hidden rounded-[1.5rem] sm:w-96" role="menu">
                     <!-- Dropdown Header -->
                     <div class="flex items-center justify-between border-b border-[var(--app-border)] px-4 py-3 bg-[var(--app-bg)]/40">
                         <div class="flex items-center gap-2">
