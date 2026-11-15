@@ -201,6 +201,8 @@ Hợp đồng demo được lưu trong `database/seeders/DemoContractSeeder.php`
 
 Lương demo nằm trong `database/seeders/DemoPayrollSeeder.php`. Trên Docker local, `docker compose up -d --build` tự thêm cấu hình lương còn thiếu cho 20 tài khoản demo, tạo kỳ 09/2026 đã chốt để nhân viên xem phiếu lương và kỳ 10/2026 dạng nháp để HR/Admin thử quản lý. Seeder không sửa lương đã nhập hoặc kỳ đã có phiếu. Nếu chạy PHP trực tiếp, đặt `APP_ENV=local` rồi chạy `php artisan db:seed --class=DemoPayrollSeeder` sau khi đã seed nhân viên và chấm công. Dữ liệu lương là số giả lập; mỗi thành viên cần chạy seeder trên MySQL của mình sau khi pull code.
 
+Seeder lương cũng bổ sung đơn nghỉ demo đã duyệt cho các ngày chấm công mẫu có trạng thái `leave` ở kỳ chưa chốt. Bảng lương chỉ tính ngày nghỉ từ đơn đã duyệt; ngày vắng hoặc thiếu chấm công nằm ở cột riêng. Nếu kỳ 10/2026 đã có phiếu nháp từ bản code cũ, HR/Admin chọn **Tạo / tạo lại kỳ nháp** để cập nhật số liệu nghỉ. Kỳ 09/2026 đã chốt trước đó giữ nguyên bản chụp, không tự sửa hồi tố.
+
 Nếu muốn xóa toàn bộ database Docker và tạo lại bảng cùng dữ liệu demo:
 
 ```bash

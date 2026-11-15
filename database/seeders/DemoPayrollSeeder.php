@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
+use App\Models\LeaveRequest;
 use App\Models\PayrollPeriod;
 use App\Models\User;
 use App\Services\PayrollService;
@@ -67,6 +69,8 @@ class DemoPayrollSeeder extends Seeder
             return;
         }
 
+        $this->seedApprovedLeaves($demoEmployeeIds);
+
         $payroll = app(PayrollService::class);
         foreach (['2026-09' => true, '2026-10' => false] as $month => $finalize) {
             $period = PayrollPeriod::where('period_month', $month.'-01')->first();
@@ -80,6 +84,49 @@ class DemoPayrollSeeder extends Seeder
                 if ($admin) {
                     $payroll->finalize($period, $admin);
                 }
+            }
+        }
+    }
+
+    private function seedApprovedLeaves(array $demoEmployeeIds): void
+    {
+        $reviewer = User::where('email', 'quan.nm@admin.hr-management.com')->first();
+        if (! $reviewer) {
+            return;
+        }
+
+        foreach (['2026-09', '2026-10'] as $month) {
+            $period = PayrollPeriod::where('period_month', $month.'-01')->first();
+            if ($period?->status === 'finalized') {
+                continue;
+            }
+
+            $lastDay = date('Y-m-t', strtotime($month.'-01'));
+            $days = Attendance::query()
+                ->whereIn('employee_id', $demoEmployeeIds)
+                ->where('status', 'leave')
+                ->whereBetween('work_date', [$month.'-01', $lastDay])
+                ->get();
+
+            foreach ($days as $attendance) {
+                $date = $attendance->work_date->toDateString();
+                if (LeaveRequest::where('employee_id', $attendance->employee_id)
+                    ->whereDate('start_date', '<=', $date)
+                    ->whereDate('end_date', '>=', $date)->exists()) {
+                    continue;
+                }
+
+                LeaveRequest::create([
+                    'employee_id' => $attendance->employee_id,
+                    'leave_type' => str_contains(mb_strtolower($attendance->note ?? ''), 'cá nhân') ? 'unpaid' : 'annual',
+                    'start_date' => $date,
+                    'end_date' => $date,
+                    'reason' => 'Dữ liệu nghỉ phép demo theo ngày chấm công mẫu.',
+                    'status' => 'approved',
+                    'reviewed_by' => $reviewer->id,
+                    'reviewed_at' => $attendance->work_date->copy()->endOfDay(),
+                    'review_note' => 'Dữ liệu demo.',
+                ]);
             }
         }
     }

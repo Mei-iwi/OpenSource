@@ -36,6 +36,26 @@
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
     </dl>
 </div>
+@if(!auth()->user()->isHr() || !$employee->user->isAdmin())
+<section class="app-panel mt-6 p-6">
+    <div class="mb-4">
+        <h2 class="app-heading">Lương nhân viên</h2>
+        <p class="app-subtitle">Mức lương này áp dụng khi tạo hoặc tạo lại kỳ lương nháp. Kỳ đã chốt giữ nguyên số liệu.</p>
+    </div>
+    <form method="POST" action="{{ route('hr.payroll.salaries.update', $employee) }}" class="grid gap-4 md:grid-cols-3">
+        @csrf @method('PUT')
+        <input type="hidden" name="return_to" value="employee">
+        @foreach(['base_salary' => 'Lương cơ bản tháng', 'allowance' => 'Phụ cấp tháng', 'fixed_deduction' => 'Khấu trừ cố định'] as $field => $label)
+            <div>
+                <label for="salary-{{ $field }}" class="app-label">{{ $label }} ({{ config('payroll.currency') }})</label>
+                <input id="salary-{{ $field }}" name="{{ $field }}" inputmode="decimal" required class="app-input mt-2 w-full" value="{{ old($field, $employee->salary?->$field ?? '0.00') }}">
+                <x-input-error :messages="$errors->get($field)" />
+            </div>
+        @endforeach
+        <div class="md:col-span-3"><button class="app-button-primary">Lưu lương</button></div>
+    </form>
+</section>
+@endif
 <section class="app-panel mt-6 p-6" x-data="faceEnrollment('{{ route('hr.employees.face-reference.store', $employee) }}')" x-init="$watch('open', value => { if (!value) stopCamera() })">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>

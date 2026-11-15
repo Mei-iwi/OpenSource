@@ -22,14 +22,19 @@ class EmployeeSalaryController extends Controller
     public function edit(Employee $employee): View
     {
         $employee->load(['user', 'salary']);
+        abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
 
         return view('hr.payroll.salary-edit', compact('employee'));
     }
 
     public function update(UpdateEmployeeSalaryRequest $request, Employee $employee): RedirectResponse
     {
+        $employee->load('user');
+        abort_if($request->user()->isHr() && $employee->user->isAdmin(), 403);
         DB::transaction(fn () => $employee->salary()->updateOrCreate([], $request->validated()));
 
-        return redirect()->route('hr.payroll.salaries.index')->with('success', 'Đã cập nhật cấu hình lương.');
+        $route = $request->input('return_to') === 'employee' ? 'hr.employees.show' : 'hr.payroll.salaries.index';
+
+        return redirect()->route($route, $route === 'hr.employees.show' ? $employee : [])->with('success', 'Đã cập nhật cấu hình lương.');
     }
 }

@@ -91,7 +91,7 @@ class EmployeeController extends Controller
     {
         $employee->load('user');
         abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
-        $employee->load('department')->loadCount('attendances');
+        $employee->load(['department', 'salary'])->loadCount('attendances');
 
         return view('hr.employees.show', compact('employee'));
     }
