@@ -132,38 +132,15 @@
                             <span class="sidebar-label">Nhân viên</span>
                         </a>
 
-                        <div x-data="{
-                            open: false,
-                            hideTimer: null,
-                            menuStyle: '',
-                            showMenu(trigger) {
-                                clearTimeout(this.hideTimer);
-                                const rect = trigger.getBoundingClientRect();
-                                const width = Math.min(240, window.innerWidth - 24);
-                                const desktopNav = trigger.closest('.desktop-nav');
-                                const anchor = desktopNav ? (navPosition === 'right' ? window.innerWidth - 288 : 288) : rect.right;
-                                const left = anchor + width + 8 <= window.innerWidth
-                                    ? anchor + 8
-                                    : Math.max(12, (desktopNav ? anchor : rect.left) - width - 8);
-                                const top = Math.max(12, Math.min(rect.top, window.innerHeight - 208));
-                                this.menuStyle = `left: ${left}px; top: ${top}px; width: ${width}px`;
-                                this.open = true;
-                            },
-                            scheduleHide() {
-                                this.hideTimer = setTimeout(() => this.open = false, 180);
-                            }
-                        }" :class="{ 'has-open-menu': open }" @keydown.escape.window="open = false" @resize.window="open = false" @scroll.capture.window="open = false">
-                            <button x-ref="trigger" type="button" title="Chấm công và lương" aria-label="Chấm công và lương" aria-haspopup="true" :aria-expanded="open.toString()" @mouseenter="if (window.matchMedia('(hover: hover)').matches) showMenu($el)" @mouseleave="scheduleHide()" @click="showMenu($el)" class="{{ $link(['hr.payroll.*', 'hr.attendances.*']) }} w-full text-left">
-                                <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h5"/></svg></span>
-                                <span class="sidebar-label flex flex-1 items-center justify-between gap-2">Chấm công &amp; lương <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg></span>
-                            </button>
-                            <template x-teleport="body">
-                                <div x-ref="menu" x-show="open" x-cloak :style="menuStyle" @mouseenter="clearTimeout(hideTimer)" @mouseleave="scheduleHide()" @click.outside="if (!$refs.trigger.contains($event.target)) open = false" class="fixed z-[80] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] p-1.5 shadow-xl" aria-label="Chấm công và lương">
-                                    <a href="{{ route('hr.attendances.index') }}" class="{{ $link('hr.attendances.*') }}">Quản lý chấm công</a>
-                                    <a href="{{ route('hr.payroll.index') }}" class="{{ $link('hr.payroll.*') }}">Bảng lương</a>
-                                </div>
-                            </template>
-                        </div>
+                        <a href="{{ route('hr.attendances.index') }}" title="Quản lý chấm công" aria-label="Quản lý chấm công" class="{{ $link('hr.attendances.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+                            <span class="sidebar-label">Quản lý chấm công</span>
+                        </a>
+
+                        <a href="{{ route('hr.payroll.index') }}" title="Bảng lương" aria-label="Bảng lương" class="{{ $link('hr.payroll.*') }}">
+                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h5"/></svg></span>
+                            <span class="sidebar-label">Bảng lương</span>
+                        </a>
 
                         <a href="{{ route('hr.reports.index') }}" title="Báo cáo phân tích" aria-label="Báo cáo phân tích" class="{{ $link('hr.reports.*') }}">
                             <span class="sidebar-icon">
