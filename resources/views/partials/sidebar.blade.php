@@ -1,7 +1,7 @@
 @php
     $role = auth()->user()->role ?? null;
     $roleLabels = ['admin' => 'Quản trị viên', 'hr' => 'Nhân sự', 'employee' => 'Nhân viên'];
-    $link = fn (string $pattern) => request()->routeIs($pattern)
+    $link = fn (string|array $pattern) => request()->routeIs(...(array) $pattern)
         ? 'group flex items-center gap-3 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 shadow-sm transition-all'
         : 'group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 transition-all';
 @endphp
@@ -132,35 +132,44 @@
                             <span class="sidebar-label">Nhân viên</span>
                         </a>
 
-                        <a href="{{ route('hr.payroll.index') }}" title="Bảng lương" aria-label="Bảng lương" class="{{ $link('hr.payroll.*') }}">
-                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h5"/></svg></span>
-                            <span class="sidebar-label">Bảng lương</span>
-                        </a>
-
-                        <a href="{{ route('hr.attendances.index') }}" title="Chấm công toàn công ty" aria-label="Chấm công toàn công ty" class="{{ $link('hr.attendances.*') }}">
-                            <span class="sidebar-icon">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            </span>
-                            <span class="sidebar-label">Quản lý chấm công</span>
-                        </a>
-
-                        <a href="{{ route('me.attendance.index') }}" title="Chấm công của tôi" aria-label="Chấm công của tôi" class="{{ $link('me.attendance.*') }}">
-                            <span class="sidebar-icon">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                            </span>
-                            <span class="sidebar-label">Chấm công của tôi</span>
-                        </a>
+                        <div x-data="{
+                            open: false,
+                            hideTimer: null,
+                            menuStyle: '',
+                            showMenu(trigger) {
+                                clearTimeout(this.hideTimer);
+                                const rect = trigger.getBoundingClientRect();
+                                const width = Math.min(240, window.innerWidth - 24);
+                                const left = rect.right + width + 8 <= window.innerWidth
+                                    ? rect.right + 8
+                                    : Math.max(12, rect.left - width - 8);
+                                const top = Math.max(12, Math.min(rect.top, window.innerHeight - 208));
+                                this.menuStyle = `left: ${left}px; top: ${top}px; width: ${width}px`;
+                                this.open = true;
+                            },
+                            scheduleHide() {
+                                this.hideTimer = setTimeout(() => this.open = false, 180);
+                            }
+                        }" @keydown.escape.window="open = false" @resize.window="open = false" @scroll.capture.window="open = false">
+                            <button x-ref="trigger" type="button" title="Chấm công và lương" aria-label="Chấm công và lương" aria-haspopup="true" :aria-expanded="open.toString()" @mouseenter="if (window.matchMedia('(hover: hover)').matches) showMenu($el)" @mouseleave="scheduleHide()" @click="showMenu($el)" class="{{ $link(['hr.payroll.*', 'hr.attendances.*', 'me.attendance.*', 'me.payslips.*']) }} w-full text-left">
+                                <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h5"/></svg></span>
+                                <span class="sidebar-label flex flex-1 items-center justify-between gap-2">Chấm công &amp; lương <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg></span>
+                            </button>
+                            <template x-teleport="body">
+                                <div x-ref="menu" x-show="open" x-cloak :style="menuStyle" @mouseenter="clearTimeout(hideTimer)" @mouseleave="scheduleHide()" @click.outside="if (!$refs.trigger.contains($event.target)) open = false" class="fixed z-[80] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)] p-1.5 shadow-xl" aria-label="Chấm công và lương">
+                                    <a href="{{ route('hr.attendances.index') }}" class="{{ $link('hr.attendances.*') }}">Quản lý chấm công</a>
+                                    <a href="{{ route('hr.payroll.index') }}" class="{{ $link('hr.payroll.*') }}">Bảng lương</a>
+                                    <a href="{{ route('me.attendance.index') }}" class="{{ $link('me.attendance.*') }}">Chấm công của tôi</a>
+                                    <a href="{{ route('me.payslips.index') }}" class="{{ $link('me.payslips.*') }}">Phiếu lương của tôi</a>
+                                </div>
+                            </template>
+                        </div>
 
                         <a href="{{ route('employee.leave-requests.index') }}" title="Đơn nghỉ của tôi" aria-label="Đơn nghỉ của tôi" class="{{ $link('employee.leave-requests.*') }}">
                             <span class="sidebar-icon">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
                             </span>
                             <span class="sidebar-label">Đơn nghỉ của tôi</span>
-                        </a>
-
-                        <a href="{{ route('me.payslips.index') }}" title="Phiếu lương của tôi" aria-label="Phiếu lương của tôi" class="{{ $link('me.payslips.*') }}">
-                            <span class="sidebar-icon"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 8h8M8 13h8M8 18h5"/></svg></span>
-                            <span class="sidebar-label">Phiếu lương của tôi</span>
                         </a>
 
                         <a href="{{ route('hr.reports.index') }}" title="Báo cáo phân tích" aria-label="Báo cáo phân tích" class="{{ $link('hr.reports.*') }}">
