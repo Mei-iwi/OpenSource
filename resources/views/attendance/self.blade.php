@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Chấm công của tôi')
 @section('content')
-<x-page-header eyebrow="Khu vực Cá nhân" title="Tự Chấm công Thông minh" description="Chấm công tại cơ sở bằng vị trí hiện tại và khuôn mặt chụp trực tiếp từ camera.">
+<x-page-header eyebrow="Cá nhân" title="Chấm công" description="Xác nhận vị trí và khuôn mặt để vào hoặc ra ca.">
     <a href="{{ route('dashboard') }}" class="app-button-secondary">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         <span>Về tổng quan</span>
@@ -18,7 +18,7 @@
     @endif
     <div x-data="selfAttendance()" class="space-y-6">
         <!-- Identity & Live Clock Banner -->
-        <div class="app-panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6 bg-gradient-to-r from-slate-50 via-[var(--app-surface)] to-indigo-50/25 dark:from-slate-800/40 dark:via-[var(--app-surface)] dark:to-indigo-950/25">
+        <div class="app-panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6">
             <div class="flex items-center gap-4">
                 <x-user-avatar :user="$employee->user" class="h-16 w-16 rounded-2xl shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15" />
                 <div>
@@ -102,7 +102,7 @@
                             <span>Chấm công vào ca</span>
                         </button>
                     @elseif (! $todayAttendance->check_out)
-                        <button type="button" @click="open('check-out')" class="app-button-primary w-full py-3 sm:w-auto bg-gradient-to-r from-sky-600 to-indigo-600">
+                        <button type="button" @click="open('check-out')" class="app-button-primary w-full py-3 sm:w-auto">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             <span>Chấm công ra ca</span>
                         </button>
@@ -122,7 +122,7 @@
                 <div class="flex items-start justify-between gap-4 border-b border-[var(--app-border)] pb-4">
                     <div>
                         <h2 id="attendance-modal-title" class="text-lg font-bold text-[var(--app-text)]" x-text="action === 'check-in' ? 'Chấm công Vào Ca' : 'Chấm công Ra Ca'"></h2>
-                        <p class="mt-1 text-xs text-[var(--app-muted)]">Chụp ảnh khuôn mặt để xác thực chấm công thông minh.</p>
+                        <p class="mt-1 text-xs text-[var(--app-muted)]">Chụp rõ khuôn mặt trước khi gửi.</p>
                     </div>
                     <button type="button" @click="close()" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-[var(--app-text)] dark:hover:bg-slate-800" aria-label="Đóng">&times;</button>
                 </div>

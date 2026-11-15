@@ -1,6 +1,5 @@
 <x-guest-layout>
-    <div class="login-card-container relative z-10 w-full overflow-hidden rounded-[1.75rem] p-[2px] shadow-xl shadow-indigo-200/60 dark:shadow-indigo-950/50">
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-400/50 via-sky-300/60 to-emerald-300/50 dark:from-indigo-500/60 dark:via-sky-400/40 dark:to-indigo-500/60"></div>
+    <div class="login-card-container relative z-10 w-full overflow-hidden rounded-2xl border border-[var(--app-border)] shadow-sm">
 
         <div class="login-card relative rounded-[1.65rem] border border-white/80 bg-white/95 p-8 text-slate-800 transition-all duration-300 dark:border-white/10 dark:bg-slate-900/95 dark:text-slate-100 sm:p-10"
              x-data="{
@@ -22,10 +21,10 @@
              }">
 
             <div class="mb-4 text-center">
-                <div class="snake-avatar-motion mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-lime-500 text-white shadow-lg shadow-emerald-900/35 ring-2 ring-emerald-500/20" aria-label="Ảnh rắn chuyển động">
+                <div class="mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-[var(--app-primary-light)]" aria-hidden="true">
                     <img src="{{ asset('images/default-employee.png') }}" alt="Ảnh rắn chuyển động" class="h-full w-full object-cover">
                 </div>
-                <h1 class="mt-2 text-xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-2xl">Chào mừng bạn trở lại</h1>
+                <h1 class="mt-3 text-xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-2xl">Đăng nhập</h1>
             </div>
 
             <x-auth-session-status class="mb-3" :status="session('status')" />
@@ -42,7 +41,7 @@
 
             <div class="mb-3.5 rounded-xl border border-slate-200 bg-slate-50 p-2.5 dark:border-white/10 dark:bg-white/5">
                 <div class="flex items-center justify-between mb-2 px-0.5">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Thử nghiệm nhanh (1-Click Fill)</p>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tài khoản mẫu</p>
                     <button type="button" @click="fillDemo('admin')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 transition hover:text-indigo-800 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300">
                         <span>Điền quyền Admin</span>
                     </button>
@@ -106,43 +105,11 @@
                     <label for="remember_me" class="ml-2 text-xs font-medium text-slate-600 dark:text-slate-300">Ghi nhớ đăng nhập</label>
                 </div>
 
-                <button id="login-submit" type="submit" class="relative mt-2 flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110 hover:shadow-indigo-500/40 active:scale-[0.99] disabled:cursor-wait disabled:opacity-80">
+                <button id="login-submit" type="submit" class="relative mt-2 flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700 active:scale-[0.99] disabled:cursor-wait disabled:opacity-80">
                     <span id="login-submit-label">Đăng nhập hệ thống</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <div id="login-snake-transition" class="login-snake-transition" aria-hidden="true">
-        <div class="login-snake-runner">
-            <img src="{{ asset('images/default-employee.png') }}" alt="">
-        </div>
-        <p>Đang mở bàn làm việc...</p>
-    </div>
-
-    <script>
-        let loginIsSubmitting = false;
-
-        document.getElementById('login-form')?.addEventListener('submit', function (event) {
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                return;
-            }
-
-            event.preventDefault();
-            if (loginIsSubmitting) {
-                return;
-            }
-            loginIsSubmitting = true;
-
-            const submitButton = document.getElementById('login-submit');
-            const submitLabel = document.getElementById('login-submit-label');
-            const transition = document.getElementById('login-snake-transition');
-
-            submitButton.disabled = true;
-            submitLabel.textContent = 'Đang đăng nhập...';
-            transition.classList.add('is-active');
-
-            window.setTimeout(() => this.submit(), 650);
-        });
-    </script>
 </x-guest-layout>

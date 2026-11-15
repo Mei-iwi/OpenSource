@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="relative overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/95 p-8 text-center shadow-xl shadow-indigo-200/60 dark:border-white/10 dark:bg-slate-900/95 dark:shadow-indigo-950/50 sm:p-10">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-lime-500 shadow-lg shadow-emerald-900/25 ring-4 ring-emerald-500/10">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-[var(--app-primary-light)]">
             <img src="{{ asset('images/default-employee.png') }}" alt="Biểu tượng công ty" class="h-full w-full object-cover">
         </div>
 
@@ -12,7 +12,7 @@
         </div>
         <p class="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">Tự động trở về trang đăng nhập sau <span data-goodbye-countdown>{{ (int) ceil($remainingMs / 1000) }}</span> giây</p>
 
-        <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110">
+        <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700">
             Trở về trang đăng nhập ngay
         </a>
     </div>

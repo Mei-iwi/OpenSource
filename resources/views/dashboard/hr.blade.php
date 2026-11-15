@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Tổng quan Nhân sự')
 @section('content')
-<x-page-header eyebrow="Khu vực Quản trị Nhân sự" title="Tổng quan vận hành HR" description="Giám sát biến động nhân sự, tỷ lệ chuyên cần và danh mục phòng ban toàn diện.">
+<x-page-header eyebrow="Nhân sự" title="Tổng quan" description="Theo dõi nhân viên, phòng ban và chấm công.">
     <a href="{{ route('hr.reports.index') }}" class="app-button-primary">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
-        <span>Báo cáo chuyên sâu</span>
+        <span>Xem báo cáo</span>
     </a>
 </x-page-header>
 

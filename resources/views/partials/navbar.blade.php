@@ -142,7 +142,7 @@
             <div class="relative" x-data="{ userMenuOpen: false }">
                 <!-- User Menu Trigger -->
                 <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="user-profile-trigger flex items-center gap-2.5 border-0 bg-transparent p-0 shadow-none transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Mở menu tài khoản">
-                    <x-user-avatar :user="auth()->user()" class="snake-avatar-motion h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 shadow-sm" />
+                    <x-user-avatar :user="auth()->user()" class="h-8 w-8 rounded-lg bg-[var(--app-primary-light)]" />
                     <div class="hidden text-left sm:block">
                         <p class="max-w-28 truncate text-xs font-bold text-[var(--app-text)] sm:max-w-36">{{ auth()->user()->name }}</p>
                         <p class="text-[10px] font-medium text-[var(--app-muted)]">{{ $roleLabels[auth()->user()->role] ?? auth()->user()->role }}</p>

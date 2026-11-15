@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Tổng quan Nhân viên')
 @section('content')
-<x-page-header eyebrow="Khu vực Cá nhân" title="Tổng quan của tôi" description="Theo dõi chi tiết thời gian làm việc, chỉ số chuyên cần và hồ sơ cá nhân.">
+<x-page-header eyebrow="Cá nhân" title="Tổng quan của tôi" description="Chấm công, nghỉ phép và hồ sơ cá nhân.">
     <div class="flex flex-wrap items-center gap-2.5">
         <a href="{{ route('me.attendance.index') }}" class="app-button-primary">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -19,7 +19,7 @@
 
 @if($employee)
     <!-- Employee Identity Card -->
-    <div class="app-panel mb-6 flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6 bg-gradient-to-r from-slate-50 via-[var(--app-surface)] to-indigo-50/20 dark:from-slate-800/40 dark:via-[var(--app-surface)] dark:to-indigo-950/20">
+    <div class="app-panel mb-6 flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
         <x-user-avatar :user="$employee->user" class="h-20 w-20 rounded-2xl shadow-md shadow-indigo-500/20 ring-4 ring-indigo-500/15" />
         <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
@@ -189,7 +189,7 @@
                             <strong class="font-bold text-emerald-600 dark:text-emerald-400">{{ $attendanceRate }}%</strong>
                         </div>
                         <div class="h-2.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                            <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500" style="width: {{ min(100, $attendanceRate) }}%"></div>
+                            <div class="h-full rounded-full bg-emerald-600 transition-all duration-500" style="width: {{ min(100, $attendanceRate) }}%"></div>
                         </div>
                         <p class="mt-1.5 text-[11px] text-[var(--app-muted)]">Dựa trên tổng ngày làm việc tiêu chuẩn</p>
                     </div>
@@ -201,7 +201,7 @@
                             <strong class="font-bold text-sky-600 dark:text-sky-400">{{ $punctualityRate }}%</strong>
                         </div>
                         <div class="h-2.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                            <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-sky-400 transition-all duration-500" style="width: {{ min(100, $punctualityRate) }}%"></div>
+                            <div class="h-full rounded-full bg-indigo-600 transition-all duration-500" style="width: {{ min(100, $punctualityRate) }}%"></div>
                         </div>
                         <p class="mt-1.5 text-[11px] text-[var(--app-muted)]">Tỷ lệ không vi phạm đi muộn</p>
                     </div>
