@@ -407,6 +407,7 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         $this->call(DemoContractSeeder::class);
+        $this->call(DemoPayrollSeeder::class);
         $this->call(ChatSeeder::class);
     }
 

@@ -26,6 +26,7 @@ class AttendanceSecurityTest extends TestCase
     {
         parent::setUp();
         config()->set('attendance.timezone', 'Asia/Ho_Chi_Minh');
+        config()->set('attendance.face_driver', 'compreface');
         config()->set('attendance.face_api_url', 'http://face-service.test');
         config()->set('attendance.face_api_key', 'test-only-key');
         Storage::fake(config('filesystems.attendance_proof_disk'));
@@ -102,6 +103,54 @@ class AttendanceSecurityTest extends TestCase
         $this->assertLessThanOrEqual(100, Attendance::firstOrFail()->check_in_distance_m);
     }
 
+    public function test_local_trial_can_check_in_and_out_without_device_location(): void
+    {
+        config()->set('attendance.enforce_location', false);
+        $withoutLocation = array_diff_key($this->payload(), array_flip(['latitude', 'longitude', 'accuracy']));
+
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $withoutLocation)
+            ->assertRedirect(route('me.attendance.index'));
+        $attendance = Attendance::firstOrFail();
+        $this->assertNull($attendance->check_in_distance_m);
+        $this->assertNotNull($attendance->check_in_photo_path);
+
+        Carbon::setTestNow(Carbon::parse('2026-10-15 17:00:00', 'Asia/Ho_Chi_Minh'));
+        $this->actingAs($this->user)->post(route('me.attendance.check-out'), $withoutLocation)
+            ->assertRedirect(route('me.attendance.index'));
+        $this->assertNull($attendance->fresh()->check_out_distance_m);
+        $this->assertSame('17:00:00', $attendance->fresh()->check_out);
+    }
+
+    public function test_checkin_outside_vietnam_working_hours_is_rejected(): void
+    {
+        config()->set('attendance.enforce_location', false);
+        Carbon::setTestNow(Carbon::parse('2026-10-15 01:00:00', 'Asia/Ho_Chi_Minh'));
+
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload())
+            ->assertSessionHasErrors('photo');
+        $this->assertDatabaseCount('attendances', 0);
+    }
+
+    public function test_camera_request_receives_json_success_and_face_error(): void
+    {
+        $this->faceResponse(0.2);
+        $this->actingAs($this->user)->withHeaders(['Accept' => 'application/json'])
+            ->post(route('me.attendance.check-in'), $this->payload())
+            ->assertUnprocessable()->assertJsonValidationErrors('photo');
+        $this->assertDatabaseCount('attendances', 0);
+
+        $this->faceResponse(0.95);
+        $this->actingAs($this->user)->withHeaders(['Accept' => 'application/json'])
+            ->post(route('me.attendance.check-in'), $this->payload())
+            ->assertOk()->assertJsonPath('recorded_at', '08:00:00');
+        $this->assertDatabaseCount('attendances', 1);
+
+        Carbon::setTestNow(Carbon::parse('2026-10-15 17:00:00', 'Asia/Ho_Chi_Minh'));
+        $this->actingAs($this->user)->withHeaders(['Accept' => 'application/json'])
+            ->post(route('me.attendance.check-out'), $this->payload())
+            ->assertOk()->assertJsonPath('recorded_at', '17:00:00');
+    }
+
     public function test_upload_method_and_missing_enrollment_are_rejected(): void
     {
         $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload(['method' => 'upload']))
@@ -122,6 +171,28 @@ class AttendanceSecurityTest extends TestCase
         $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload())
             ->assertSessionHasErrors('photo');
         $this->assertDatabaseCount('attendances', 0);
+    }
+
+    public function test_face_api_js_must_match_reference_before_checkin_is_saved(): void
+    {
+        config()->set('attendance.face_driver', 'face-api-js');
+        config()->set('attendance.face_max_distance', 0.40);
+        Http::swap(new Factory);
+        Http::fake(['face-service.test/compare' => Http::response([
+            'source_face_count' => 1, 'target_face_count' => 1, 'distance' => 0.55,
+        ])]);
+
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload())
+            ->assertSessionHasErrors('photo');
+        $this->assertDatabaseCount('attendances', 0);
+
+        Http::swap(new Factory);
+        Http::fake(['face-service.test/compare' => Http::response([
+            'source_face_count' => 1, 'target_face_count' => 1, 'distance' => 0.31,
+        ])]);
+        $this->actingAs($this->user)->post(route('me.attendance.check-in'), $this->payload())
+            ->assertRedirect(route('me.attendance.index'));
+        $this->assertDatabaseCount('attendances', 1);
     }
 
     public function test_face_verification_rejects_multiple_faces(): void
@@ -199,6 +270,23 @@ class AttendanceSecurityTest extends TestCase
         $this->assertNotSame($oldPath, $this->employee->fresh()->face_reference_path);
         Storage::disk(config('filesystems.attendance_proof_disk'))->assertMissing($oldPath);
         Storage::disk(config('filesystems.attendance_proof_disk'))->assertExists($this->employee->fresh()->face_reference_path);
+    }
+
+    public function test_invalid_camera_enrollment_keeps_existing_reference(): void
+    {
+        $hr = User::create([
+            'name' => 'HR', 'email' => 'hr@example.test', 'password' => 'Password123!',
+            'role' => 'hr', 'account_status' => 'active',
+        ]);
+        $originalPath = $this->employee->face_reference_path;
+        $this->faceResponse(0.2);
+
+        $this->actingAs($hr)->post(route('hr.employees.face-reference.store', $this->employee), [
+            'face_reference' => UploadedFile::fake()->image('camera.jpg'),
+        ])->assertSessionHasErrors('photo');
+
+        $this->assertSame($originalPath, $this->employee->fresh()->face_reference_path);
+        Storage::disk(config('filesystems.attendance_proof_disk'))->assertExists($originalPath);
     }
 
     public function test_hr_cannot_replace_admin_face_reference(): void

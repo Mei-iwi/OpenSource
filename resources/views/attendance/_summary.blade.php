@@ -57,7 +57,11 @@
     </div>
 
     <div class="flex flex-wrap gap-x-7 gap-y-2 border-t border-[var(--app-border)] px-6 py-4 text-xs text-[var(--app-muted)] sm:px-8">
-        <span>Ca bắt đầu {{ $schedule['work_start_time'] }} · Đi muộn sau {{ $schedule['grace_boundary_time'] }}</span>
-        <span>HUIT, 140 Lê Trọng Tấn · Bán kính {{ config('attendance.site_radius_meters') }} m</span>
+        <span>Vào ca {{ $schedule['checkin_open_time'] }}–{{ $schedule['checkin_close_time'] }} · Đi muộn sau {{ $schedule['grace_boundary_time'] }}</span>
+        @if (config('attendance.enforce_location'))
+            <span>HUIT, 140 Lê Trọng Tấn · Bán kính {{ config('attendance.site_radius_meters') }} m</span>
+        @else
+            <span>Kiểm tra vị trí tạm tắt để thử nghiệm</span>
+        @endif
     </div>
 </section>

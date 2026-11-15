@@ -88,11 +88,15 @@ class AttendanceScheduleService
      */
     public function isCheckinAllowed(CarbonInterface $time): bool
     {
-        if ($time->isWeekend() && ! $this->isWeekendCheckinAllowed()) {
+        $local = $time->copy()->setTimezone($this->getTimezone());
+        if ($local->isWeekend() && ! $this->isWeekendCheckinAllowed()) {
             return false;
         }
 
-        return true;
+        $localTime = $local->format('H:i:s');
+
+        return $localTime >= config('attendance.checkin_open_time', '07:00').':00'
+            && $localTime <= config('attendance.checkin_close_time', '17:00').':00';
     }
 
     /**
@@ -105,6 +109,8 @@ class AttendanceScheduleService
 
         return [
             'work_start_time' => $this->getWorkStartTime(),
+            'checkin_open_time' => config('attendance.checkin_open_time', '07:00'),
+            'checkin_close_time' => config('attendance.checkin_close_time', '17:00'),
             'grace_period_minutes' => $this->getGracePeriodMinutes(),
             'grace_boundary_time' => $boundary->format('H:i'),
             'timezone' => $this->getTimezone(),

@@ -21,6 +21,17 @@
     <div x-data="selfAttendance()" class="space-y-6">
         @include('attendance._summary')
 
+        <div x-show="noticeOpen" x-cloak class="pointer-events-none fixed inset-x-4 top-4 z-[80] flex justify-center sm:inset-x-0" role="alertdialog" aria-modal="true" aria-labelledby="attendance-notice-title" aria-describedby="attendance-notice-text" @keydown.escape.window="finishNotice()">
+            <div class="glass-island-panel pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-[1.75rem] p-4 shadow-2xl">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" :class="noticeKind === 'success' ? 'bg-indigo-500/10 text-indigo-600' : 'bg-rose-500/10 text-rose-600'" aria-hidden="true">
+                    <svg x-show="noticeKind === 'success'" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg>
+                    <svg x-show="noticeKind === 'error'" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                </div>
+                <div class="min-w-0 flex-1"><h2 id="attendance-notice-title" class="font-bold" x-text="noticeTitle"></h2><p id="attendance-notice-text" class="mt-1 text-sm text-[var(--app-muted)]" x-text="noticeText"></p></div>
+                <button type="button" class="rounded-full px-2 py-1 text-sm font-semibold text-[var(--app-accent)]" @click="finishNotice()" x-text="noticeKind === 'success' ? 'Xong' : 'Đóng'"></button>
+            </div>
+        </div>
+
         <!-- Camera / Photo Modal Dialog -->
         <div x-show="openModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="attendance-modal-title">
             <div @click.outside="close()" class="w-full max-w-lg rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-2xl">
@@ -81,6 +92,9 @@
 function selfAttendance() {
     return {
         openModal: false, action: '', previewUrl: '', photo: null, stream: null, cameraActive: false, cameraError: '', submitting: false,
+        noticeOpen: false, noticeKind: '', noticeTitle: '', noticeText: '',
+        showNotice(kind, title, text) { this.noticeKind = kind; this.noticeTitle = title; this.noticeText = text; this.noticeOpen = true; },
+        finishNotice() { if (this.noticeKind === 'success') { window.location.reload(); return; } this.noticeOpen = false; },
         open(action) { this.action = action; this.openModal = true; this.resetPhoto(); },
         close() { this.stopCamera(); this.openModal = false; this.resetPhoto(); },
         async startCamera() {
@@ -127,32 +141,41 @@ function selfAttendance() {
             this.submitting = true;
             this.cameraError = '';
             try {
-                if (!navigator.geolocation) throw new Error('Thiết bị không hỗ trợ định vị.');
-                const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true, timeout: 15000, maximumAge: 0
-                }));
                 const form = new FormData();
                 form.append('photo', this.photo);
                 form.append('method', 'camera');
-                form.append('latitude', position.coords.latitude);
-                form.append('longitude', position.coords.longitude);
-                form.append('accuracy', position.coords.accuracy);
+                if ({{ config('attendance.enforce_location') ? 'true' : 'false' }}) {
+                    if (!navigator.geolocation) throw new Error('Thiết bị không hỗ trợ định vị.');
+                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true, timeout: 15000, maximumAge: 0
+                    }));
+                    form.append('latitude', position.coords.latitude);
+                    form.append('longitude', position.coords.longitude);
+                    form.append('accuracy', position.coords.accuracy);
+                }
                 const response = await fetch(this.action === 'check-in' ? '{{ route('me.attendance.check-in') }}' : '{{ route('me.attendance.check-out') }}', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'text/html'
+                        'Accept': 'application/json'
                     },
                     body: form
                 });
-                if (response.redirected) {
+                if (response.redirected && response.url.includes('/login')) {
                     window.location.href = response.url;
                     return;
                 }
-                throw new Error('Không thể lưu chấm công. Vui lòng thử lại.');
+                const data = await response.json().catch(() => null);
+                if (!response.ok) {
+                    throw new Error(Object.values(data?.errors || {}).flat()[0] || data?.message || 'Không thể lưu chấm công. Vui lòng thử lại.');
+                }
+                if (!data?.recorded_at) throw new Error('Không nhận được giờ chấm công từ máy chủ.');
+                const completedAction = this.action;
+                this.close();
+                this.showNotice('success', completedAction === 'check-in' ? 'Chấm công vào thành công' : 'Chấm công ra thành công', `${data.message} Lúc ${data.recorded_at}.`);
             } catch (error) {
                 this.submitting = false;
-                this.cameraError = error?.message || 'Không thể lấy vị trí hiện tại. Vui lòng cấp quyền định vị và thử lại.';
+                this.showNotice('error', 'Chấm công chưa thành công', error?.message || 'Vui lòng thử lại.');
             }
         }
     };

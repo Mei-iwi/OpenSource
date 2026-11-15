@@ -1,4 +1,5 @@
 * text=auto eol=lf
+face-service/models/*-shard* -text
 
 *.blade.php diff=html
 *.css diff=css

@@ -39,6 +39,7 @@ php artisan view:clear
 php artisan migrate --force
 if [ "${APP_ENV:-}" = "local" ]; then
     php artisan db:seed --class=DemoContractSeeder --force
+    php artisan db:seed --class=DemoPayrollSeeder --force
 fi
 php artisan cache:clear
 
