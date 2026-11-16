@@ -12,6 +12,9 @@ services:
       APP_KEY: "${DOCKER_APP_KEY:-}"
       APP_URL: http://localhost:8080
       APP_LOCALE: vi
+      ATTENDANCE_TIMEZONE: "${ATTENDANCE_TIMEZONE:-Asia/Ho_Chi_Minh}"
+      ATTENDANCE_CHECKIN_OPEN_TIME: "${ATTENDANCE_CHECKIN_OPEN_TIME:-07:00}"
+      ATTENDANCE_CHECKIN_CLOSE_TIME: "${ATTENDANCE_CHECKIN_CLOSE_TIME:-17:00}"
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
@@ -29,6 +32,12 @@ services:
       MAIL_PASSWORD: "${MAIL_PASSWORD:-}"
       MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-hello@example.com}"
       MAIL_FROM_NAME: "${MAIL_FROM_NAME:-Công ty TNHH 4 thành viên CTQ}"
+      ATTENDANCE_FACE_DRIVER: "${ATTENDANCE_FACE_DRIVER:-face-api-js}"
+      ATTENDANCE_FACE_API_URL: "${ATTENDANCE_FACE_API_URL:-http://face:8001}"
+      ATTENDANCE_FACE_API_KEY: "${ATTENDANCE_FACE_API_KEY:-}"
+      ATTENDANCE_FACE_MIN_SIMILARITY: "${ATTENDANCE_FACE_MIN_SIMILARITY:-0.80}"
+      ATTENDANCE_FACE_MAX_DISTANCE: "${ATTENDANCE_FACE_MAX_DISTANCE:-0.40}"
+      ATTENDANCE_ENFORCE_LOCATION: "${ATTENDANCE_ENFORCE_LOCATION:-true}"
       FILESYSTEM_DISK: local
       MEDIA_DISK: persistent_uploads
       UPLOAD_STORAGE_PATH: /var/www/html/storage/app/private/uploads
@@ -37,8 +46,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      face:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  face:
+    build:
+      context: ./face-service
+    expose:
+      - "8001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8001/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 10

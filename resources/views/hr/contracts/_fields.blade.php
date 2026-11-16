@@ -1,5 +1,6 @@
-<fieldset class="mt-8 border-t border-[var(--app-border)] pt-6">
+<fieldset id="hop-dong" class="mt-8 scroll-mt-24 border-t border-[var(--app-border)] pt-6">
     <legend class="font-semibold">Hợp đồng và thông tin pháp lý</legend>
+    <p class="app-subtitle mt-2">Nhập theo hồ sơ thực tế. Hợp đồng có thời hạn hoặc thử việc cần ngày kết thúc; hợp đồng không xác định thời hạn để trống ngày này.</p>
     <div class="mt-4 grid gap-5 sm:grid-cols-2">
         <div><label for="contract_type" class="app-label">Loại hợp đồng</label><select id="contract_type" name="contract_type" class="app-input w-full">
             <option value="">Chưa cập nhật</option>
@@ -8,6 +9,7 @@
             @endforeach
         </select><x-input-error :messages="$errors->get('contract_type')" /></div>
         <div><label for="contract_start_date" class="app-label">Ngày bắt đầu hợp đồng</label><input id="contract_start_date" name="contract_start_date" type="date" class="app-input w-full" value="{{ old('contract_start_date', isset($employee) && $employee->contract_start_date ? $employee->contract_start_date->format('Y-m-d') : '') }}"><x-input-error :messages="$errors->get('contract_start_date')" /></div>
+        <div><label for="contract_end_date" class="app-label">Ngày kết thúc hợp đồng</label><input id="contract_end_date" name="contract_end_date" type="date" class="app-input w-full" value="{{ old('contract_end_date', isset($employee) && $employee->contract_end_date ? $employee->contract_end_date->format('Y-m-d') : '') }}"><x-input-error :messages="$errors->get('contract_end_date')" /></div>
         <div><label for="identity_number" class="app-label">CCCD / CMND</label><input id="identity_number" name="identity_number" class="app-input w-full" maxlength="20" autocomplete="off" value="{{ old('identity_number', $employee->identity_number ?? '') }}"><x-input-error :messages="$errors->get('identity_number')" /></div>
         <div><label for="tax_code" class="app-label">Mã số thuế</label><input id="tax_code" name="tax_code" class="app-input w-full" maxlength="30" autocomplete="off" value="{{ old('tax_code', $employee->tax_code ?? '') }}"><x-input-error :messages="$errors->get('tax_code')" /></div>
         <div><label for="social_insurance_number" class="app-label">Số BHXH</label><input id="social_insurance_number" name="social_insurance_number" class="app-input w-full" maxlength="30" autocomplete="off" value="{{ old('social_insurance_number', $employee->social_insurance_number ?? '') }}"><x-input-error :messages="$errors->get('social_insurance_number')" /></div>

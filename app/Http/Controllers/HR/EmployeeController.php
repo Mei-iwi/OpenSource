@@ -61,9 +61,6 @@ class EmployeeController extends Controller
                 $employeeData = collect($data)->except(['name', 'email', 'password', 'password_confirmation', 'avatar', 'role', 'employee_code'])->all();
                 $employeeData['avatar_path'] = $avatarPath;
                 $employeeData['employee_code'] = $codes->next($user->role);
-                if (($employeeData['contract_type'] ?? null) === 'indefinite') {
-                    $employeeData['contract_end_date'] = null;
-                }
                 if ($employeeData['employment_status'] === 'inactive' && empty($employeeData['employment_end_date'])) {
                     $employeeData['employment_end_date'] = Carbon::today(config('attendance.timezone'))->toDateString();
                 }
@@ -94,7 +91,7 @@ class EmployeeController extends Controller
     {
         $employee->load('user');
         abort_if(auth()->user()->isHr() && $employee->user->isAdmin(), 403);
-        $employee->load('department')->loadCount('attendances');
+        $employee->load(['department', 'salary'])->loadCount('attendances');
 
         return view('hr.employees.show', compact('employee'));
     }
@@ -126,9 +123,6 @@ class EmployeeController extends Controller
             DB::transaction(function () use ($data, $employee, $newAvatar) {
                 $employee->user->update(['name' => $data['name'], 'email' => $data['email']]);
                 $employeeData = collect($data)->except(['name', 'email', 'avatar'])->all();
-                if (($employeeData['contract_type'] ?? null) === 'indefinite') {
-                    $employeeData['contract_end_date'] = null;
-                }
                 if ($employeeData['employment_status'] === 'active') {
                     $employeeData['employment_end_date'] = null;
                 } elseif ($employee->employment_status !== 'inactive' && empty($employeeData['employment_end_date'])) {

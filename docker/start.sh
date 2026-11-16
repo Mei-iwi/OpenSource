@@ -37,6 +37,10 @@ done
 php artisan config:clear
 php artisan view:clear
 php artisan migrate --force
+if [ "${APP_ENV:-}" = "local" ]; then
+    php artisan db:seed --class=DemoContractSeeder --force
+    php artisan db:seed --class=DemoPayrollSeeder --force
+fi
 php artisan cache:clear
 
 exec php artisan serve --host=0.0.0.0 --port=8000

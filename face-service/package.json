@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "commonjs",
+  "scripts": { "start": "node server.cjs" },
+  "dependencies": {
+    "busboy": "1.6.0",
+    "face-api.js": "0.22.2",
+    "sharp": "0.34.4"
+  }
+}

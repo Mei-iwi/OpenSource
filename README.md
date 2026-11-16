@@ -197,6 +197,12 @@ docker compose exec app php artisan db:seed --force
 
 Có thể chạy lại cùng lệnh để cập nhật dữ liệu demo.
 
+Hợp đồng demo được lưu trong `database/seeders/DemoContractSeeder.php` (dữ liệu giả lập, không chứa số giấy tờ cá nhân). Khi cập nhật code từ `main`, chạy `docker compose up -d --build`: container local tự bổ sung hợp đồng cho các tài khoản demo còn trống. Hợp đồng đã nhập không bị ghi đè. Nếu chạy PHP trực tiếp thay vì Docker, sau khi `git pull` chạy `php artisan migrate` và `php artisan db:seed --class=DemoContractSeeder`. Git chỉ đồng bộ mã nguồn và seeder; database MySQL riêng của mỗi thành viên không tự đồng bộ chỉ bằng `git pull`.
+
+Lương demo nằm trong `database/seeders/DemoPayrollSeeder.php`. Trên Docker local, `docker compose up -d --build` tự thêm cấu hình lương còn thiếu cho 20 tài khoản demo, tạo kỳ 09/2026 đã chốt để nhân viên xem phiếu lương và kỳ 10/2026 dạng nháp để HR/Admin thử quản lý. Seeder không sửa lương đã nhập hoặc kỳ đã có phiếu. Nếu chạy PHP trực tiếp, đặt `APP_ENV=local` rồi chạy `php artisan db:seed --class=DemoPayrollSeeder` sau khi đã seed nhân viên và chấm công. Dữ liệu lương là số giả lập; mỗi thành viên cần chạy seeder trên MySQL của mình sau khi pull code.
+
+Seeder lương cũng bổ sung đơn nghỉ demo đã duyệt cho các ngày chấm công mẫu có trạng thái `leave` ở kỳ chưa chốt. Bảng lương chỉ tính ngày nghỉ từ đơn đã duyệt; ngày vắng hoặc thiếu chấm công nằm ở cột riêng. Nếu kỳ 10/2026 đã có phiếu nháp từ bản code cũ, HR/Admin chọn **Tạo / tạo lại kỳ nháp** để cập nhật số liệu nghỉ. Kỳ 09/2026 đã chốt trước đó giữ nguyên bản chụp, không tự sửa hồi tố.
+
 Nếu muốn xóa toàn bộ database Docker và tạo lại bảng cùng dữ liệu demo:
 
 ```bash

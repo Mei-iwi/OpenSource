@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Tổng quan Quản trị')
 @section('content')
-<x-page-header eyebrow="Khu vực Quản trị tối cao" title="Bảng điều khiển hệ thống" description="Theo dõi toàn diện tình hình nhân sự, chuyên cần và hoạt động vận hành thời gian thực.">
+<x-page-header eyebrow="Quản trị" title="Tổng quan" description="Nhân sự và chấm công trong kỳ.">
     <a href="{{ route('admin.users.index') }}" class="app-button-primary">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
         <span>Quản lý tài khoản</span>
@@ -132,7 +132,7 @@
 </div>
 
 <!-- Pending Leave Requests Alert Banner -->
-<div class="app-panel mt-6 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-500/5 via-[var(--app-surface)] to-[var(--app-surface)] p-5">
+<div class="app-panel mt-6 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-500 p-5">
     <div class="flex items-center gap-3.5">
         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>

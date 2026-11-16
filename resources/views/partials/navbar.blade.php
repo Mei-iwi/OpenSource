@@ -20,6 +20,7 @@
             </div>
         </div>
 
+        @unless (request()->routeIs('me.attendance.*'))
         <!-- Center: Live Clock & System Status Widget (Hidden on mobile) -->
         <div x-data="{
             time: '',
@@ -41,6 +42,8 @@
             <span class="text-xs font-semibold text-[var(--app-text)] font-mono" x-text="time">--:--:--</span>
             <span class="text-xs text-[var(--app-muted)] font-medium" x-text="date">--/--</span>
         </div>
+
+        @endunless
 
         <!-- Right Side: Controls & User Profile -->
         <div class="relative flex items-center gap-2 sm:gap-3" x-data="{ userMenuOpen: false, logoutConfirm: false }">
@@ -72,7 +75,7 @@
                 </button>
 
                 <!-- Notifications Dropdown -->
-                <div x-show="notificationsOpen" x-cloak @click.outside="notificationsOpen = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 top-full mt-2.5 z-50 w-80 sm:w-96 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] shadow-2xl overflow-hidden" role="menu">
+                <div x-show="notificationsOpen" x-cloak @click.outside="notificationsOpen = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="glass-island-panel absolute right-0 top-full z-50 mt-2.5 w-80 overflow-hidden rounded-[1.5rem] sm:w-96" role="menu">
                     <!-- Dropdown Header -->
                     <div class="flex items-center justify-between border-b border-[var(--app-border)] px-4 py-3 bg-[var(--app-bg)]/40">
                         <div class="flex items-center gap-2">
@@ -142,7 +145,7 @@
             <div class="relative" x-data="{ userMenuOpen: false }">
                 <!-- User Menu Trigger -->
                 <button type="button" @click="userMenuOpen = !userMenuOpen" :aria-expanded="userMenuOpen" class="user-profile-trigger flex items-center gap-2.5 border-0 bg-transparent p-0 shadow-none transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Mở menu tài khoản">
-                    <x-user-avatar :user="auth()->user()" class="snake-avatar-motion h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 shadow-sm" />
+                    <x-user-avatar :user="auth()->user()" class="h-8 w-8 rounded-lg bg-[var(--app-primary-light)]" />
                     <div class="hidden text-left sm:block">
                         <p class="max-w-28 truncate text-xs font-bold text-[var(--app-text)] sm:max-w-36">{{ auth()->user()->name }}</p>
                         <p class="text-[10px] font-medium text-[var(--app-muted)]">{{ $roleLabels[auth()->user()->role] ?? auth()->user()->role }}</p>

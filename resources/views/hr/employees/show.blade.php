@@ -3,6 +3,7 @@
 @section('content')
 <x-page-header eyebrow="HR / Nhân sự" title="{{ $employee->user->name }}" description="Hồ sơ nhân viên và thông tin tài khoản.">
     <a href="{{ route('hr.employees.edit', $employee) }}" class="app-button-primary">Chỉnh sửa</a>
+    <a href="{{ route('hr.contracts.show', $employee) }}" class="app-button-secondary">Xem hợp đồng</a>
 </x-page-header>
 
 @if(session('created_credentials'))
@@ -30,24 +31,147 @@
         <div><dt class="app-label">Phòng ban</dt><dd>{{ $employee->department->name }}</dd></div>
         <div><dt class="app-label">Chức vụ</dt><dd>{{ $employee->position ?: '—' }}</dd></div>
         <div><dt class="app-label">Ngày vào làm</dt><dd>{{ $employee->hire_date?->format('d/m/Y') }}</dd></div>
-        <div><dt class="app-label">Hạn hợp đồng</dt><dd>{{ $employee->contract_end_date?->format('d/m/Y') ?: '—' }}</dd></div>
         <div><dt class="app-label">Trạng thái</dt><dd>{{ $employee->employment_status }}</dd></div>
         <div><dt class="app-label">Ngày ngừng làm việc</dt><dd>{{ $employee->employment_end_date?->format('d/m/Y') ?: '—' }}</dd></div>
         <div><dt class="app-label">Chấm công</dt><dd>{{ $employee->attendances_count }} bản ghi</dd></div>
     </dl>
 </div>
+@if(!auth()->user()->isHr() || !$employee->user->isAdmin())
 <section class="app-panel mt-6 p-6">
-    <h2 class="app-heading">Khuôn mặt mẫu để chấm công</h2>
-    <p class="app-subtitle">{{ $employee->face_reference_path ? 'Đã đăng ký. Tải ảnh mới để thay thế.' : 'Chưa đăng ký. Nhân viên sẽ chưa thể tự chấm công.' }}</p>
-    <form method="POST" action="{{ route('hr.employees.face-reference.store', $employee) }}" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-end gap-3">
-        @csrf
-        <label class="app-label">Ảnh một khuôn mặt rõ ràng
-            <input type="file" name="face_reference" accept="image/jpeg,image/png,image/webp" required class="mt-2 block">
-        </label>
-        <button class="app-button-primary">Đăng ký khuôn mặt</button>
+    <div class="mb-4">
+        <h2 class="app-heading">Lương nhân viên</h2>
+        <p class="app-subtitle">Mức lương này áp dụng khi tạo hoặc tạo lại kỳ lương nháp. Kỳ đã chốt giữ nguyên số liệu.</p>
+    </div>
+    <form method="POST" action="{{ route('hr.payroll.salaries.update', $employee) }}" class="grid gap-4 md:grid-cols-3">
+        @csrf @method('PUT')
+        <input type="hidden" name="return_to" value="employee">
+        @foreach(['base_salary' => 'Lương cơ bản tháng', 'allowance' => 'Phụ cấp tháng', 'fixed_deduction' => 'Khấu trừ cố định'] as $field => $label)
+            <div>
+                <label for="salary-{{ $field }}" class="app-label">{{ $label }} ({{ config('payroll.currency') }})</label>
+                <input id="salary-{{ $field }}" name="{{ $field }}" inputmode="decimal" required class="app-input mt-2 w-full" value="{{ old($field, $employee->salary?->$field ?? '0.00') }}">
+                <x-input-error :messages="$errors->get($field)" />
+            </div>
+        @endforeach
+        <div class="md:col-span-3"><button class="app-button-primary">Lưu lương</button></div>
     </form>
-    @error('face_reference')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
-    @error('photo')<p class="mt-2 text-sm text-rose-600">{{ $message }}</p>@enderror
 </section>
-@include('hr.employees._contract_legal_details')
+@endif
+<section class="app-panel mt-6 p-6" x-data="faceEnrollment('{{ route('hr.employees.face-reference.store', $employee) }}')" x-init="$watch('open', value => { if (!value) stopCamera() })">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h2 class="app-heading">Khuôn mặt mẫu để chấm công</h2>
+            <p class="app-subtitle">{{ $employee->face_reference_path ? 'Đã đăng ký. Có thể chụp lại để thay thế.' : 'Chưa đăng ký. Nhân viên chưa thể tự chấm công.' }}</p>
+        </div>
+        <button type="button" class="app-button-primary" @click="openCamera()">{{ $employee->face_reference_path ? 'Chụp lại khuôn mặt' : 'Đăng ký từ camera' }}</button>
+    </div>
+
+    <div x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="face-enrollment-title" @keydown.escape.window="close()">
+        <div class="w-full max-w-lg rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-2xl" @click.outside="close()">
+            <div class="flex items-start justify-between gap-4">
+                <div><h3 id="face-enrollment-title" class="text-lg font-bold">Đăng ký khuôn mặt</h3><p class="app-subtitle">Đưa một khuôn mặt vào khung hình, đủ sáng và nhìn thẳng camera.</p></div>
+                <button type="button" class="text-2xl leading-none text-[var(--app-muted)]" aria-label="Đóng" @click="close()">&times;</button>
+            </div>
+
+            <p x-show="error" x-text="error" class="mt-4 text-sm text-rose-600" role="alert"></p>
+            <div x-show="cameraActive" class="mt-5 overflow-hidden rounded-2xl bg-slate-950">
+                <video x-ref="video" autoplay muted playsinline class="max-h-80 w-full object-cover"></video>
+            </div>
+            <div x-show="previewUrl" class="mt-5 overflow-hidden rounded-2xl bg-slate-950">
+                <img :src="previewUrl" alt="Ảnh khuôn mặt vừa chụp" class="max-h-80 w-full object-contain">
+            </div>
+            <div class="mt-5 flex flex-wrap justify-end gap-3">
+                <button type="button" class="app-button-secondary" @click="close()">Hủy</button>
+                <button x-show="cameraActive" type="button" class="app-button-primary" @click="capture()">Chụp khuôn mặt</button>
+                <button x-show="previewUrl" type="button" class="app-button-secondary" @click="openCamera()">Chụp lại</button>
+                <button x-show="previewUrl" type="button" class="app-button-primary" :disabled="saving" @click="save()" x-text="saving ? 'Đang xác thực...' : 'Lưu khuôn mặt'"></button>
+            </div>
+        </div>
+    </div>
+</section>
 @endsection
+
+@push('scripts')
+<script>
+function faceEnrollment(url) {
+    return {
+        open: false, cameraActive: false, stream: null, photo: null, previewUrl: '', error: '', saving: false,
+        async openCamera() {
+            this.open = true;
+            this.clearPhoto();
+            this.error = '';
+            this.stopCamera();
+            if (!navigator.mediaDevices?.getUserMedia) {
+                this.error = 'Camera chỉ hoạt động trên HTTPS hoặc localhost và cần trình duyệt hỗ trợ.';
+                return;
+            }
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}, audio: false});
+                if (!this.open) { this.stopCamera(); return; }
+                this.$refs.video.srcObject = this.stream;
+                await this.$refs.video.play();
+                this.cameraActive = true;
+            } catch (error) {
+                this.stopCamera();
+                this.error = 'Không mở được camera. Hãy cấp quyền truy cập và thử lại.';
+            }
+        },
+        capture() {
+            const video = this.$refs.video;
+            if (!video.videoWidth || !video.videoHeight) {
+                this.error = 'Camera chưa sẵn sàng. Vui lòng thử lại.';
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+                if (!this.open) return;
+                if (!blob) { this.error = 'Không chụp được ảnh. Vui lòng thử lại.'; return; }
+                this.photo = new File([blob], 'face-camera.jpg', {type: 'image/jpeg'});
+                this.previewUrl = URL.createObjectURL(blob);
+                this.stopCamera();
+            }, 'image/jpeg', 0.9);
+        },
+        async save() {
+            if (!this.photo || this.saving) return;
+            this.saving = true;
+            this.error = '';
+            const form = new FormData();
+            form.append('face_reference', this.photo);
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json'},
+                    body: form,
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.errors?.face_reference?.[0] || data.errors?.photo?.[0] || data.message || 'Không thể đăng ký khuôn mặt.');
+                }
+                window.location.reload();
+            } catch (error) {
+                this.error = error.message || 'Không thể đăng ký khuôn mặt. Vui lòng thử lại.';
+                this.saving = false;
+            }
+        },
+        clearPhoto() {
+            if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+            this.previewUrl = '';
+            this.photo = null;
+        },
+        stopCamera() {
+            if (this.stream) this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+            this.cameraActive = false;
+        },
+        close() {
+            this.open = false;
+            this.stopCamera();
+            this.clearPhoto();
+            this.error = '';
+        },
+    };
+}
+</script>
+@endpush

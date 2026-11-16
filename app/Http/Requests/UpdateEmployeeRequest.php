@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateEmployeeRequest extends FormRequest
 {
-    use Concerns\ContractLegalRules;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +31,7 @@ class UpdateEmployeeRequest extends FormRequest
     {
         $employee = $this->route('employee');
 
-        return $this->contractLegalRules() + [
+        return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($employee?->user_id)],
             'department_id' => ['required', 'exists:departments,id'],

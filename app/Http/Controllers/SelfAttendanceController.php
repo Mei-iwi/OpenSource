@@ -9,6 +9,7 @@ use App\Services\AttendanceLocationService;
 use App\Services\AttendanceScheduleService;
 use App\Services\FaceVerificationService;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,14 +34,17 @@ class SelfAttendanceController extends Controller
         return view('attendance.self', compact('employee', 'todayAttendance', 'openAttendance', 'schedule'));
     }
 
-    public function checkIn(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService, AttendanceLocationService $location, FaceVerificationService $faces): RedirectResponse
+    public function checkIn(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService, AttendanceLocationService $location, FaceVerificationService $faces): RedirectResponse|JsonResponse
     {
         $employee = $this->employee($request);
         $timezone = $scheduleService->getTimezone();
         $now = now($timezone);
 
         if (! $scheduleService->isCheckinAllowed($now)) {
-            throw ValidationException::withMessages(['photo' => 'Hệ thống không cho phép chấm công vào ngày cuối tuần.']);
+            $message = $now->isWeekend() && ! $scheduleService->isWeekendCheckinAllowed()
+                ? 'Hệ thống không cho phép chấm công vào ngày cuối tuần.'
+                : 'Chỉ có thể chấm công vào từ '.config('attendance.checkin_open_time').' đến '.config('attendance.checkin_close_time').' (giờ Việt Nam).';
+            throw ValidationException::withMessages(['photo' => $message]);
         }
 
         $workDate = $now->toDateString();
@@ -52,7 +56,9 @@ class SelfAttendanceController extends Controller
             throw ValidationException::withMessages(['photo' => 'Bạn đã chấm công vào hôm nay.']);
         }
 
-        $distance = $location->distanceMeters((float) $request->validated('latitude'), (float) $request->validated('longitude'), (float) $request->validated('accuracy'));
+        $distance = config('attendance.enforce_location')
+            ? $location->distanceMeters((float) $request->validated('latitude'), (float) $request->validated('longitude'), (float) $request->validated('accuracy'))
+            : null;
         $this->verifyIdentity($employee, $request->file('photo')->get(), $faces);
         $recordedAt = now($timezone);
         if ($recordedAt->toDateString() !== $workDate) {
@@ -92,10 +98,14 @@ class SelfAttendanceController extends Controller
             ? 'Đã chấm công vào (Ghi nhận đi muộn) và lưu ảnh xác nhận.'
             : 'Đã chấm công vào và lưu ảnh xác nhận.';
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message, 'recorded_at' => $recordedAt->format('H:i:s')]);
+        }
+
         return redirect()->route('me.attendance.index')->with('success', $message);
     }
 
-    public function checkOut(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService, AttendanceLocationService $location, FaceVerificationService $faces): RedirectResponse
+    public function checkOut(SelfAttendanceRequest $request, AttendanceScheduleService $scheduleService, AttendanceLocationService $location, FaceVerificationService $faces): RedirectResponse|JsonResponse
     {
         $employee = $this->employee($request);
         $timezone = $scheduleService->getTimezone();
@@ -109,7 +119,9 @@ class SelfAttendanceController extends Controller
             throw ValidationException::withMessages(['photo' => 'Bạn cần chấm công vào trước khi chấm công ra.']);
         }
 
-        $distance = $location->distanceMeters((float) $request->validated('latitude'), (float) $request->validated('longitude'), (float) $request->validated('accuracy'));
+        $distance = config('attendance.enforce_location')
+            ? $location->distanceMeters((float) $request->validated('latitude'), (float) $request->validated('longitude'), (float) $request->validated('accuracy'))
+            : null;
         $image = $request->file('photo')->get();
         $this->verifyIdentity($employee, $image, $faces);
         $disk = Storage::disk(config('filesystems.attendance_proof_disk'));
@@ -138,7 +150,12 @@ class SelfAttendanceController extends Controller
             throw $exception;
         }
 
-        return redirect()->route('me.attendance.index')->with('success', 'Đã chấm công ra và lưu ảnh xác nhận.');
+        $message = 'Đã chấm công ra và lưu ảnh xác nhận.';
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message, 'recorded_at' => $recordedAt->format('H:i:s')]);
+        }
+
+        return redirect()->route('me.attendance.index')->with('success', $message);
     }
 
     private function employee(Request $request): Employee

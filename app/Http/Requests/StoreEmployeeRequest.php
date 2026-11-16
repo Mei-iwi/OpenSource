@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 
 class StoreEmployeeRequest extends FormRequest
 {
-    use Concerns\ContractLegalRules;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +25,7 @@ class StoreEmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->contractLegalRules() + [
+        return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['prohibited'],
